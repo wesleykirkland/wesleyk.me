@@ -13,7 +13,7 @@ export default function Home() {
               Welcome to my corner of the internet
             </h1>
             <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto">
-              I&apos;m Wesley Kirkland, a Sr. Systems Engineer specializing in PowerShell, O365, Azure, and Security Research.
+              I&apos;m {process.env.NEXT_PUBLIC_NAME}, a {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} specializing in PowerShell, O365, Azure, and Security Research.
               Here you&apos;ll find my thoughts on technology, security vulnerabilities I&apos;ve discovered, and various technical adventures.
             </p>
             <div className="flex justify-center space-x-4">
@@ -99,7 +99,7 @@ export default function Home() {
           <p className="text-gray-700 mb-6">
             Wesley Kirkland started his career back in 2013 working as a lonely intern racking and stacking servers.
             Throughout the years he quickly advanced through his company and eventually found an all-star team to work with.
-            Currently he is a Sr. Systems Engineer working with PowerShell, O365, Exchange, Azure, and various SaaS applications.
+            Currently he is a {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} working with PowerShell, O365, Exchange, Azure, and various SaaS applications.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {['PowerShell', 'Azure', 'O365', 'Security Research', 'SCCM', 'Active Directory', 'Networking', 'Documentation'].map((skill) => (

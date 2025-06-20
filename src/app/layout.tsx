@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wesley Kirkland - Meme Master of Disaster",
-  description: "Personal website and blog of Wesley Kirkland - Sr. Systems Engineer specializing in PowerShell, O365, Azure, and Security Research",
+  title: `${process.env.NEXT_PUBLIC_NAME} - ${process.env.NEXT_PUBLIC_TAGLINE}`,
+  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
   icons: {
     icon: '/powershell-icon.svg',
   },
