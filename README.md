@@ -120,12 +120,14 @@ Set the environment variable in your deployment platform (Netlify, Vercel, etc.)
 ### Dark Mode
 
 The website includes a built-in dark mode toggle that:
-- **Automatically detects** your system's color scheme preference
-- **Remembers your choice** using localStorage
+- **Automatically detects** your system's color scheme preference on first visit
+- **Remembers your choice** using localStorage across sessions
 - **Provides a toggle button** in the header for manual switching
+- **Works reliably** regardless of your system's current preference
 - **Supports all pages** with consistent dark/light themes
+- **Prevents flash** of unstyled content with inline script
 
-The dark mode toggle appears as a sun/moon icon in the header next to the social media links.
+The dark mode toggle appears as a sun/moon icon in the header next to the social media links. Click it to instantly switch between light and dark modes.
 
 ## 📝 Adding Blog Posts
 

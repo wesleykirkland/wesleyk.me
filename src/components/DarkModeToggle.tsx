@@ -6,51 +6,44 @@ export default function DarkModeToggle() {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Only run on client side to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
 
-    // Check if user has a preference stored
+    // Initialize dark mode
     const stored = localStorage.getItem('darkMode');
-    if (stored) {
-      const prefersDark = stored === 'true';
-      setIsDark(prefersDark);
-      // Apply the stored preference immediately
-      if (prefersDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+    let shouldBeDark = false;
+
+    if (stored !== null) {
+      shouldBeDark = stored === 'true';
     } else {
-      // Check system preference
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDark(systemPrefersDark);
-      // Apply system preference immediately
-      if (systemPrefersDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      shouldBeDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    setIsDark(shouldBeDark);
+
+    // Apply to DOM
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
-  useEffect(() => {
-    if (mounted) {
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('darkMode', 'true');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('darkMode', 'false');
-      }
-    }
-  }, [isDark, mounted]);
+  const handleToggle = () => {
+    const newDarkMode = !isDark;
+    setIsDark(newDarkMode);
 
-  const toggleDarkMode = () => {
-    setIsDark(!isDark);
+    // Apply to DOM
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    // Store preference
+    localStorage.setItem('darkMode', newDarkMode.toString());
   };
 
-  // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
     return (
       <button className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
@@ -61,7 +54,7 @@ export default function DarkModeToggle() {
 
   return (
     <button
-      onClick={toggleDarkMode}
+      onClick={handleToggle}
       className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
