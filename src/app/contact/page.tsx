@@ -1,11 +1,11 @@
 export default function Contact() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact</h1>
-          <p className="text-xl text-gray-600">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Contact</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Let&apos;s connect! I&apos;m always interested in discussing technology, security research, or PowerShell automation.
           </p>
         </div>
@@ -14,13 +14,13 @@ export default function Contact() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Social Media */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Connect With Me</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Connect With Me</h2>
             <div className="space-y-4">
               <a
                 href={process.env.NEXT_PUBLIC_GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                className="flex items-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
               >
                 <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -28,8 +28,8 @@ export default function Contact() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">GitHub</h3>
-                  <p className="text-gray-600">@wesleykirkland</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">GitHub</h3>
+                  <p className="text-gray-600 dark:text-gray-300">@wesleykirkland</p>
                 </div>
               </a>
 
@@ -37,7 +37,7 @@ export default function Contact() {
                 href={process.env.NEXT_PUBLIC_LINKEDIN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                className="flex items-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
               >
                 <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -45,8 +45,8 @@ export default function Contact() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">LinkedIn</h3>
-                  <p className="text-gray-600">Wesley Kirkland</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">LinkedIn</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Wesley Kirkland</p>
                 </div>
               </a>
 
@@ -55,14 +55,14 @@ export default function Contact() {
 
           {/* Contact Form Placeholder */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Send a Message</h2>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <p className="text-gray-700 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h2>
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 I&apos;d love to hear from you! Whether you have questions about my security research,
                 want to discuss PowerShell automation, or just want to connect, feel free to reach out.
               </p>
-              <p className="text-gray-600 text-sm">
-                For now, please use the social media links to connect with me. 
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                For now, please use the social media links to connect with me.
                 A contact form will be available soon!
               </p>
             </div>
@@ -71,7 +71,7 @@ export default function Contact() {
 
         {/* Topics of Interest */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Topics I Love to Discuss</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Topics I Love to Discuss</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 rounded-lg p-4 text-center">
               <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-3">

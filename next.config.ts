@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   distDir: 'out',
+  skipTrailingSlashRedirect: true,
 };
 
 export default nextConfig;

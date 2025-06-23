@@ -8,10 +8,11 @@ A modern, responsive personal website and blog built with Next.js, featuring sec
 - **Blog System**: Markdown-based blog with frontmatter support
 - **Responsive Design**: Mobile-first design that works on all devices
 - **SEO Optimized**: Meta tags, structured data, and performance optimized
-- **Static 
-**: Optimized for Netlify deployment
+- **Static Export**: Optimized for Netlify deployment
+- **Dark Mode Support**: Automatic system preference detection with manual toggle
 - **Security Research**: Dedicated section for vulnerability research and case studies
 - **PowerShell Branding**: Custom branding reflecting expertise in PowerShell automation
+- **Environment Variables**: Easy configuration for personal information
 
 ## 🛠️ Tech Stack
 
@@ -115,6 +116,16 @@ Set the environment variable in your deployment platform (Netlify, Vercel, etc.)
 - Netlify: Site settings → Environment variables
 - Vercel: Project settings → Environment Variables
 - Docker: Use `-e` flag or environment file
+
+### Dark Mode
+
+The website includes a built-in dark mode toggle that:
+- **Automatically detects** your system's color scheme preference
+- **Remembers your choice** using localStorage
+- **Provides a toggle button** in the header for manual switching
+- **Supports all pages** with consistent dark/light themes
+
+The dark mode toggle appears as a sun/moon icon in the header next to the social media links.
 
 ## 📝 Adding Blog Posts
 

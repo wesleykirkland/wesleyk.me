@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import DarkModeToggle from './DarkModeToggle';
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo and Title */}
@@ -12,47 +13,48 @@ export default function Header() {
                 <span className="text-white font-bold text-xl">PS</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">{process.env.NEXT_PUBLIC_NAME}</h1>
-                <p className="text-sm text-gray-600">{process.env.NEXT_PUBLIC_TAGLINE}</p>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{process.env.NEXT_PUBLIC_NAME}</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{process.env.NEXT_PUBLIC_TAGLINE}</p>
               </div>
             </Link>
           </div>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              href="/" 
-              className="text-gray-700 hover:text-blue-600 transition-colors duration-200"
+            <Link
+              href="/"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               Home
             </Link>
-            <Link 
-              href="/about" 
-              className="text-gray-700 hover:text-blue-600 transition-colors duration-200"
+            <Link
+              href="/about"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               Get-AboutMe
             </Link>
-            <Link 
-              href="/contact" 
-              className="text-gray-700 hover:text-blue-600 transition-colors duration-200"
+            <Link
+              href="/contact"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               Contact
             </Link>
-            <Link 
-              href="/security-research" 
-              className="text-gray-700 hover:text-blue-600 transition-colors duration-200"
+            <Link
+              href="/security-research"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               Security Research
             </Link>
           </nav>
 
-          {/* Social Links */}
+          {/* Dark Mode Toggle and Social Links */}
           <div className="flex items-center space-x-4">
+            <DarkModeToggle />
             <a
               href={process.env.NEXT_PUBLIC_GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
               aria-label="GitHub"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -63,7 +65,7 @@ export default function Header() {
               href={process.env.NEXT_PUBLIC_LINKEDIN_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
               aria-label="LinkedIn"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -76,7 +78,7 @@ export default function Header() {
           <div className="md:hidden">
             <button
               type="button"
-              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:text-gray-900 dark:focus:text-white"
               aria-label="Toggle menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
