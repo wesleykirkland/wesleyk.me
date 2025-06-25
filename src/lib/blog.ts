@@ -16,6 +16,8 @@ export interface BlogPost {
   author: string;
   featuredImage?: string;
   images?: string[];
+  permalink?: string;
+  wordpressUrl?: string;
 }
 
 export interface BlogPostMetadata {
@@ -26,6 +28,8 @@ export interface BlogPostMetadata {
   tags: string[];
   author: string;
   featuredImage?: string;
+  permalink?: string;
+  wordpressUrl?: string;
 }
 
 export function getSortedPostsData(): BlogPostMetadata[] {
@@ -53,6 +57,8 @@ export function getSortedPostsData(): BlogPostMetadata[] {
         tags: matterResult.data.tags || [],
         author: matterResult.data.author || 'Wesley Kirkland',
         featuredImage: matterResult.data.featuredImage,
+        permalink: matterResult.data.permalink,
+        wordpressUrl: matterResult.data.wordpressUrl,
       };
     });
 
@@ -106,6 +112,8 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     author: matterResult.data.author || 'Wesley Kirkland',
     featuredImage: matterResult.data.featuredImage,
     images: matterResult.data.images || [],
+    permalink: matterResult.data.permalink,
+    wordpressUrl: matterResult.data.wordpressUrl,
   };
 }
 
@@ -139,4 +147,70 @@ export function processImagePaths(content: string, slug: string): string {
       return `![${alt}](${imagePath})`;
     }
   );
+}
+
+// Permalink utility functions
+export function generateWordPressPermalink(date: string, slug: string): string {
+  const dateObj = new Date(date);
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}/${month}/${day}/${slug}`;
+}
+
+export function getPostPermalink(post: BlogPostMetadata): string {
+  // Always use the modern clean URL (slug-based)
+  return post.slug;
+}
+
+export function getWordPressPermalink(post: BlogPostMetadata): string {
+  // If custom permalink is defined, use it (for backward compatibility)
+  if (post.permalink) {
+    return post.permalink;
+  }
+
+  // If WordPress URL is defined, use it
+  if (post.wordpressUrl) {
+    return post.wordpressUrl;
+  }
+
+  // Default to WordPress-style permalink
+  return generateWordPressPermalink(post.date, post.slug);
+}
+
+export function getPostUrl(post: BlogPostMetadata): string {
+  const permalink = getPostPermalink(post);
+  return `/${permalink}`;
+}
+
+export function getBlogPostUrl(post: BlogPostMetadata): string {
+  const permalink = getPostPermalink(post);
+  return `/blog/${permalink}`;
+}
+
+// Find post by permalink (for routing)
+export function getPostByPermalink(permalink: string): BlogPostMetadata | null {
+  const allPosts = getSortedPostsData();
+
+  // First, try to find by modern permalink (slug)
+  let post = allPosts.find(p => getPostPermalink(p) === permalink);
+
+  if (!post) {
+    // Try to find by WordPress-style permalink (for backward compatibility)
+    post = allPosts.find(p => getWordPressPermalink(p) === permalink);
+  }
+
+  if (!post) {
+    // Try to find by slug (fallback for direct slug access)
+    post = allPosts.find(p => p.slug === permalink);
+  }
+
+  return post || null;
+}
+
+// Check if a permalink is a WordPress-style URL that should redirect
+export function isWordPressPermalink(permalink: string, post: BlogPostMetadata): boolean {
+  const wpPermalink = getWordPressPermalink(post);
+  const modernPermalink = getPostPermalink(post);
+  return permalink === wpPermalink && permalink !== modernPermalink;
 }

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getSortedPostsData } from '@/lib/blog';
+import { getSortedPostsData, getPostUrl } from '@/lib/blog';
 
 export default function Blog() {
   const allPostsData = getSortedPostsData();
@@ -31,7 +31,7 @@ export default function Blog() {
 
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
               <Link
-                href={`/blog/${post.slug}`}
+                href={getPostUrl(post)}
                 className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
               >
                 {post.title}
@@ -56,7 +56,7 @@ export default function Blog() {
               </div>
 
               <Link
-                href={`/blog/${post.slug}`}
+                href={getPostUrl(post)}
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
               >
                 Read more →

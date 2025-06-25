@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getRecentPosts } from '@/lib/blog';
+import { getRecentPosts, getPostUrl } from '@/lib/blog';
 
 export default function Home() {
   const recentPosts = getRecentPosts(2);
@@ -62,7 +62,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={getPostUrl(post)}
                     className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                   >
                     {post.title}
@@ -80,7 +80,7 @@ export default function Home() {
                     })}
                   </span>
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={getPostUrl(post)}
                     className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                   >
                     Read more →
