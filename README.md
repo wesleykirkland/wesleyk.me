@@ -89,8 +89,8 @@ Your professional title and personal information are configured using environmen
 **Environment Variables:**
 ```bash
 # Professional Information
-NEXT_PUBLIC_PROFESSIONAL_TITLE="Principal Solutions Architect"
-NEXT_PUBLIC_FULL_TITLE="Principal Solutions Architect | PowerShell Enthusiast | Security Researcher"
+NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer"
+NEXT_PUBLIC_FULL_TITLE="Sr. Cloud Engineer | PowerShell Enthusiast | Security Researcher"
 NEXT_PUBLIC_NAME="Wesley Kirkland"
 NEXT_PUBLIC_TAGLINE="Meme Master of Disaster"
 
@@ -100,7 +100,7 @@ NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
 NEXT_PUBLIC_YOUTUBE_PLAYLIST="https://www.youtube.com/playlist?list=PL6e0QoXQoTzW_YGyfOmcqGP_wHbiAFmhW"
 
 # Site Metadata
-NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Principal Solutions Architect specializing in PowerShell, O365, Azure, and Security Research"
+NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Sr. Cloud Engineer specializing in PowerShell, O365, Azure, and Security Research"
 
 # Contact Form Configuration
 NEXT_PUBLIC_HCAPTCHA_SITE_KEY="your-hcaptcha-site-key"
@@ -121,7 +121,7 @@ SMTP_TLS="true"
 **Local Development:**
 Edit `.env.local` and change the `NEXT_PUBLIC_PROFESSIONAL_TITLE` variable:
 ```bash
-NEXT_PUBLIC_PROFESSIONAL_TITLE="Principal Solutions Architect"
+NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer"
 ```
 
 **Production Deployment:**

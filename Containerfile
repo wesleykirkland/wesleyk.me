@@ -18,14 +18,14 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Set default environment variables for build
-ENV NEXT_PUBLIC_PROFESSIONAL_TITLE="Principal Solutions Architect"
-ENV NEXT_PUBLIC_FULL_TITLE="Principal Solutions Architect | PowerShell Enthusiast | Security Researcher"
+ENV NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer"
+ENV NEXT_PUBLIC_FULL_TITLE="Sr. Cloud Engineer | PowerShell Enthusiast | Security Researcher"
 ENV NEXT_PUBLIC_NAME="Wesley Kirkland"
 ENV NEXT_PUBLIC_TAGLINE="Meme Master of Disaster"
 ENV NEXT_PUBLIC_GITHUB_URL="https://github.com/wesleykirkland"
 ENV NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
 ENV NEXT_PUBLIC_YOUTUBE_PLAYLIST="https://www.youtube.com/playlist?list=PL6e0QoXQoTzW_YGyfOmcqGP_wHbiAFmhW"
-ENV NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Principal Solutions Architect specializing in PowerShell, O365, Azure, and Security Research"
+ENV NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Sr. Cloud Engineer specializing in PowerShell, O365, Azure, and Security Research"
 ENV NEXT_PUBLIC_HCAPTCHA_SITE_KEY=""
 
 # Build the application
