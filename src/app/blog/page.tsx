@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getSortedPostsData, getPostUrl } from '@/lib/blog';
+import { format } from 'date-fns';
+import TagList from '@/components/TagList';
 
 export default function Blog() {
   const allPostsData = getSortedPostsData();
@@ -18,15 +20,8 @@ export default function Blog() {
       <div className="space-y-8">
         {allPostsData.map((post) => (
           <article key={post.slug} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 hover:shadow-md transition-shadow duration-200">
-            <div className="flex flex-wrap gap-2 mb-4">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
+            <div className="mb-4">
+              <TagList tags={post.tags} size="sm" variant="default" />
             </div>
 
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
@@ -47,11 +42,7 @@ export default function Blog() {
                 <span>By {post.author}</span>
                 <span className="mx-2">•</span>
                 <time dateTime={post.date}>
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {format(new Date(post.date), 'MMMM d, yyyy')}
                 </time>
               </div>
 
@@ -82,18 +73,21 @@ export default function Blog() {
       {/* Categories/Tags Section */}
       {allPostsData.length > 0 && (
         <section className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Popular Topics</h2>
-          <div className="bg-gray-50 rounded-lg p-6">
-            <div className="flex flex-wrap gap-3">
-              {Array.from(new Set(allPostsData.flatMap(post => post.tags))).map((tag) => (
-                <span 
-                  key={tag} 
-                  className="inline-block bg-white text-gray-700 px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Popular Topics</h2>
+            <Link
+              href="/tags"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+            >
+              View all tags →
+            </Link>
+          </div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <TagList
+              tags={Array.from(new Set(allPostsData.flatMap(post => post.tags)))}
+              size="lg"
+              variant="outline"
+            />
           </div>
         </section>
       )}

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getPostByPermalink, getPostData, getSortedPostsData, getPostPermalink, getWordPressPermalink, isWordPressPermalink } from '@/lib/blog';
 import { format } from 'date-fns';
+import TagList from '@/components/TagList';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -113,15 +114,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                >
-                  {tag}
-                </span>
-              ))}
+            <div className="mb-6">
+              <TagList tags={post.tags} size="md" variant="default" />
             </div>
           )}
 

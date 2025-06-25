@@ -3,6 +3,7 @@
 This guide explains how to manage static assets (images, documents, etc.) for blog posts in your Next.js website.
 
 ## 📁 Directory Structure
+All assets are stored within Git LFS for Git efficiency
 
 ```
 public/

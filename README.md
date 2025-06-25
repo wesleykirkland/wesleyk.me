@@ -194,4 +194,4 @@ Your post content here...
 3. **Environment Variables**: Set `NODE_VERSION=18`
 4. **Deploy**: Netlify will automatically build and deploy your site
 
-Built with ❤️ by Wesley Kirkland - Meme Master of Disaster and with the help of Agentic AI and I'm not a Software Engineer by Trade
+Built with ❤️ by Wesley Kirkland - Meme Master of Disaster and with the help of Agentic AI as I'm not a Software Engineer by Trade

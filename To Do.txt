@@ -1,3 +1,5 @@
 Link to my book
 Link to my Talks
 Add in my Security Research and case studies (Case studies need to be in git LFS)
+Verify redirect being a 301 for permalinkx  
+Tag based driven content approach

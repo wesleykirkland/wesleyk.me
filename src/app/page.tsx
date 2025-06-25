@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getRecentPosts, getPostUrl } from '@/lib/blog';
+import TagList from '@/components/TagList';
 
 export default function Home() {
   const recentPosts = getRecentPosts(2);
@@ -50,15 +51,8 @@ export default function Home() {
           {recentPosts.map((post) => (
             <article key={post.slug} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
               <div className="mb-4">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                <div className="mb-3">
+                  <TagList tags={post.tags} size="sm" variant="default" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   <Link

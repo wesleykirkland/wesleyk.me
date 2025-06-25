@@ -214,3 +214,33 @@ export function isWordPressPermalink(permalink: string, post: BlogPostMetadata):
   const modernPermalink = getPostPermalink(post);
   return permalink === wpPermalink && permalink !== modernPermalink;
 }
+
+// Tag utility functions
+export function getAllTags(): string[] {
+  const allPosts = getSortedPostsData();
+  const tagSet = new Set<string>();
+
+  allPosts.forEach(post => {
+    post.tags.forEach(tag => tagSet.add(tag));
+  });
+
+  return Array.from(tagSet).sort();
+}
+
+export function getPostsByTag(tag: string): BlogPostMetadata[] {
+  const allPosts = getSortedPostsData();
+  return allPosts.filter(post =>
+    post.tags.some(postTag =>
+      postTag.toLowerCase() === tag.toLowerCase()
+    )
+  );
+}
+
+export function getTagSlug(tag: string): string {
+  return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+export function getTagFromSlug(slug: string): string | null {
+  const allTags = getAllTags();
+  return allTags.find(tag => getTagSlug(tag) === slug) || null;
+}
