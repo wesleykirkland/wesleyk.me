@@ -28,6 +28,12 @@ export default function Header() {
               Home
             </Link>
             <Link
+              href="/blog"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+            >
+              Blog
+            </Link>
+            <Link
               href="/about"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
