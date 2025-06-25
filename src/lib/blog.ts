@@ -14,6 +14,8 @@ export interface BlogPost {
   content: string;
   tags: string[];
   author: string;
+  featuredImage?: string;
+  images?: string[];
 }
 
 export interface BlogPostMetadata {
@@ -23,6 +25,7 @@ export interface BlogPostMetadata {
   excerpt: string;
   tags: string[];
   author: string;
+  featuredImage?: string;
 }
 
 export function getSortedPostsData(): BlogPostMetadata[] {
@@ -49,6 +52,7 @@ export function getSortedPostsData(): BlogPostMetadata[] {
         excerpt: matterResult.data.excerpt,
         tags: matterResult.data.tags || [],
         author: matterResult.data.author || 'Wesley Kirkland',
+        featuredImage: matterResult.data.featuredImage,
       };
     });
 
@@ -82,10 +86,13 @@ export async function getPostData(slug: string): Promise<BlogPost> {
   // Use gray-matter to parse the post metadata section
   const matterResult = matter(fileContents);
 
+  // Process image paths in markdown content
+  const processedMarkdown = processImagePaths(matterResult.content, slug);
+
   // Use remark to convert markdown into HTML string
   const processedContent = await remark()
     .use(html)
-    .process(matterResult.content);
+    .process(processedMarkdown);
   const contentHtml = processedContent.toString();
 
   // Combine the data with the slug and the contentHtml
@@ -97,10 +104,39 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     content: contentHtml,
     tags: matterResult.data.tags || [],
     author: matterResult.data.author || 'Wesley Kirkland',
+    featuredImage: matterResult.data.featuredImage,
+    images: matterResult.data.images || [],
   };
 }
 
 export function getRecentPosts(count: number = 5): BlogPostMetadata[] {
   const allPosts = getSortedPostsData();
   return allPosts.slice(0, count);
+}
+
+// Utility functions for handling blog images
+export function getBlogImagePath(slug: string, imageName: string): string {
+  const year = new Date().getFullYear();
+  return `/images/blog/${year}/${slug}/${imageName}`;
+}
+
+export function getBlogImageUrl(slug: string, imageName: string): string {
+  return getBlogImagePath(slug, imageName);
+}
+
+// Process markdown content to handle relative image paths
+export function processImagePaths(content: string, slug: string): string {
+  // Replace relative image paths with absolute paths
+  return content.replace(
+    /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g,
+    (match, alt, src) => {
+      // If the path starts with /, it's already absolute
+      if (src.startsWith('/')) {
+        return match;
+      }
+      // Convert relative path to absolute blog image path
+      const imagePath = getBlogImagePath(slug, src);
+      return `![${alt}](${imagePath})`;
+    }
+  );
 }

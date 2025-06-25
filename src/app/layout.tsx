@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: `${process.env.NEXT_PUBLIC_NAME} - ${process.env.NEXT_PUBLIC_TAGLINE}`,
   description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
   icons: {
-    icon: '/powershell-icon.svg',
+    icon: '/images/icons/powershell-icon.svg',
   },
 };
 

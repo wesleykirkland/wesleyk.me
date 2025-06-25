@@ -16,7 +16,7 @@ export default function About() {
         <div className="flex justify-center mb-8">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-600 shadow-lg">
             <Image
-              src="/circle_headshot.png"
+              src="/images/general/circle_headshot.png"
               alt={`${process.env.NEXT_PUBLIC_NAME} headshot`}
               width={128}
               height={128}
