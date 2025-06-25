@@ -211,6 +211,7 @@ docker run -d --name my-website-container -p 3000:3000 my-website
 
 Create a `.env.docker` file:
 ```bash
+# Personal Information (Build-time)
 NEXT_PUBLIC_PROFESSIONAL_TITLE=Principal Solutions Architect
 NEXT_PUBLIC_FULL_TITLE=Principal Solutions Architect | Cloud Expert | DevOps Engineer
 NEXT_PUBLIC_NAME=Your Name
@@ -219,9 +220,54 @@ NEXT_PUBLIC_EMAIL=your.email@example.com
 NEXT_PUBLIC_GITHUB_URL=https://github.com/yourusername
 NEXT_PUBLIC_LINKEDIN_URL=https://linkedin.com/in/yourusername
 NEXT_PUBLIC_SITE_DESCRIPTION=Your site description
+
+# Contact Form Configuration (Build-time for captcha site key)
+NEXT_PUBLIC_HCAPTCHA_SITE_KEY=your-hcaptcha-site-key
 ```
 
-Then build with:
+For runtime environment variables (SMTP and captcha secret), create a `.env.runtime` file:
 ```bash
-docker build -f Containerfile --env-file .env.docker -t my-website .
+# SMTP Configuration (Runtime)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_FROM=your-email@gmail.com
+SMTP_TO=your-email@gmail.com
+SMTP_TLS=true
+
+# Captcha Configuration (Runtime)
+HCAPTCHA_SECRET_KEY=your-hcaptcha-secret-key
 ```
+
+Then build with build-time variables and run with runtime variables:
+```bash
+# Build with build-time environment variables
+docker build -f Containerfile --env-file .env.docker -t my-website .
+
+# Run with runtime environment variables
+docker run -d \
+  --name my-website-container \
+  --env-file .env.runtime \
+  -p 3000:3000 \
+  my-website
+```
+
+### Contact Form Setup
+
+The contact form requires additional configuration:
+
+1. **HCaptcha Setup**:
+   - Sign up at [hCaptcha](https://www.hcaptcha.com/)
+   - Get your site key and secret key
+   - Add them to your environment files
+
+2. **SMTP Configuration**:
+   - Use your email provider's SMTP settings
+   - For Gmail, you'll need an App Password (not your regular password)
+   - Enable 2FA and generate an App Password in your Google Account settings
+
+3. **Environment Variables**:
+   - `NEXT_PUBLIC_HCAPTCHA_SITE_KEY`: Public key for captcha (build-time)
+   - `HCAPTCHA_SECRET_KEY`: Secret key for captcha verification (runtime)
+   - `SMTP_*`: SMTP server configuration (runtime)

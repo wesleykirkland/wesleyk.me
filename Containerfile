@@ -26,6 +26,7 @@ ENV NEXT_PUBLIC_EMAIL="wesley@wesleyk.me"
 ENV NEXT_PUBLIC_GITHUB_URL="https://github.com/wesleykirkland"
 ENV NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
 ENV NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Principal Solutions Architect specializing in PowerShell, O365, Azure, and Security Research"
+ENV NEXT_PUBLIC_HCAPTCHA_SITE_KEY=""
 
 # Build the application
 RUN npm run build

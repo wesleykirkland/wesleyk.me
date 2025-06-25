@@ -20,7 +20,7 @@ A modern, responsive personal website and blog built with Next.js, featuring sec
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Content**: Markdown with gray-matter for frontmatter
-- **Deployment**: Netlify
+- **Deployment**: Netlify (with Next.js runtime for API routes)
 - **Icons**: Custom SVG icons
 
 ## 🚀 Getting Started
@@ -101,6 +101,19 @@ NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
 
 # Site Metadata
 NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Principal Solutions Architect specializing in PowerShell, O365, Azure, and Security Research"
+
+# Contact Form Configuration
+NEXT_PUBLIC_HCAPTCHA_SITE_KEY="your-hcaptcha-site-key"
+HCAPTCHA_SECRET_KEY="your-hcaptcha-secret-key"
+
+# SMTP Configuration
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_USERNAME="your-email@gmail.com"
+SMTP_PASSWORD="your-app-password"
+SMTP_FROM="wesley@wesleyk.me"
+SMTP_TO="wesley@wesleyk.me"
+SMTP_TLS="true"
 ```
 
 ### Updating Your Title
@@ -116,6 +129,33 @@ Set the environment variable in your deployment platform (Netlify, Vercel, etc.)
 - Netlify: Site settings → Environment variables
 - Vercel: Project settings → Environment Variables
 - Docker: Use `-e` flag or environment file
+
+### Contact Form Setup
+
+The website includes a functional contact form with the following features:
+- SMTP email sending
+- HCaptcha spam protection
+- Form validation
+- Responsive design with dark mode support
+
+**Required Setup:**
+
+1. **HCaptcha Configuration:**
+   - Sign up at [hCaptcha](https://www.hcaptcha.com/)
+   - Get your site key and secret key
+   - Add them to your `.env.local` file
+
+2. **SMTP Configuration:**
+   - Configure your email provider's SMTP settings
+   - For Gmail: Enable 2FA and create an App Password
+   - Add SMTP settings to your `.env.local` file
+
+**Note:** You'll need to obtain an HCaptcha API key to enable the contact form. The form will display an error message if the captcha site key is not configured.
+
+**Important:** The contact form requires server-side functionality (API routes). This means:
+- The site is no longer a static export
+- Deployment requires a platform that supports Next.js API routes (like Netlify with Next.js runtime, Vercel, etc.)
+- For static hosting, you would need to implement the contact form using a third-party service
 
 ### Dark Mode
 

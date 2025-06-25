@@ -1,3 +1,5 @@
+import ContactFormWrapper from '@/components/ContactFormWrapper';
+
 export default function Contact() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -53,19 +55,9 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Contact Form Placeholder */}
+          {/* Contact Form */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h2>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                I&apos;d love to hear from you! Whether you have questions about my security research,
-                want to discuss PowerShell automation, or just want to connect, feel free to reach out.
-              </p>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                For now, please use the social media links to connect with me.
-                A contact form will be available soon!
-              </p>
-            </div>
+            <ContactFormWrapper />
           </div>
         </div>
 
