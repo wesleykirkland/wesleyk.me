@@ -97,6 +97,7 @@ NEXT_PUBLIC_TAGLINE="Meme Master of Disaster"
 # Contact Information
 NEXT_PUBLIC_GITHUB_URL="https://github.com/wesleykirkland"
 NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
+NEXT_PUBLIC_YOUTUBE_PLAYLIST="https://www.youtube.com/playlist?list=PL6e0QoXQoTzW_YGyfOmcqGP_wHbiAFmhW"
 
 # Site Metadata
 NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Principal Solutions Architect specializing in PowerShell, O365, Azure, and Security Research"

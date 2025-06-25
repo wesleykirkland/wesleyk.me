@@ -189,6 +189,7 @@ These environment variables are used during the build process and must be set wh
 - `NEXT_PUBLIC_TAGLINE`: Your tagline (default: "Meme Master of Disaster")
 - `NEXT_PUBLIC_GITHUB_URL`: GitHub profile URL
 - `NEXT_PUBLIC_LINKEDIN_URL`: LinkedIn profile URL
+- `NEXT_PUBLIC_YOUTUBE_PLAYLIST`: YouTube playlist URL for public speaking
 - `NEXT_PUBLIC_SITE_DESCRIPTION`: Site description for SEO
 
 ### Custom Build with Your Information

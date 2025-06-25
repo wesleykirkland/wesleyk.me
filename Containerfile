@@ -24,6 +24,7 @@ ENV NEXT_PUBLIC_NAME="Wesley Kirkland"
 ENV NEXT_PUBLIC_TAGLINE="Meme Master of Disaster"
 ENV NEXT_PUBLIC_GITHUB_URL="https://github.com/wesleykirkland"
 ENV NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
+ENV NEXT_PUBLIC_YOUTUBE_PLAYLIST="https://www.youtube.com/playlist?list=PL6e0QoXQoTzW_YGyfOmcqGP_wHbiAFmhW"
 ENV NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Principal Solutions Architect specializing in PowerShell, O365, Azure, and Security Research"
 ENV NEXT_PUBLIC_HCAPTCHA_SITE_KEY=""
 
