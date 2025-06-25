@@ -134,8 +134,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </header>
 
         {/* Content */}
-        <div 
-          className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-gray-900 dark:prose-code:text-gray-100 prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800"
+        <div
+          className="prose prose-lg dark:prose-invert max-w-none
+                     prose-headings:text-gray-900 dark:prose-headings:text-white
+                     prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:mb-6 prose-p:leading-relaxed
+                     prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:underline hover:prose-a:no-underline
+                     prose-strong:text-gray-900 dark:prose-strong:text-white
+                     prose-code:text-gray-900 dark:prose-code:text-gray-100 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                     prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-200 dark:prose-pre:border-gray-700
+                     prose-ul:my-6 prose-ol:my-6 prose-li:my-2
+                     prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic
+                     prose-h1:mb-6 prose-h2:mb-4 prose-h2:mt-8 prose-h3:mb-3 prose-h3:mt-6"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 

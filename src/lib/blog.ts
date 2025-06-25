@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import remarkGfm from 'remark-gfm';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
@@ -97,9 +98,12 @@ export async function getPostData(slug: string): Promise<BlogPost> {
 
   // Use remark to convert markdown into HTML string
   const processedContent = await remark()
-    .use(html)
+    .use(remarkGfm) // GitHub Flavored Markdown support
+    .use(html) // Convert to HTML first
     .process(processedMarkdown);
   const contentHtml = processedContent.toString();
+
+
 
   // Combine the data with the slug and the contentHtml
   return {
