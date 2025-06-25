@@ -95,7 +95,6 @@ NEXT_PUBLIC_NAME="Wesley Kirkland"
 NEXT_PUBLIC_TAGLINE="Meme Master of Disaster"
 
 # Contact Information
-NEXT_PUBLIC_EMAIL="wesley@wesleyk.me"
 NEXT_PUBLIC_GITHUB_URL="https://github.com/wesleykirkland"
 NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
 

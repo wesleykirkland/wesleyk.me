@@ -187,7 +187,6 @@ These environment variables are used during the build process and must be set wh
 - `NEXT_PUBLIC_FULL_TITLE`: Full professional title with specializations
 - `NEXT_PUBLIC_NAME`: Your name (default: "Wesley Kirkland")
 - `NEXT_PUBLIC_TAGLINE`: Your tagline (default: "Meme Master of Disaster")
-- `NEXT_PUBLIC_EMAIL`: Your email address
 - `NEXT_PUBLIC_GITHUB_URL`: GitHub profile URL
 - `NEXT_PUBLIC_LINKEDIN_URL`: LinkedIn profile URL
 - `NEXT_PUBLIC_SITE_DESCRIPTION`: Site description for SEO
@@ -216,7 +215,6 @@ NEXT_PUBLIC_PROFESSIONAL_TITLE=Principal Solutions Architect
 NEXT_PUBLIC_FULL_TITLE=Principal Solutions Architect | Cloud Expert | DevOps Engineer
 NEXT_PUBLIC_NAME=Your Name
 NEXT_PUBLIC_TAGLINE=Your Tagline
-NEXT_PUBLIC_EMAIL=your.email@example.com
 NEXT_PUBLIC_GITHUB_URL=https://github.com/yourusername
 NEXT_PUBLIC_LINKEDIN_URL=https://linkedin.com/in/yourusername
 NEXT_PUBLIC_SITE_DESCRIPTION=Your site description
