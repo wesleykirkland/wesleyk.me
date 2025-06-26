@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wesley Kirkland - Meme Master of Disaster",
-  description: "Personal website and blog of Wesley Kirkland - Sr. Systems Engineer specializing in PowerShell, O365, Azure, and Security Research",
+  title: `${process.env.NEXT_PUBLIC_NAME} - ${process.env.NEXT_PUBLIC_TAGLINE}`,
+  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
   icons: {
-    icon: '/powershell-icon.svg',
+    icon: '/images/icons/powershell-icon.svg',
   },
 };
 
@@ -27,10 +27,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200`}
+        suppressHydrationWarning
       >
+
         <Header />
         <main className="min-h-screen">
           {children}
