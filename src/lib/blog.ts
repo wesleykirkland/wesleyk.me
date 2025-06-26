@@ -228,7 +228,7 @@ export function getAllTags(): string[] {
     post.tags.forEach(tag => tagSet.add(tag));
   });
 
-  return Array.from(tagSet).sort();
+  return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
 }
 
 export function getPostsByTag(tag: string): BlogPostMetadata[] {

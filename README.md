@@ -107,12 +107,12 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY="your-hcaptcha-site-key"
 HCAPTCHA_SECRET_KEY="your-hcaptcha-secret-key"
 
 # SMTP Configuration
-SMTP_HOST="smtp.gmail.com"
+SMTP_HOST=""
 SMTP_PORT="587"
-SMTP_USERNAME="your-email@gmail.com"
-SMTP_PASSWORD="your-app-password"
-SMTP_FROM="wesley@wesleyk.me"
-SMTP_TO="wesley@wesleyk.me"
+SMTP_USERNAME=""
+SMTP_PASSWORD=""
+SMTP_FROM=""
+SMTP_TO=""
 SMTP_TLS="true"
 ```
 
@@ -147,7 +147,6 @@ The website includes a functional contact form with the following features:
 
 2. **SMTP Configuration:**
    - Configure your email provider's SMTP settings
-   - For Gmail: Enable 2FA and create an App Password
    - Add SMTP settings to your `.env.local` file
 
 **Note:** You'll need to obtain an HCaptcha API key to enable the contact form. The form will display an error message if the captcha site key is not configured.

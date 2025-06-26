@@ -122,10 +122,9 @@
 /* Ensure lists are visible and properly styled - Override Tailwind reset */
 .prose ol,
 .prose ul {
-  list-style-position: outside !important;
   margin-left: 0 !important;
   padding-left: 1.5rem !important;
-  list-style: initial !important;
+  list-style-position: outside !important;
 }
 
 .prose ol {

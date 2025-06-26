@@ -227,12 +227,12 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY=your-hcaptcha-site-key
 For runtime environment variables (SMTP and captcha secret), create a `.env.runtime` file:
 ```bash
 # SMTP Configuration (Runtime)
-SMTP_HOST=smtp.gmail.com
+SMTP_HOST=
 SMTP_PORT=587
-SMTP_USERNAME=your-email@gmail.com
-SMTP_PASSWORD=your-app-password
-SMTP_FROM=your-email@gmail.com
-SMTP_TO=your-email@gmail.com
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_FROM=
+SMTP_TO=
 SMTP_TLS=true
 
 # Captcha Configuration (Runtime)
@@ -263,8 +263,6 @@ The contact form requires additional configuration:
 
 2. **SMTP Configuration**:
    - Use your email provider's SMTP settings
-   - For Gmail, you'll need an App Password (not your regular password)
-   - Enable 2FA and generate an App Password in your Google Account settings
 
 3. **Environment Variables**:
    - `NEXT_PUBLIC_HCAPTCHA_SITE_KEY`: Public key for captcha (build-time)
