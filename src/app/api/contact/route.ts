@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendContactEmail, type ContactFormData } from '@/lib/email';
+import {
+  sanitizeInput,
+  validateContactForm
+} from '@/lib/validation';
 
 interface HCaptchaResponse {
   success: boolean;
@@ -11,117 +15,7 @@ interface HCaptchaResponse {
   score_reason?: string[];
 }
 
-// Server-side validation functions - Safe from ReDoS attacks
-function isValidEmail(email: string): boolean {
-  // Basic length and character checks first
-  if (!email || email.length > 254 || email.length < 5) {
-    return false;
-  }
-
-  // Check for single @ symbol
-  const atIndex = email.indexOf('@');
-  const lastAtIndex = email.lastIndexOf('@');
-  if (atIndex === -1 || atIndex !== lastAtIndex) {
-    return false;
-  }
-
-  // Split into local and domain parts
-  const localPart = email.substring(0, atIndex);
-  const domainPart = email.substring(atIndex + 1);
-
-  // Validate local part (before @)
-  if (localPart.length === 0 || localPart.length > 64) {
-    return false;
-  }
-
-  // Validate domain part (after @)
-  if (domainPart.length === 0 || domainPart.length > 253) {
-    return false;
-  }
-
-  // Check for valid characters using safe, non-backtracking patterns
-  const localPartRegex = /^[a-zA-Z0-9._-]+$/;
-  const domainPartRegex = /^[a-zA-Z0-9.-]+$/;
-
-  if (!localPartRegex.test(localPart) || !domainPartRegex.test(domainPart)) {
-    return false;
-  }
-
-  // Check domain has at least one dot and valid TLD
-  const domainParts = domainPart.split('.');
-  if (domainParts.length < 2) {
-    return false;
-  }
-
-  // Validate each domain part
-  for (const part of domainParts) {
-    if (part.length === 0 || part.length > 63) {
-      return false;
-    }
-    // Domain parts cannot start or end with hyphen
-    if (part.startsWith('-') || part.endsWith('-')) {
-      return false;
-    }
-  }
-
-  // Check TLD (last part) is valid
-  const tld = domainParts[domainParts.length - 1];
-  const tldRegex = /^[a-zA-Z]{2,}$/;
-
-  return tldRegex.test(tld);
-}
-
-function isValidName(name: string): boolean {
-  if (!name) return false;
-  const trimmed = name.trim();
-  return trimmed.length >= 2 && trimmed.length <= 100;
-}
-
-function isValidSubject(subject: string): boolean {
-  if (!subject) return false;
-  const trimmed = subject.trim();
-  return trimmed.length >= 3 && trimmed.length <= 200;
-}
-
-function isValidMessage(message: string): boolean {
-  if (!message) return false;
-  const trimmed = message.trim();
-  return trimmed.length >= 10 && trimmed.length <= 5000;
-}
-
-function sanitizeInput(input: string): string {
-  return input.trim().replace(/[<>]/g, '');
-}
-
-interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-}
-
-function validateContactFormServer(data: ContactFormData): ValidationResult {
-  const errors: string[] = [];
-
-  if (!isValidName(data.name)) {
-    errors.push('Name must be between 2 and 100 characters');
-  }
-
-  if (!isValidEmail(data.email)) {
-    errors.push('Please enter a valid email address');
-  }
-
-  if (!isValidSubject(data.subject)) {
-    errors.push('Subject must be between 3 and 200 characters');
-  }
-
-  if (!isValidMessage(data.message)) {
-    errors.push('Message must be between 10 and 5000 characters');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-}
+// Server-side validation now uses shared functions from @/lib/validation
 
 async function verifyCaptcha(token: string): Promise<boolean> {
   const secretKey = process.env.HCAPTCHA_SECRET_KEY;
@@ -246,14 +140,15 @@ export async function POST(request: NextRequest) {
     };
 
     // Server-side validation
-    const validation = validateContactFormServer(formData);
+    const validation = validateContactForm(formData);
     if (!validation.isValid) {
-      console.log('Server-side validation failed:', validation.errors);
+      const errorMessages = Object.values(validation.errors);
+      console.log('Server-side validation failed:', errorMessages);
       return NextResponse.json(
         {
           success: false,
           error: 'Validation failed',
-          details: validation.errors
+          details: errorMessages
         },
         { status: 400 }
       );
