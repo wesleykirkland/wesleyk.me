@@ -1,8 +1,19 @@
 import Image from 'next/image';
+import PageTracker from '@/components/PageTracker';
+import CatLink from '@/components/CatLink';
 
 export default function About() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <PageTracker
+        pageName="About"
+        pageType="profile"
+        customProperties={{
+          section: 'about-me',
+          hasProfileImage: true
+        }}
+      />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -148,12 +159,13 @@ export default function About() {
             </p>
             <p className="text-gray-700 dark:text-gray-300 mb-2">My favorite Icebreakers are:</p>
             <ul className="list-disc list-inside ml-4 text-gray-700 dark:text-gray-300">
-              <li>One of my cats is &ldquo;famous&rdquo; on Amazon</li>
+              <li>One of my <CatLink>cats</CatLink> is &ldquo;famous&rdquo; on Amazon</li>
               <li>I&apos;m a published Author</li>
             </ul>
           </div>
         </section>
       </div>
     </div>
+    </>
   );
 }
