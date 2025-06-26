@@ -70,16 +70,9 @@ jobs:
           args: --severity-threshold=medium
         continue-on-error: true
 
-      # CodeQL Analysis
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript, typescript
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:javascript"
+      # Skip CodeQL if default setup is enabled (to avoid conflicts)
+      # CodeQL analysis is handled by GitHub's default setup
+      # To use custom CodeQL, disable default setup in repository settings
 
       # Semgrep Security Scanning
       - name: Run Semgrep
@@ -200,7 +193,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ **Completed Security Scans:**" >> $GITHUB_STEP_SUMMARY
           echo "- Snyk vulnerability scanning" >> $GITHUB_STEP_SUMMARY
-          echo "- CodeQL static analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- CodeQL static analysis (via GitHub default setup)" >> $GITHUB_STEP_SUMMARY
           echo "- Semgrep security rules" >> $GITHUB_STEP_SUMMARY
           echo "- Trivy vulnerability scanner" >> $GITHUB_STEP_SUMMARY
           echo "- Gitleaks secret detection" >> $GITHUB_STEP_SUMMARY

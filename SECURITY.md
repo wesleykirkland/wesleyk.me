@@ -9,7 +9,7 @@ This repository uses comprehensive automated security scanning on all non-main b
 | Tool | Purpose | Trigger |
 |------|---------|---------|
 | **Snyk** | Vulnerability scanning for dependencies and IaC | Every push/PR |
-| **CodeQL** | Static application security testing (SAST) | Every push/PR |
+| **CodeQL** | Static application security testing (SAST) | GitHub default setup |
 | **Semgrep** | Security rule engine for code patterns | Every push/PR |
 | **Trivy** | Vulnerability scanner for containers and filesystems | Every push/PR |
 | **Gitleaks** | Fast and comprehensive secret detection | Every push/PR |
