@@ -51,12 +51,22 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high --file=package.json
+          args: --severity-threshold=high --file=package.json --sarif-file-output=snyk.sarif
+        continue-on-error: true
+
+      # Fallback Snyk scan if SARIF generation fails
+      - name: Run Snyk CLI (fallback)
+        if: always() && hashFiles('snyk.sarif') == ''
+        run: |
+          npm install -g snyk
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --severity-threshold=high --json > snyk-results.json || true
+          echo "Snyk scan completed (fallback mode)"
         continue-on-error: true
 
       - name: Upload Snyk results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif
         continue-on-error: true
@@ -67,7 +77,14 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=medium
+          args: --severity-threshold=medium --sarif-file-output=snyk-iac.sarif
+        continue-on-error: true
+
+      - name: Upload Snyk IaC results to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('snyk-iac.sarif') != ''
+        with:
+          sarif_file: snyk-iac.sarif
         continue-on-error: true
 
       # Skip CodeQL if default setup is enabled (to avoid conflicts)
@@ -100,9 +117,27 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+
+      # Debug: Check for generated SARIF files
+      - name: Check SARIF files
+        if: always()
+        run: |
+          echo "Checking for SARIF files..."
+          ls -la *.sarif 2>/dev/null || echo "No SARIF files found"
+          if [ -f "snyk.sarif" ]; then
+            echo "✅ snyk.sarif exists ($(wc -l < snyk.sarif) lines)"
+          else
+            echo "❌ snyk.sarif not found"
+          fi
+          if [ -f "trivy-results.sarif" ]; then
+            echo "✅ trivy-results.sarif exists ($(wc -l < trivy-results.sarif) lines)"
+          else
+            echo "❌ trivy-results.sarif not found"
+          fi
         continue-on-error: true
 
       # Audit npm packages
@@ -168,7 +203,7 @@ jobs:
 
       - name: Upload Checkov scan results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('checkov.sarif') != ''
         with:
           sarif_file: checkov.sarif
         continue-on-error: true
