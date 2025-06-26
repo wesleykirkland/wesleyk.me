@@ -56,7 +56,7 @@ export default function TagsPage() {
             </div>
             
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              View all posts tagged with "{tag}"
+              View all posts tagged with &ldquo;{tag}&rdquo;
             </p>
           </Link>
         ))}
