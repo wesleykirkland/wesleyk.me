@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { getPostByPermalink, getPostData, getSortedPostsData, getPostPermalink, getWordPressPermalink, isWordPressPermalink } from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
+import PageTracker from '@/components/PageTracker';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -88,7 +89,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const formattedDate = format(new Date(post.date), 'MMMM d, yyyy');
 
   return (
-    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <PageTracker
+        pageName={post.title}
+        pageType="blog-post"
+        customProperties={{
+          postSlug: post.slug,
+          postDate: post.date,
+          postTags: post.tags,
+          wordCount: post.content.split(' ').length,
+          hasExcerpt: !!post.excerpt,
+          hasFeaturedImage: !!post.featuredImage
+        }}
+      />
+      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
         {/* Header */}
         <header className="mb-8">
@@ -144,7 +158,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                      prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-200 dark:prose-pre:border-gray-700
                      prose-ul:my-6 prose-ol:my-6 prose-li:my-2
                      prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic
-                     prose-h1:mb-6 prose-h2:mb-4 prose-h2:mt-8 prose-h3:mb-3 prose-h3:mt-6"
+                     prose-h1:mb-6 prose-h2:mb-4 prose-h2:mt-8 prose-h3:mb-3 prose-h3:mt-6
+                     prose-img:rounded-lg prose-img:shadow-lg prose-img:my-8 prose-img:mx-auto prose-img:max-w-full prose-img:h-auto"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
@@ -168,5 +183,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </footer>
       </div>
     </article>
+    </>
   );
 }

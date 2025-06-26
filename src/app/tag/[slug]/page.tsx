@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getAllTags, getTagFromSlug, getPostsByTag, getPostUrl, getTagSlug } from '@/lib/blog';
 import { format } from 'date-fns';
+import PageTracker from '@/components/PageTracker';
 
 interface TagPageProps {
   params: Promise<{
@@ -54,7 +55,18 @@ export default async function TagPage({ params }: TagPageProps) {
   const allTags = getAllTags();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <PageTracker
+        pageName={`Tag: ${tag}`}
+        pageType="tag-archive"
+        customProperties={{
+          tag: tag,
+          tagSlug: slug,
+          postCount: posts.length,
+          hasPosts: posts.length > 0
+        }}
+      />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
         <nav className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -177,5 +189,6 @@ export default async function TagPage({ params }: TagPageProps) {
         </Link>
       </div>
     </div>
+    </>
   );
 }

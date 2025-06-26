@@ -1,11 +1,21 @@
 import Link from 'next/link';
 import { getRecentPosts, getPostUrl } from '@/lib/blog';
 import TagList from '@/components/TagList';
+import PageTracker from '@/components/PageTracker';
 
 export default function Home() {
   const recentPosts = getRecentPosts(2);
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <PageTracker
+        pageName="Home"
+        pageType="landing"
+        customProperties={{
+          recentPostsCount: recentPosts.length,
+          hasRecentPosts: recentPosts.length > 0
+        }}
+      />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Hero Section */}
       <section className="mb-12">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
@@ -105,5 +115,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </>
   );
 }

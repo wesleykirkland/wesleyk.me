@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { isValidEmail } from '@/lib/validation';
+import { trackingEvents } from '@/hooks/usePageTracking';
 
 interface FormData {
   name: string;
@@ -104,7 +105,10 @@ export default function ContactForm() {
       if (data.success) {
         setSubmitStatus('success');
         setSubmitMessage(data.message);
-        
+
+        // Track successful form submission
+        trackingEvents.contactFormSubmit(true);
+
         // Reset form
         setFormData({
           name: '',
@@ -122,6 +126,9 @@ export default function ContactForm() {
           setSubmitMessage(data.details.join(', '));
         }
 
+        // Track failed form submission
+        trackingEvents.contactFormSubmit(false, data.error || 'Unknown error');
+
         // Reset captcha on error to allow retry
         setCaptchaToken(null);
         captchaRef.current?.resetCaptcha();
@@ -130,6 +137,9 @@ export default function ContactForm() {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
       setSubmitMessage('Network error. Please check your connection and try again.');
+
+      // Track network error
+      trackingEvents.contactFormSubmit(false, 'Network error');
 
       // Reset captcha on network error to allow retry
       setCaptchaToken(null);

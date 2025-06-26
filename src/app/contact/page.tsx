@@ -1,8 +1,18 @@
 import ContactFormWrapper from '@/components/ContactFormWrapper';
+import PageTracker from '@/components/PageTracker';
 
 export default function Contact() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <PageTracker
+        pageName="Contact"
+        pageType="form"
+        customProperties={{
+          formType: 'contact',
+          hasContactForm: true
+        }}
+      />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -94,5 +104,6 @@ export default function Contact() {
         </section>
       </div>
     </div>
+    </>
   );
 }
