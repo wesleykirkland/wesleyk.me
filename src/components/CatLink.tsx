@@ -14,7 +14,7 @@ interface CatData {
   error?: string;
 }
 
-export default function CatLink({ children, className = "" }: CatLinkProps) {
+export default function CatLink({ children, className = "" }: Readonly<CatLinkProps>) {
   const [catUrl, setCatUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
 

@@ -22,11 +22,11 @@ interface RandomCatProps {
   className?: string;
 }
 
-export default function RandomCat({ 
-  showInfo = false, 
+export default function RandomCat({
+  showInfo = false,
   autoRefresh,
   className = ""
-}: RandomCatProps) {
+}: Readonly<RandomCatProps>) {
   const [catData, setCatData] = useState<CatData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export default function RandomCat({
       if (data.success) {
         setCatData(data);
       } else {
-        setError(data.error || 'Failed to fetch cat image');
+        setError(data.error ?? 'Failed to fetch cat image');
       }
     } catch (err) {
       setError('Network error: Failed to fetch cat image');
@@ -132,7 +132,7 @@ export default function RandomCat({
         </div>
       )}
 
-      {catData && catData.image && (
+      {catData?.image && (
         <div>
           <div className="relative mb-4">
             <Image

@@ -127,7 +127,7 @@ export default function ContactForm() {
         }
 
         // Track failed form submission
-        trackingEvents.contactFormSubmit(false, data.error || 'Unknown error');
+        trackingEvents.contactFormSubmit(false, data.error ?? 'Unknown error');
 
         // Reset captcha on error to allow retry
         setCaptchaToken(null);

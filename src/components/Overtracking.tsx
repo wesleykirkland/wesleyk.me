@@ -20,7 +20,7 @@ declare global {
 export default function Overtracking({
   siteId = process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID,
   enabled = process.env.NODE_ENV === 'production'
-}: OvertrackingProps) {
+}: Readonly<OvertrackingProps>) {
   // Don't render anything if disabled or no site ID
   if (!siteId || !enabled) {
     console.log('Overtracking: Disabled or missing site ID');
