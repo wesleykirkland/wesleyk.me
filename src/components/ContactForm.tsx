@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { isValidEmail } from '@/lib/validation';
 
 interface FormData {
   name: string;
@@ -55,7 +56,7 @@ export default function ContactForm() {
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!isValidEmail(formData.email.trim())) {
       newErrors.email = 'Please enter a valid email address';
     }
 
@@ -63,8 +64,8 @@ export default function ContactForm() {
       newErrors.subject = 'Subject must be at least 3 characters long';
     }
 
-    if (!formData.message.trim() || formData.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters long';
+    if (!formData.message.trim() || formData.message.trim().length < 100) {
+      newErrors.message = 'Message must be at least 100 characters long';
     }
 
     if (!captchaToken) {

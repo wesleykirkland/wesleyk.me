@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { isValidEmail } from './validation';
 
 export interface ContactFormData {
   name: string;
@@ -143,11 +144,7 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-// Validate email format
-export function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+
 
 // Validate form data
 export function validateContactForm(data: ContactFormData): string[] {
@@ -165,8 +162,8 @@ export function validateContactForm(data: ContactFormData): string[] {
     errors.push('Subject must be at least 3 characters long');
   }
 
-  if (!data.message || data.message.trim().length < 10) {
-    errors.push('Message must be at least 10 characters long');
+  if (!data.message || data.message.trim().length < 100) {
+    errors.push('Message must be at least 100 characters long');
   }
 
   // Check for reasonable length limits
