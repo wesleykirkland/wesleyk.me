@@ -173,23 +173,13 @@ export async function GET(request: NextRequest) {
 }
 
 // Handle unsupported methods
-export async function POST() {
+function methodNotAllowed() {
   return NextResponse.json(
     { error: 'Method not allowed. Use GET to fetch a random cat.' },
     { status: 405 }
   );
 }
 
-export async function PUT() {
-  return NextResponse.json(
-    { error: 'Method not allowed. Use GET to fetch a random cat.' },
-    { status: 405 }
-  );
-}
-
-export async function DELETE() {
-  return NextResponse.json(
-    { error: 'Method not allowed. Use GET to fetch a random cat.' },
-    { status: 405 }
-  );
-}
+export const POST = methodNotAllowed;
+export const PUT = methodNotAllowed;
+export const DELETE = methodNotAllowed;
