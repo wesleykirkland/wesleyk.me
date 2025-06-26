@@ -183,7 +183,7 @@ docker run -d \
 ### Personal Information (Build-time)
 These environment variables are used during the build process and must be set when building the container:
 
-- `NEXT_PUBLIC_PROFESSIONAL_TITLE`: Your job title (default: "Principal Solutions Architect")
+- `NEXT_PUBLIC_PROFESSIONAL_TITLE`: Your job title (default: "Sr. Cloud Engineer")
 - `NEXT_PUBLIC_FULL_TITLE`: Full professional title with specializations
 - `NEXT_PUBLIC_NAME`: Your name (default: "Wesley Kirkland")
 - `NEXT_PUBLIC_TAGLINE`: Your tagline (default: "Meme Master of Disaster")
@@ -199,8 +199,8 @@ To build the container with your own information:
 ```bash
 # Build with custom title
 docker build -f Containerfile \
-  --build-arg NEXT_PUBLIC_PROFESSIONAL_TITLE="Principal Solutions Architect" \
-  --build-arg NEXT_PUBLIC_FULL_TITLE="Principal Solutions Architect | Cloud Expert | DevOps Engineer" \
+  --build-arg NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer" \
+  --build-arg NEXT_PUBLIC_FULL_TITLE="Sr. Cloud Engineer | Cloud Expert | DevOps Engineer" \
   -t my-website .
 
 # Run the container
@@ -212,8 +212,8 @@ docker run -d --name my-website-container -p 3000:3000 my-website
 Create a `.env.docker` file:
 ```bash
 # Personal Information (Build-time)
-NEXT_PUBLIC_PROFESSIONAL_TITLE=Principal Solutions Architect
-NEXT_PUBLIC_FULL_TITLE=Principal Solutions Architect | Cloud Expert | DevOps Engineer
+NEXT_PUBLIC_PROFESSIONAL_TITLE=Sr. Cloud Engineer
+NEXT_PUBLIC_FULL_TITLE=Sr. Cloud Engineer | Cloud Expert | DevOps Engineer
 NEXT_PUBLIC_NAME=Your Name
 NEXT_PUBLIC_TAGLINE=Your Tagline
 NEXT_PUBLIC_GITHUB_URL=https://github.com/yourusername
