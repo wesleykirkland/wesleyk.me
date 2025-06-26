@@ -1,0 +1,136 @@
+# Gitleaks configuration file
+# https://github.com/gitleaks/gitleaks
+
+title = "Gitleaks Configuration for wesleyk.me"
+
+# Extend the base configuration
+[extend]
+# Use the default gitleaks configuration as base
+useDefault = true
+
+# Additional custom rules for this project
+[[rules]]
+id = "next-env-vars"
+description = "Next.js environment variables"
+regex = '''NEXT_PUBLIC_[A-Z_]+=.+'''
+keywords = ["NEXT_PUBLIC"]
+secretGroup = 1
+severity = "medium"
+
+[[rules]]
+id = "smtp-credentials"
+description = "SMTP credentials in environment files"
+regex = '''(SMTP_USER|SMTP_PASS|SMTP_HOST)=.+'''
+keywords = ["SMTP_USER", "SMTP_PASS", "SMTP_HOST"]
+secretGroup = 1
+severity = "high"
+
+[[rules]]
+id = "email-credentials"
+description = "Email service credentials"
+regex = '''(EMAIL_USER|EMAIL_PASS|EMAIL_FROM|EMAIL_TO)=.+'''
+keywords = ["EMAIL_USER", "EMAIL_PASS", "EMAIL_FROM", "EMAIL_TO"]
+secretGroup = 1
+severity = "high"
+
+[[rules]]
+id = "captcha-keys"
+description = "Captcha service keys"
+regex = '''(HCAPTCHA_SECRET|RECAPTCHA_SECRET|CAPTCHA_SECRET)=.+'''
+keywords = ["HCAPTCHA_SECRET", "RECAPTCHA_SECRET", "CAPTCHA_SECRET"]
+secretGroup = 1
+severity = "high"
+
+[[rules]]
+id = "database-urls"
+description = "Database connection strings"
+regex = '''(DATABASE_URL|DB_URL|MONGO_URL|POSTGRES_URL)=.+'''
+keywords = ["DATABASE_URL", "DB_URL", "MONGO_URL", "POSTGRES_URL"]
+secretGroup = 1
+severity = "critical"
+
+# Allowlist for false positives
+[allowlist]
+description = "Allowlist for known false positives"
+commits = []
+paths = [
+    ".env.example",
+    ".env.template",
+    "README.md",
+    "SECURITY.md",
+    "docs/",
+    ".github/workflows/",
+    "lighthouserc.json",
+    "sonar-project.properties"
+]
+regexes = [
+    # Allow example/template values
+    '''example\.com''',
+    '''your-email@example\.com''',
+    '''your-secret-key-here''',
+    '''replace-with-your-key''',
+    '''<your-.*>''',
+    '''YOUR_.*_HERE''',
+    
+    # Allow common placeholder patterns
+    '''xxx+''',
+    '''yyy+''',
+    '''zzz+''',
+    '''123456789''',
+    '''abcdefgh''',
+    
+    # Allow documentation examples
+    '''sk-[a-zA-Z0-9]{48}''', # OpenAI API key format in docs
+    '''ghp_[a-zA-Z0-9]{36}''', # GitHub token format in docs
+    
+    # Allow test/mock values
+    '''test-.*''',
+    '''mock-.*''',
+    '''fake-.*''',
+    '''dummy-.*''',
+    
+    # Allow localhost and development URLs
+    '''localhost''',
+    '''127\.0\.0\.1''',
+    '''0\.0\.0\.0''',
+    
+    # Allow common development ports
+    ''':3000''',
+    ''':8080''',
+    ''':5432''',
+    
+    # Allow environment variable references (not actual values)
+    '''\$\{.*\}''',
+    '''process\.env\..*''',
+    '''env\..*''',
+    
+    # Allow base64 encoded images (common in documentation)
+    '''data:image/.*base64''',
+    
+    # Allow common hash examples
+    '''sha256:[a-f0-9]{64}''',
+    '''md5:[a-f0-9]{32}''',
+]
+
+# Entropy settings
+[allowlist.entropy]
+# Allow high entropy in certain file types
+Min = 3.5
+Max = 8.0
+Group1 = '''[a-zA-Z0-9+/=]{20,}'''
+
+# Stopwords to reduce false positives
+stopwords = [
+    "example",
+    "test",
+    "demo",
+    "sample",
+    "placeholder",
+    "template",
+    "mock",
+    "fake",
+    "dummy",
+    "localhost",
+    "development",
+    "staging"
+]

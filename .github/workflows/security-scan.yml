@@ -122,7 +122,16 @@ jobs:
           fi
         continue-on-error: true
 
-      # Check for secrets
+      # Check for secrets with Gitleaks
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-path: .gitleaks.toml
+        continue-on-error: true
+
+      # Additional secret scanning with TruffleHog
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
         with:
@@ -194,6 +203,7 @@ jobs:
           echo "- CodeQL static analysis" >> $GITHUB_STEP_SUMMARY
           echo "- Semgrep security rules" >> $GITHUB_STEP_SUMMARY
           echo "- Trivy vulnerability scanner" >> $GITHUB_STEP_SUMMARY
+          echo "- Gitleaks secret detection" >> $GITHUB_STEP_SUMMARY
           echo "- TruffleHog secret detection" >> $GITHUB_STEP_SUMMARY
           echo "- NPM audit" >> $GITHUB_STEP_SUMMARY
           echo "- ESLint & TypeScript checks" >> $GITHUB_STEP_SUMMARY
