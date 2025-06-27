@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendContactEmail, validateContactForm, type ContactFormData } from '@/lib/email';
+import { sendContactEmail, type ContactFormData } from '@/lib/email';
+import {
+  sanitizeInput,
+  validateContactForm
+} from '@/lib/validation';
 
 interface HCaptchaResponse {
   success: boolean;
@@ -10,6 +14,8 @@ interface HCaptchaResponse {
   score?: number;
   score_reason?: string[];
 }
+
+// Server-side validation now uses shared functions from @/lib/validation
 
 async function verifyCaptcha(token: string): Promise<boolean> {
   const secretKey = process.env.HCAPTCHA_SECRET_KEY;
@@ -56,7 +62,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, subject, message, captchaToken } = body;
 
-    // Validate required fields
+    // Basic type and presence validation
     if (!name || !email || !subject || !message || !captchaToken) {
       console.log('Missing required fields:', {
         name: !!name,
@@ -74,6 +80,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Type validation - ensure all fields are strings
+    if (typeof name !== 'string' || typeof email !== 'string' ||
+        typeof subject !== 'string' || typeof message !== 'string' ||
+        typeof captchaToken !== 'string') {
+      console.log('Invalid field types detected');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid field types'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check for potential injection attempts
+    const suspiciousPatterns = [
+      /<script/i,
+      /javascript:/i,
+      /on\w+\s*=/i,
+      /data:text\/html/i,
+      /vbscript:/i
+    ];
+
+    const allFields = [name, email, subject, message];
+    for (const field of allFields) {
+      for (const pattern of suspiciousPatterns) {
+        if (pattern.test(field)) {
+          console.log('Suspicious content detected in form submission');
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Invalid content detected'
+            },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Verify captcha
     const captchaValid = await verifyCaptcha(captchaToken);
     if (!captchaValid) {
@@ -86,22 +131,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prepare form data
+    // Sanitize and prepare form data
     const formData: ContactFormData = {
-      name: name.trim(),
-      email: email.trim(),
-      subject: subject.trim(),
-      message: message.trim(),
+      name: sanitizeInput(name),
+      email: sanitizeInput(email),
+      subject: sanitizeInput(subject),
+      message: sanitizeInput(message),
     };
 
-    // Validate form data
-    const validationErrors = validateContactForm(formData);
-    if (validationErrors.length > 0) {
+    // Server-side validation
+    const validation = validateContactForm(formData);
+    if (!validation.isValid) {
+      const errorMessages = Object.values(validation.errors);
+      console.log('Server-side validation failed:', errorMessages);
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Validation failed',
-          details: validationErrors 
+          details: errorMessages
         },
         { status: 400 }
       );

@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -51,12 +51,22 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high --file=package.json
+          args: --severity-threshold=high --file=package.json --sarif-file-output=snyk.sarif
+        continue-on-error: true
+
+      # Fallback Snyk scan if SARIF generation fails
+      - name: Run Snyk CLI (fallback)
+        if: always() && hashFiles('snyk.sarif') == ''
+        run: |
+          npm install -g snyk
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --severity-threshold=high --json > snyk-results.json || true
+          echo "Snyk scan completed (fallback mode)"
         continue-on-error: true
 
       - name: Upload Snyk results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif
         continue-on-error: true
@@ -67,32 +77,52 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=medium
+          args: --severity-threshold=medium --sarif-file-output=snyk-iac.sarif
         continue-on-error: true
 
-      # CodeQL Analysis
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+      - name: Upload Snyk IaC results to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('snyk-iac.sarif') != ''
         with:
-          languages: javascript, typescript
+          sarif_file: snyk-iac.sarif
+        continue-on-error: true
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:javascript"
+      # Skip CodeQL if default setup is enabled (to avoid conflicts)
+      # CodeQL analysis is handled by GitHub's default setup
+      # To use custom CodeQL, disable default setup in repository settings
 
       # Semgrep Security Scanning
+      - name: Install Semgrep
+        run: pip install semgrep
+
       - name: Run Semgrep
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: >-
-            p/security-audit
-            p/secrets
-            p/owasp-top-ten
-            p/react
-            p/typescript
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        run: |
+          echo "=== Running Semgrep security analysis"
+          SEMGREP_RULES="p/security-audit p/secrets p/owasp-top-ten p/react p/typescript"
+          semgrep --config=$SEMGREP_RULES --json --output=semgrep-results.json . || true
+
+          # Display results summary
+          if [ -f "semgrep-results.json" ]; then
+            echo "📊 Semgrep scan completed. Results saved to semgrep-results.json"
+            # Count findings by severity
+            node -e "
+              try {
+                const results = JSON.parse(require('fs').readFileSync('semgrep-results.json', 'utf8'));
+                const findings = results.results || [];
+                const errors = findings.filter(f => f.extra?.severity === 'ERROR').length;
+                const warnings = findings.filter(f => f.extra?.severity === 'WARNING').length;
+                const info = findings.filter(f => f.extra?.severity === 'INFO').length;
+
+                console.log('🔍 Semgrep Results Summary:');
+                console.log('- Errors:', errors);
+                console.log('- Warnings:', warnings);
+                console.log('- Info:', info);
+                console.log('- Total findings:', findings.length);
+              } catch (e) {
+                console.log('Could not parse Semgrep results');
+              }
+            " || echo "Results summary not available"
+          fi
         continue-on-error: true
 
       # Trivy vulnerability scanner
@@ -103,13 +133,31 @@ jobs:
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+
+      # Debug: Check for generated SARIF files
+      - name: Check SARIF files
+        if: always()
+        run: |
+          echo "Checking for SARIF files..."
+          ls -la *.sarif 2>/dev/null || echo "No SARIF files found"
+          if [ -f "snyk.sarif" ]; then
+            echo "✅ snyk.sarif exists ($(wc -l < snyk.sarif) lines)"
+          else
+            echo "❌ snyk.sarif not found"
+          fi
+          if [ -f "trivy-results.sarif" ]; then
+            echo "✅ trivy-results.sarif exists ($(wc -l < trivy-results.sarif) lines)"
+          else
+            echo "❌ trivy-results.sarif not found"
+          fi
         continue-on-error: true
 
       # Audit npm packages
@@ -120,9 +168,18 @@ jobs:
             echo "NPM audit found vulnerabilities"
             cat npm-audit.json
           fi
-        continue-on-error: true
+        continue-on-error: false
 
-      # Check for secrets
+      # Check for secrets with Gitleaks
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-path: .gitleaks.toml
+        continue-on-error: false
+
+      # Additional secret scanning with TruffleHog
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
         with:
@@ -130,7 +187,7 @@ jobs:
           base: main
           head: HEAD
           extra_args: --debug --only-verified
-        continue-on-error: true
+        continue-on-error: false
 
       # Dependency Review (for PRs)
       - name: Dependency Review
@@ -166,7 +223,7 @@ jobs:
 
       - name: Upload Checkov scan results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('checkov.sarif') != ''
         with:
           sarif_file: checkov.sarif
         continue-on-error: true
@@ -191,9 +248,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ **Completed Security Scans:**" >> $GITHUB_STEP_SUMMARY
           echo "- Snyk vulnerability scanning" >> $GITHUB_STEP_SUMMARY
-          echo "- CodeQL static analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- CodeQL static analysis (via GitHub default setup)" >> $GITHUB_STEP_SUMMARY
           echo "- Semgrep security rules" >> $GITHUB_STEP_SUMMARY
           echo "- Trivy vulnerability scanner" >> $GITHUB_STEP_SUMMARY
+          echo "- Gitleaks secret detection" >> $GITHUB_STEP_SUMMARY
           echo "- TruffleHog secret detection" >> $GITHUB_STEP_SUMMARY
           echo "- NPM audit" >> $GITHUB_STEP_SUMMARY
           echo "- ESLint & TypeScript checks" >> $GITHUB_STEP_SUMMARY
