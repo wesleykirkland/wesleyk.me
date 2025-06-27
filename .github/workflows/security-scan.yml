@@ -92,17 +92,37 @@ jobs:
       # To use custom CodeQL, disable default setup in repository settings
 
       # Semgrep Security Scanning
+      - name: Install Semgrep
+        run: pip install semgrep
+
       - name: Run Semgrep
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: >-
-            p/security-audit
-            p/secrets
-            p/owasp-top-ten
-            p/react
-            p/typescript
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        run: |
+          echo "=== Running Semgrep security analysis"
+          SEMGREP_RULES="p/security-audit p/secrets p/owasp-top-ten p/react p/typescript"
+          semgrep --config=$SEMGREP_RULES --json --output=semgrep-results.json . || true
+
+          # Display results summary
+          if [ -f "semgrep-results.json" ]; then
+            echo "📊 Semgrep scan completed. Results saved to semgrep-results.json"
+            # Count findings by severity
+            node -e "
+              try {
+                const results = JSON.parse(require('fs').readFileSync('semgrep-results.json', 'utf8'));
+                const findings = results.results || [];
+                const errors = findings.filter(f => f.extra?.severity === 'ERROR').length;
+                const warnings = findings.filter(f => f.extra?.severity === 'WARNING').length;
+                const info = findings.filter(f => f.extra?.severity === 'INFO').length;
+
+                console.log('🔍 Semgrep Results Summary:');
+                console.log('- Errors:', errors);
+                console.log('- Warnings:', warnings);
+                console.log('- Info:', info);
+                console.log('- Total findings:', findings.length);
+              } catch (e) {
+                console.log('Could not parse Semgrep results');
+              }
+            " || echo "Results summary not available"
+          fi
         continue-on-error: true
 
       # Trivy vulnerability scanner
@@ -113,7 +133,7 @@ jobs:
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -148,7 +168,7 @@ jobs:
             echo "NPM audit found vulnerabilities"
             cat npm-audit.json
           fi
-        continue-on-error: true
+        continue-on-error: false
 
       # Check for secrets with Gitleaks
       - name: Run Gitleaks
@@ -157,7 +177,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           config-path: .gitleaks.toml
-        continue-on-error: true
+        continue-on-error: false
 
       # Additional secret scanning with TruffleHog
       - name: TruffleHog OSS
@@ -167,7 +187,7 @@ jobs:
           base: main
           head: HEAD
           extra_args: --debug --only-verified
-        continue-on-error: true
+        continue-on-error: false
 
       # Dependency Review (for PRs)
       - name: Dependency Review

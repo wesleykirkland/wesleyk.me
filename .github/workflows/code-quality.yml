@@ -34,7 +34,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        continue-on-error: true
+        continue-on-error: false
 
       # Bundle analyzer for Next.js
       - name: Analyze bundle size
@@ -53,7 +53,7 @@ jobs:
           lhci autorun --config=./lighthouserc.json || echo "Lighthouse completed with warnings"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Upload Lighthouse results
         uses: actions/upload-artifact@v4
@@ -85,7 +85,7 @@ jobs:
           else
             echo "✅ All dependencies use exact versions"
           fi
-        continue-on-error: true
+        continue-on-error: false
 
   accessibility:
     name: Accessibility Testing
@@ -121,7 +121,7 @@ jobs:
         run: |
           npm install -g @axe-core/cli
           axe http://localhost:3000 --exit
-        continue-on-error: true
+        continue-on-error: false
 
   performance:
     name: Performance Testing
@@ -152,12 +152,33 @@ jobs:
         run: |
           timeout 60 bash -c 'until curl -f http://localhost:3000; do sleep 2; done'
 
-      # Web Vitals testing
+      # Web Vitals testing with Lighthouse
       - name: Test Core Web Vitals
         run: |
-          npm install -g web-vitals-cli
-          web-vitals http://localhost:3000
-        continue-on-error: true
+          echo "Testing Core Web Vitals with Lighthouse..."
+          npx lighthouse http://localhost:3000 \
+            --chrome-flags="--no-sandbox --disable-dev-shm-usage --headless" \
+            --only-categories=performance \
+            --output=json \
+            --output-path=./core-web-vitals.json \
+            --quiet || echo "Core Web Vitals test completed with warnings"
+
+          # Extract and display Core Web Vitals metrics
+          if [ -f "./core-web-vitals.json" ]; then
+            echo "📊 Core Web Vitals Results:"
+            node -e "
+              const report = JSON.parse(require('fs').readFileSync('./core-web-vitals.json', 'utf8'));
+              const audits = report.audits;
+
+              console.log('- First Contentful Paint (FCP):', audits['first-contentful-paint']?.displayValue || 'N/A');
+              console.log('- Largest Contentful Paint (LCP):', audits['largest-contentful-paint']?.displayValue || 'N/A');
+              console.log('- Cumulative Layout Shift (CLS):', audits['cumulative-layout-shift']?.displayValue || 'N/A');
+              console.log('- Total Blocking Time (TBT):', audits['total-blocking-time']?.displayValue || 'N/A');
+              console.log('- Speed Index:', audits['speed-index']?.displayValue || 'N/A');
+              console.log('🎯 Performance Score:', Math.round(report.categories.performance.score * 100) + '/100');
+            "
+          fi
+        continue-on-error: false
 
   docker-security:
     name: Container Security Scan
@@ -183,7 +204,7 @@ jobs:
       - name: Run Docker Scout
         run: |
           docker scout cves website:test
-        continue-on-error: true
+        continue-on-error: false
 
   summary:
     name: Quality Summary
