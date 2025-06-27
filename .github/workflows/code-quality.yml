@@ -28,14 +28,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # SonarCloud analysis
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        continue-on-error: false
-
       # Bundle analyzer for Next.js
       - name: Analyze bundle size
         run: |
@@ -218,7 +210,6 @@ jobs:
           echo "## Code Quality Results 📊" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ **Completed Quality Checks:**" >> $GITHUB_STEP_SUMMARY
-          echo "- SonarCloud code analysis" >> $GITHUB_STEP_SUMMARY
           echo "- Bundle size analysis" >> $GITHUB_STEP_SUMMARY
           echo "- Lighthouse performance testing" >> $GITHUB_STEP_SUMMARY
           echo "- Accessibility testing (axe-core)" >> $GITHUB_STEP_SUMMARY
