@@ -2,6 +2,8 @@
 
 A modern, responsive personal website and blog built with Next.js, featuring security research, PowerShell automation content, and technical articles.
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/43fce32b-eca4-44e6-9af7-97d19a143a5d/deploy-status)](https://app.netlify.com/projects/wesleykme/deploys)
+
 ## 🚀 Features
 
 - **Modern Tech Stack**: Built with Next.js 14+, TypeScript, and Tailwind CSS
