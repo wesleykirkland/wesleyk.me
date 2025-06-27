@@ -1,8 +1,19 @@
 import Image from 'next/image';
+import PageTracker from '@/components/PageTracker';
+import CatLink from '@/components/CatLink';
 
 export default function About() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <PageTracker
+        pageName="About"
+        pageType="profile"
+        customProperties={{
+          section: 'about-me',
+          hasProfileImage: true
+        }}
+      />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -45,28 +56,22 @@ export default function About() {
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">Technical Skills</h3>
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}PowerShell Scripting & Automation
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>PowerShell Scripting & Automation
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}Microsoft O365 & Exchange Administration
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>Microsoft O365 & Exchange Administration
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}AWS Cloud Services
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>AWS Cloud Services
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}Azure Cloud Services
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>Azure Cloud Services
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}Active Directory Management
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>Active Directory Management
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}System Center Products (SCCM, SCOM, SCVMM)
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>System Center Products (SCCM, SCOM, SCVMM)
                 </li>
               </ul>
             </div>
@@ -74,36 +79,28 @@ export default function About() {
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">Specializations</h3>
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}Security Research & Vulnerability Assessment
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>Security Research & Vulnerability Assessment
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}SAML (Security Assertion Markup Language)
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>SAML (Security Assertion Markup Language)
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}Windows Server Administration
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>Windows Server Administration
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}Virtualization Technologies (VMWare, Containerization)
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>Virtualization Technologies (VMWare, Containerization)
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  Documentation, SOPs, & Process Improvement
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>Documentation, SOPs, & Process Improvement
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  System Architecture
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>System Architecture
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  Networking (On-Premise & Cloud)
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>Networking (On-Premise & Cloud)
                 </li>
                 <li className="flex items-center">
-                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  Web Presence (Domain Names, DNS, and Redirects)
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>Web Presence (Domain Names, DNS, and Redirects)
                 </li>
               </ul>
             </div>
@@ -119,20 +116,16 @@ export default function About() {
             </p>
             <ul className="space-y-2 text-gray-700 dark:text-gray-300">
               <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Automating complex IT processes with PowerShell</span>
+                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span><span>Automating complex IT processes with PowerShell</span>
               </li>
               <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Managing enterprise O365 and Exchange environments</span>
+                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span><span>Managing enterprise O365 and Exchange environments</span>
               </li>
               <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Researching security vulnerabilities in SaaS applications</span>
+                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span><span>Researching security vulnerabilities in SaaS applications</span>
               </li>
               <li className="flex items-start">
-                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Integrating various SaaS applications with Azure services</span>
+                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span><span>Integrating various SaaS applications with Azure services</span>
               </li>
             </ul>
           </div>
@@ -148,12 +141,13 @@ export default function About() {
             </p>
             <p className="text-gray-700 dark:text-gray-300 mb-2">My favorite Icebreakers are:</p>
             <ul className="list-disc list-inside ml-4 text-gray-700 dark:text-gray-300">
-              <li>One of my cats is &ldquo;famous&rdquo; on Amazon</li>
+              <li>One of my <CatLink>cats</CatLink> is &ldquo;famous&rdquo; on Amazon</li>
               <li>I&apos;m a published Author</li>
             </ul>
           </div>
         </section>
       </div>
     </div>
+    </>
   );
 }

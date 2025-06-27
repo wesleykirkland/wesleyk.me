@@ -2,12 +2,22 @@ import Link from 'next/link';
 import { getSortedPostsData, getPostUrl } from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
+import PageTracker from '@/components/PageTracker';
 
 export default function Blog() {
   const allPostsData = getSortedPostsData();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <PageTracker
+        pageName="Blog"
+        pageType="blog-index"
+        customProperties={{
+          totalPosts: allPostsData.length,
+          hasPosts: allPostsData.length > 0
+        }}
+      />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Blog</h1>
@@ -92,5 +102,6 @@ export default function Blog() {
         </section>
       )}
     </div>
+    </>
   );
 }

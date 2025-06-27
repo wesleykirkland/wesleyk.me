@@ -241,7 +241,7 @@ export function getPostsByTag(tag: string): BlogPostMetadata[] {
 }
 
 export function getTagSlug(tag: string): string {
-  return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|(-$)/g, '');
+  return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 export function getTagFromSlug(slug: string): string | null {
