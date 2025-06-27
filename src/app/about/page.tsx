@@ -57,27 +57,27 @@ export default function About() {
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}PowerShell Scripting & Automation
+                  PowerShell Scripting & Automation
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}Microsoft O365 & Exchange Administration
+                  Microsoft O365 & Exchange Administration
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}AWS Cloud Services
+                  AWS Cloud Services
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}Azure Cloud Services
+                  Azure Cloud Services
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}Active Directory Management
+                  Active Directory Management
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                  {' '}System Center Products (SCCM, SCOM, SCVMM)
+                  System Center Products (SCCM, SCOM, SCVMM)
                 </li>
               </ul>
             </div>
@@ -86,19 +86,19 @@ export default function About() {
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}Security Research & Vulnerability Assessment
+                  Security Research & Vulnerability Assessment
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}SAML (Security Assertion Markup Language)
+                  SAML (Security Assertion Markup Language)
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}Windows Server Administration
+                  Windows Server Administration
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                  {' '}Virtualization Technologies (VMWare, Containerization)
+                  Virtualization Technologies (VMWare, Containerization)
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
@@ -131,19 +131,19 @@ export default function About() {
             <ul className="space-y-2 text-gray-700 dark:text-gray-300">
               <li className="flex items-start">
                 <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Automating complex IT processes with PowerShell</span>
+                <span>Automating complex IT processes with PowerShell</span>
               </li>
               <li className="flex items-start">
                 <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Managing enterprise O365 and Exchange environments</span>
+                <span>Managing enterprise O365 and Exchange environments</span>
               </li>
               <li className="flex items-start">
                 <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Researching security vulnerabilities in SaaS applications</span>
+                <span>Researching security vulnerabilities in SaaS applications</span>
               </li>
               <li className="flex items-start">
                 <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                {' '}<span>Integrating various SaaS applications with Azure services</span>
+                <span>Integrating various SaaS applications with Azure services</span>
               </li>
             </ul>
           </div>
