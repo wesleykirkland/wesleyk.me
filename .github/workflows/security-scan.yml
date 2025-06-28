@@ -1,7 +1,10 @@
 name: Security & Code Quality Scan
 
 on:
-  push:
+  workflow_run:
+    workflows: ['Run pre-commit on push']
+    types:
+      - completed
     branches-ignore:
       - main
   pull_request:
@@ -12,6 +15,7 @@ jobs:
   security-scan:
     name: Security & Quality Analysis
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'pull_request' }}
 
     permissions:
       contents: read
