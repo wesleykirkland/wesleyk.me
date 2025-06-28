@@ -208,20 +208,30 @@ export function getBlogPostUrl(post: BlogPostMetadata): string {
 }
 
 // Safe URL functions that explicitly sanitize input
-// These functions prevent XSS by:
+// These functions prevent XSS and ReDoS by:
 // 1. Validating input at the permalink level
-// 2. Sanitizing the URL path to remove dangerous characters
-// 3. Providing safe fallbacks on error
+// 2. Limiting input length to prevent ReDoS attacks
+// 3. Sanitizing the URL path to remove dangerous characters
+// 4. Using ReDoS-safe string operations instead of vulnerable regex
+// 5. Providing safe fallbacks on error
 //
 // Test cases that should be blocked:
 // - javascript:alert('xss') -> empty string
 // - <script>alert('xss')</script> -> scriptalertxssscript
 // - onclick="alert('xss')" -> alert'xss'
 // - data:text/html,<script>alert('xss')</script> -> texthtmlscriptalertxssscript
+// - Very long strings with repeated slashes -> truncated and safely processed
 export function getSafePostUrl(post: BlogPostMetadata): string {
   try {
     const permalink = getPostPermalink(post);
     const sanitizedPermalink = sanitizeUrlPath(permalink);
+
+    // Additional safety check for empty result
+    if (!sanitizedPermalink) {
+      console.warn('Sanitized permalink is empty, using fallback');
+      return '/blog';
+    }
+
     return `/${sanitizedPermalink}`;
   } catch (error) {
     console.error('Error generating safe post URL:', error);
@@ -233,6 +243,13 @@ export function getSafeBlogPostUrl(post: BlogPostMetadata): string {
   try {
     const permalink = getPostPermalink(post);
     const sanitizedPermalink = sanitizeUrlPath(permalink);
+
+    // Additional safety check for empty result
+    if (!sanitizedPermalink) {
+      console.warn('Sanitized permalink is empty, using fallback');
+      return '/blog';
+    }
+
     return `/blog/${sanitizedPermalink}`;
   } catch (error) {
     console.error('Error generating safe blog post URL:', error);
@@ -302,8 +319,14 @@ function sanitizeUrlPath(path: string): string {
     return '';
   }
 
+  // Limit input length to prevent ReDoS attacks
+  if (path.length > 1000) {
+    console.warn('URL path too long, truncating for security');
+    path = path.substring(0, 1000);
+  }
+
   // Remove dangerous characters that could be used for XSS while preserving valid URL structure
-  return path
+  let sanitized = path
     .replace(/[<>'"]/g, '') // Remove HTML/JS injection characters
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .replace(/data:/gi, '') // Remove data: protocol
@@ -311,8 +334,27 @@ function sanitizeUrlPath(path: string): string {
     .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
     .replace(/&[#\w]+;/g, '') // Remove HTML entities
     .replace(/[^\w\-\/\.]/g, '') // Only allow word chars, hyphens, slashes, and dots
-    .replace(/\/+/g, '/') // Collapse multiple slashes
-    .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+    .replace(/\/+/g, '/'); // Collapse multiple slashes
+
+  // Remove leading/trailing slashes safely (ReDoS-safe approach)
+  // Use simple string methods instead of vulnerable regex /^\/+|\/+$/g
+  // This prevents catastrophic backtracking with inputs like "//////////...//////////x"
+  // Performance: O(n) instead of potentially O(2^n) with malicious input
+  let iterations = 0;
+  const maxIterations = 100; // Safety limit to prevent infinite loops
+
+  while (sanitized.startsWith('/') && iterations < maxIterations) {
+    sanitized = sanitized.substring(1);
+    iterations++;
+  }
+
+  iterations = 0; // Reset counter for trailing slashes
+  while (sanitized.endsWith('/') && iterations < maxIterations) {
+    sanitized = sanitized.substring(0, sanitized.length - 1);
+    iterations++;
+  }
+
+  return sanitized;
 }
 
 export function getTagFromSlug(slug: string): string | null {
