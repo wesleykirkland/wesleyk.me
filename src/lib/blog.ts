@@ -248,5 +248,5 @@ export function getTagSlug(tag: string): string {
 
 export function getTagFromSlug(slug: string): string | null {
   const allTags = getAllTags();
-  return allTags.find((tag) => getTagSlug(tag) === slug) || null;
+  return allTags.find((tag) => getTagSlug(tag) === slug) ?? null;
 }
