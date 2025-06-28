@@ -8,11 +8,12 @@ resource "netlify_environment_variable" "node_version" {
 
   key = "NODE_VERSION"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.node_version
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "npm_version" {
@@ -21,11 +22,12 @@ resource "netlify_environment_variable" "npm_version" {
 
   key = "NPM_VERSION"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.npm_version
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 # Public environment variables
@@ -35,11 +37,12 @@ resource "netlify_environment_variable" "next_public_professional_title" {
 
   key = "NEXT_PUBLIC_PROFESSIONAL_TITLE"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_professional_title
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_full_title" {
@@ -48,11 +51,12 @@ resource "netlify_environment_variable" "next_public_full_title" {
 
   key = "NEXT_PUBLIC_FULL_TITLE"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_professional_title
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_name" {
@@ -61,11 +65,12 @@ resource "netlify_environment_variable" "next_public_name" {
 
   key = "NEXT_PUBLIC_NAME"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_name
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_tagline" {
@@ -74,11 +79,12 @@ resource "netlify_environment_variable" "next_public_tagline" {
 
   key = "NEXT_PUBLIC_TAGLINE"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_tagline
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_site_description" {
@@ -87,11 +93,12 @@ resource "netlify_environment_variable" "next_public_site_description" {
 
   key = "NEXT_PUBLIC_SITE_DESCRIPTION"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_site_description
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_github_url" {
@@ -100,11 +107,12 @@ resource "netlify_environment_variable" "next_public_github_url" {
 
   key = "NEXT_PUBLIC_GITHUB_URL"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_github_url
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_linkedin_url" {
@@ -113,11 +121,12 @@ resource "netlify_environment_variable" "next_public_linkedin_url" {
 
   key = "NEXT_PUBLIC_LINKEDIN_URL"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_linkedin_url
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_youtube_playlist" {
@@ -126,11 +135,12 @@ resource "netlify_environment_variable" "next_public_youtube_playlist" {
 
   key = "NEXT_PUBLIC_YOUTUBE_PLAYLIST"
   values = [
-    {
+    for context in local.contexts : {
       value   = var.next_public_youtube_playlist_url
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 # Secret-based environment variables
@@ -140,11 +150,12 @@ resource "netlify_environment_variable" "smtp_host" {
 
   key = "SMTP_HOST"
   secret_values = [
-    {
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["SMTP_HOST"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "smtp_port" {
@@ -153,11 +164,12 @@ resource "netlify_environment_variable" "smtp_port" {
 
   key = "SMTP_PORT"
   secret_values = [
-    {
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["SMTP_PORT"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "smtp_username" {
@@ -166,11 +178,12 @@ resource "netlify_environment_variable" "smtp_username" {
 
   key = "SMTP_USERNAME"
   secret_values = [
-    {
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["SMTP_USERNAME"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "smtp_password" {
@@ -178,18 +191,13 @@ resource "netlify_environment_variable" "smtp_password" {
   team_id = data.netlify_team.team.id
 
   key = "SMTP_PASSWORD"
-  values = [
-    {
+  secret_values = [
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["SMTP_PASSWORD"]
-      context = "all"
+      context = context
     }
   ]
-  scopes = [
-    "builds",
-    "functions",
-    "runtime",
-    "post-processing"
-  ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "smtp_from" {
@@ -198,12 +206,13 @@ resource "netlify_environment_variable" "smtp_from" {
 
   key = "SMTP_FROM"
   secret_values = [
-    {
+    for context in local.contexts : {
       # Potentially change to env specific from address for more dev slots long term
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["SMTP_FROM"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "smtp_to" {
@@ -212,11 +221,12 @@ resource "netlify_environment_variable" "smtp_to" {
 
   key = "SMTP_TO"
   secret_values = [
-    {
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["SMTP_TO"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "smtp_tls" {
@@ -225,11 +235,12 @@ resource "netlify_environment_variable" "smtp_tls" {
 
   key = "SMTP_TLS"
   secret_values = [
-    {
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["SMTP_TLS"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_hcaptcha_site_key" {
@@ -237,12 +248,13 @@ resource "netlify_environment_variable" "next_public_hcaptcha_site_key" {
   team_id = data.netlify_team.team.id
 
   key = "NEXT_PUBLIC_HCAPTCHA_SITE_KEY"
-  values = [
-    {
+  secret_values = [
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["NEXT_PUBLIC_HCAPTCHA_SITE_KEY"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "hcaptcha_secret_key" {
@@ -251,11 +263,12 @@ resource "netlify_environment_variable" "hcaptcha_secret_key" {
 
   key = "HCAPTCHA_SECRET_KEY"
   secret_values = [
-    {
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["HCAPTCHA_SECRET_KEY"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
 
 resource "netlify_environment_variable" "next_public_overtracking_site_id" {
@@ -263,10 +276,11 @@ resource "netlify_environment_variable" "next_public_overtracking_site_id" {
   team_id = data.netlify_team.team.id
 
   key = "NEXT_PUBLIC_OVERTRACKING_SITE_ID"
-  values = [
-    {
+  secret_values = [
+    for context in local.contexts : {
       value   = jsondecode(data.aws_secretsmanager_secret_version.latest.secret_string)["NEXT_PUBLIC_OVERTRACKING_SITE_ID"]
-      context = "all"
+      context = context
     }
   ]
+  scopes = local.scopes
 }
