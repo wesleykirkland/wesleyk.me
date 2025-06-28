@@ -211,15 +211,17 @@ export function getBlogPostUrl(post: BlogPostMetadata): string {
 // These functions prevent XSS and ReDoS by:
 // 1. Validating input at the permalink level
 // 2. Limiting input length to prevent ReDoS attacks
-// 3. Sanitizing the URL path to remove dangerous characters
-// 4. Using ReDoS-safe string operations instead of vulnerable regex
-// 5. Providing safe fallbacks on error
+// 3. Using iterative sanitization to prevent interleaving bypass attacks
+// 4. Applying whitelist filtering as final security layer
+// 5. Using ReDoS-safe string operations instead of vulnerable regex
+// 6. Providing safe fallbacks on error
 //
 // Test cases that should be blocked:
 // - javascript:alert('xss') -> empty string
 // - <script>alert('xss')</script> -> scriptalertxssscript
 // - onclick="alert('xss')" -> alert'xss'
 // - data:text/html,<script>alert('xss')</script> -> texthtmlscriptalertxssscript
+// - javajavascript:script:alert('xss') -> empty string (interleaving bypass prevented)
 // - Very long strings with repeated slashes -> truncated and safely processed
 export function getSafePostUrl(post: BlogPostMetadata): string {
   try {
@@ -326,14 +328,32 @@ function sanitizeUrlPath(path: string): string {
   }
 
   // Remove dangerous characters that could be used for XSS while preserving valid URL structure
-  let sanitized = path
-    .replace(/[<>'"]/g, '') // Remove HTML/JS injection characters
-    .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/data:/gi, '') // Remove data: protocol
-    .replace(/vbscript:/gi, '') // Remove vbscript: protocol
-    .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
-    .replace(/&[#\w]+;/g, '') // Remove HTML entities
-    .replace(/[^\w\-\/\.]/g, '') // Only allow word chars, hyphens, slashes, and dots
+  // Use iterative approach to prevent bypass through interleaving
+  let sanitized = path;
+  let previousLength;
+  let sanitizeIterations = 0;
+  const maxSanitizeIterations = 10; // Prevent infinite loops
+
+  // Keep sanitizing until no more changes occur (prevents interleaving bypass)
+  do {
+    previousLength = sanitized.length;
+    sanitized = sanitized
+      .replace(/[<>'"]/g, '') // Remove HTML/JS injection characters
+      .replace(/javascript:/gi, '') // Remove javascript: protocol
+      .replace(/data:/gi, '') // Remove data: protocol
+      .replace(/vbscript:/gi, '') // Remove vbscript: protocol
+      .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
+      .replace(/&[#\w]+;/g, ''); // Remove HTML entities
+    sanitizeIterations++;
+  } while (
+    sanitized.length !== previousLength &&
+    sanitized.length > 0 &&
+    sanitizeIterations < maxSanitizeIterations
+  );
+
+  // Final whitelist filter - only allow safe characters (fixed escape)
+  sanitized = sanitized
+    .replace(/[^\w\-/.]/g, '') // Only allow word chars, hyphens, slashes, and dots
     .replace(/\/+/g, '/'); // Collapse multiple slashes
 
   // Remove leading/trailing slashes safely (ReDoS-safe approach)
