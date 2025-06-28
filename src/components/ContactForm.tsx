@@ -125,7 +125,7 @@ export default function ContactForm() {
       } else {
         setSubmitStatus('error');
         setSubmitMessage(
-          data.error || 'An error occurred while sending your message'
+          data.error ?? 'An error occurred while sending your message'
         );
 
         if (data.details && Array.isArray(data.details)) {
