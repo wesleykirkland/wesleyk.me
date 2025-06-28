@@ -1,11 +1,11 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   // Remove 'export' output to enable API routes for contact form
   // output: 'export',
   trailingSlash: true,
   images: {
-    unoptimized: true,
+    unoptimized: true
   },
   // distDir: 'out', // Not needed without static export
   skipTrailingSlashRedirect: true,
@@ -21,8 +21,9 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_LINKEDIN_URL: process.env.NEXT_PUBLIC_LINKEDIN_URL,
     NEXT_PUBLIC_YOUTUBE_PLAYLIST: process.env.NEXT_PUBLIC_YOUTUBE_PLAYLIST,
     NEXT_PUBLIC_HCAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY,
-    NEXT_PUBLIC_OVERTRACKING_SITE_ID: process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID,
-  },
+    NEXT_PUBLIC_OVERTRACKING_SITE_ID:
+      process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID
+  }
 };
 
 export default nextConfig;

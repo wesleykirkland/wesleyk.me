@@ -14,7 +14,10 @@ interface CatData {
   error?: string;
 }
 
-export default function CatLink({ children, className = "" }: Readonly<CatLinkProps>) {
+export default function CatLink({
+  children,
+  className = ''
+}: Readonly<CatLinkProps>) {
   const [catUrl, setCatUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +26,7 @@ export default function CatLink({ children, className = "" }: Readonly<CatLinkPr
       try {
         const response = await fetch('/api/cat');
         const data: CatData = await response.json();
-        
+
         if (data.success && data.url) {
           setCatUrl(data.url);
         } else {
@@ -48,9 +51,9 @@ export default function CatLink({ children, className = "" }: Readonly<CatLinkPr
   }
 
   return (
-    <a 
-      href={catUrl} 
-      target="_blank" 
+    <a
+      href={catUrl}
+      target="_blank"
       rel="noopener noreferrer"
       className={`text-blue-600 dark:text-blue-400 hover:underline ${className}`}
       title="Click to see a random cat image!"

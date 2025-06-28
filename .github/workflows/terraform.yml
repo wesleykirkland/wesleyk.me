@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - "terraform/**"
+      - 'terraform/**'
   pull_request:
     branches:
       - main
     paths:
-      - "terraform/**"
+      - 'terraform/**'
   workflow_dispatch:
 
 permissions:
@@ -18,8 +18,8 @@ permissions:
   contents: read
 
 env:
-  TF_VERSION: "1.10.5"
-  TF_WORKING_DIR: "./terraform"
+  TF_VERSION: '1.10.5'
+  TF_WORKING_DIR: './terraform'
 
 jobs:
   terraform-check:

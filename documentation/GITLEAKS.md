@@ -119,7 +119,7 @@ regexes = [
 Suppress specific lines:
 
 ```javascript
-const apiKey = "not-a-real-key"; // gitleaks:allow
+const apiKey = 'not-a-real-key'; // gitleaks:allow
 ```
 
 ### 3. File-level Suppression:
@@ -129,7 +129,7 @@ Add to file header:
 ```javascript
 // gitleaks:disable
 const config = {
-  secret: "example-value",
+  secret: 'example-value'
 };
 // gitleaks:enable
 ```

@@ -5,7 +5,7 @@ export async function GET() {
     {
       message: "I'm a teapot 🫖",
       status: 418,
-      tip: "Don't brew coffee with me.",
+      tip: "Don't brew coffee with me."
     },
     { status: 418 }
   );

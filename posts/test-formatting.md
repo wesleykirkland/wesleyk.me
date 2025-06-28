@@ -1,9 +1,9 @@
 ---
-title: "Test Post - Markdown Formatting"
-date: "2024-01-15"
-excerpt: "A test post to demonstrate proper markdown formatting and paragraph spacing."
-tags: ["Test", "Markdown", "Formatting"]
-author: "Wesley Kirkland"
+title: 'Test Post - Markdown Formatting'
+date: '2024-01-15'
+excerpt: 'A test post to demonstrate proper markdown formatting and paragraph spacing.'
+tags: ['Test', 'Markdown', 'Formatting']
+author: 'Wesley Kirkland'
 ---
 
 This is the first paragraph of the test post. It should have proper spacing below it.
@@ -38,7 +38,7 @@ Here's a code block:
 
 ```javascript
 function testFunction() {
-  console.log("This is a test");
+  console.log('This is a test');
   return true;
 }
 ```

@@ -26,25 +26,29 @@ export default function ContactForm() {
     name: '',
     email: '',
     subject: '',
-    message: '',
+    message: ''
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
   const [submitMessage, setSubmitMessage] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  
+
   const captchaRef = useRef<HCaptcha>(null);
   const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Clear error for this field when user starts typing
     if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -79,7 +83,7 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -92,12 +96,12 @@ export default function ContactForm() {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           ...formData,
-          captchaToken,
-        }),
+          captchaToken
+        })
       });
 
       const data = await response.json();
@@ -114,13 +118,15 @@ export default function ContactForm() {
           name: '',
           email: '',
           subject: '',
-          message: '',
+          message: ''
         });
         setCaptchaToken(null);
         captchaRef.current?.resetCaptcha();
       } else {
         setSubmitStatus('error');
-        setSubmitMessage(data.error || 'An error occurred while sending your message');
+        setSubmitMessage(
+          data.error || 'An error occurred while sending your message'
+        );
 
         if (data.details && Array.isArray(data.details)) {
           setSubmitMessage(data.details.join(', '));
@@ -136,7 +142,9 @@ export default function ContactForm() {
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
-      setSubmitMessage('Network error. Please check your connection and try again.');
+      setSubmitMessage(
+        'Network error. Please check your connection and try again.'
+      );
 
       // Track network error
       trackingEvents.contactFormSubmit(false, 'Network error');
@@ -152,7 +160,7 @@ export default function ContactForm() {
   const handleCaptchaVerify = (token: string) => {
     setCaptchaToken(token);
     if (errors.captcha) {
-      setErrors(prev => ({ ...prev, captcha: undefined }));
+      setErrors((prev) => ({ ...prev, captcha: undefined }));
     }
   };
 
@@ -164,7 +172,8 @@ export default function ContactForm() {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
         <p className="text-red-700 dark:text-red-300">
-          Contact form is temporarily unavailable. Please use the social media links to reach out.
+          Contact form is temporarily unavailable. Please use the social media
+          links to reach out.
         </p>
       </div>
     );
@@ -172,8 +181,10 @@ export default function ContactForm() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h2>
-      
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        Send a Message
+      </h2>
+
       {submitStatus === 'success' && (
         <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
           <p className="text-green-700 dark:text-green-300">{submitMessage}</p>
@@ -189,7 +200,10 @@ export default function ContactForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Name *
             </label>
             <input
@@ -199,18 +213,25 @@ export default function ContactForm() {
               value={formData.name}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.name 
-                  ? 'border-red-300 dark:border-red-600' 
+                errors.name
+                  ? 'border-red-300 dark:border-red-600'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Your full name"
               disabled={isSubmitting}
             />
-            {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>}
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.name}
+              </p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Email *
             </label>
             <input
@@ -220,19 +241,26 @@ export default function ContactForm() {
               value={formData.email}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.email 
-                  ? 'border-red-300 dark:border-red-600' 
+                errors.email
+                  ? 'border-red-300 dark:border-red-600'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="your.email@example.com"
               disabled={isSubmitting}
             />
-            {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>}
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.email}
+              </p>
+            )}
           </div>
         </div>
 
         <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="subject"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Subject *
           </label>
           <input
@@ -242,18 +270,25 @@ export default function ContactForm() {
             value={formData.subject}
             onChange={handleInputChange}
             className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-              errors.subject 
-                ? 'border-red-300 dark:border-red-600' 
+              errors.subject
+                ? 'border-red-300 dark:border-red-600'
                 : 'border-gray-300 dark:border-gray-600'
             }`}
             placeholder="What would you like to discuss?"
             disabled={isSubmitting}
           />
-          {errors.subject && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.subject}</p>}
+          {errors.subject && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.subject}
+            </p>
+          )}
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="message"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Message *
           </label>
           <textarea
@@ -263,14 +298,18 @@ export default function ContactForm() {
             value={formData.message}
             onChange={handleInputChange}
             className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-              errors.message 
-                ? 'border-red-300 dark:border-red-600' 
+              errors.message
+                ? 'border-red-300 dark:border-red-600'
                 : 'border-gray-300 dark:border-gray-600'
             }`}
             placeholder="Tell me about your project, question, or just say hello!"
             disabled={isSubmitting}
           />
-          {errors.message && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.message}</p>}
+          {errors.message && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.message}
+            </p>
+          )}
         </div>
 
         <div>
@@ -281,7 +320,11 @@ export default function ContactForm() {
             onExpire={handleCaptchaExpire}
             theme="auto"
           />
-          {errors.captcha && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.captcha}</p>}
+          {errors.captcha && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.captcha}
+            </p>
+          )}
         </div>
 
         <button
@@ -291,9 +334,25 @@ export default function ContactForm() {
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Sending...
             </>

@@ -93,7 +93,7 @@ Replace the commented CodeQL section in `.github/workflows/security-scan.yml`:
 - name: Perform CodeQL Analysis
   uses: github/codeql-action/analyze@v3
   with:
-    category: "/language:javascript-typescript"
+    category: '/language:javascript-typescript'
 ```
 
 ### Step 3: Customize Configuration
@@ -126,8 +126,8 @@ paths:
 
 paths-ignore:
   - node_modules/
-  - "**/*.test.ts"
-  - "**/*.d.ts"
+  - '**/*.test.ts'
+  - '**/*.d.ts'
 ```
 
 ### Query Selection

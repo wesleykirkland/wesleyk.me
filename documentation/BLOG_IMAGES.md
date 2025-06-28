@@ -44,14 +44,14 @@ public/
 
 ```markdown
 ---
-title: "My First Vulnerability Discovery"
-date: "2024-01-15"
-excerpt: "How I found a critical vulnerability in Mimecast"
-featuredImage: "/images/blog/2024/my-first-vulnerability/hero.jpg"
+title: 'My First Vulnerability Discovery'
+date: '2024-01-15'
+excerpt: 'How I found a critical vulnerability in Mimecast'
+featuredImage: '/images/blog/2024/my-first-vulnerability/hero.jpg'
 images:
-  - "/images/blog/2024/my-first-vulnerability/screenshot-1.png"
-  - "/images/blog/2024/my-first-vulnerability/screenshot-2.png"
-tags: ["security", "vulnerability", "mimecast"]
+  - '/images/blog/2024/my-first-vulnerability/screenshot-1.png'
+  - '/images/blog/2024/my-first-vulnerability/screenshot-2.png'
+tags: ['security', 'vulnerability', 'mimecast']
 ---
 
 # My First Vulnerability Discovery
@@ -117,7 +117,7 @@ The blog system includes several utilities:
 
 ```typescript
 // Automatically converts relative paths to absolute paths
-getBlogImagePath("my-post-slug", "image.png");
+getBlogImagePath('my-post-slug', 'image.png');
 // Returns: '/images/blog/2024/my-post-slug/image.png'
 ```
 
@@ -153,7 +153,7 @@ The system automatically processes markdown content to convert relative image pa
 
 4. **Add featured image to frontmatter** (optional):
    ```yaml
-   featuredImage: "/images/blog/2024/your-post-slug/hero.jpg"
+   featuredImage: '/images/blog/2024/your-post-slug/hero.jpg'
    ```
 
 ## 🌐 CDN and Performance Considerations
@@ -168,7 +168,7 @@ For production, consider:
 ## 📱 Responsive Images Example
 
 ```jsx
-import Image from "next/image";
+import Image from 'next/image';
 
 <Image
   src="/images/blog/2024/my-post/screenshot.png"

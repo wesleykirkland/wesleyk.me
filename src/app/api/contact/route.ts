@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendContactEmail, type ContactFormData } from '@/lib/email';
-import {
-  sanitizeInput,
-  validateContactForm
-} from '@/lib/validation';
+import { sanitizeInput, validateContactForm } from '@/lib/validation';
 
 interface HCaptchaResponse {
   success: boolean;
@@ -19,7 +16,7 @@ interface HCaptchaResponse {
 
 async function verifyCaptcha(token: string): Promise<boolean> {
   const secretKey = process.env.HCAPTCHA_SECRET_KEY;
-  
+
   if (!secretKey) {
     console.error('HCAPTCHA_SECRET_KEY environment variable is not set');
     return false;
@@ -29,12 +26,12 @@ async function verifyCaptcha(token: string): Promise<boolean> {
     const response = await fetch('https://hcaptcha.com/siteverify', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
         secret: secretKey,
-        response: token,
-      }),
+        response: token
+      })
     });
 
     if (!response.ok) {
@@ -43,7 +40,7 @@ async function verifyCaptcha(token: string): Promise<boolean> {
     }
 
     const data: HCaptchaResponse = await response.json();
-    
+
     if (!data.success) {
       console.error('HCaptcha verification failed:', data['error-codes']);
       return false;
@@ -81,9 +78,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Type validation - ensure all fields are strings
-    if (typeof name !== 'string' || typeof email !== 'string' ||
-        typeof subject !== 'string' || typeof message !== 'string' ||
-        typeof captchaToken !== 'string') {
+    if (
+      typeof name !== 'string' ||
+      typeof email !== 'string' ||
+      typeof subject !== 'string' ||
+      typeof message !== 'string' ||
+      typeof captchaToken !== 'string'
+    ) {
       console.log('Invalid field types detected');
       return NextResponse.json(
         {
@@ -123,9 +124,9 @@ export async function POST(request: NextRequest) {
     const captchaValid = await verifyCaptcha(captchaToken);
     if (!captchaValid) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Captcha verification failed. Please try again.' 
+        {
+          success: false,
+          error: 'Captcha verification failed. Please try again.'
         },
         { status: 400 }
       );
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
       name: sanitizeInput(name),
       email: sanitizeInput(email),
       subject: sanitizeInput(subject),
-      message: sanitizeInput(message),
+      message: sanitizeInput(message)
     };
 
     // Server-side validation
@@ -161,11 +162,15 @@ export async function POST(request: NextRequest) {
       console.error('Email sending failed:', emailError);
 
       // Check if it's a configuration error
-      if (emailError instanceof Error && emailError.message.includes('Missing required environment variable')) {
+      if (
+        emailError instanceof Error &&
+        emailError.message.includes('Missing required environment variable')
+      ) {
         return NextResponse.json(
           {
             success: false,
-            error: 'Email service is not configured. Please contact the administrator.'
+            error:
+              'Email service is not configured. Please contact the administrator.'
           },
           { status: 503 }
         );
@@ -175,7 +180,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Failed to send email. Please try again later or contact me directly via social media.'
+          error:
+            'Failed to send email. Please try again later or contact me directly via social media.'
         },
         { status: 500 }
       );
@@ -183,21 +189,22 @@ export async function POST(request: NextRequest) {
 
     // Return success response
     return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Your message has been sent successfully! I\'ll get back to you soon.' 
+      {
+        success: true,
+        message:
+          "Your message has been sent successfully! I'll get back to you soon."
       },
       { status: 200 }
     );
-
   } catch (error) {
     console.error('Contact form submission error:', error);
-    
+
     // Return generic error message to avoid exposing internal details
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'An error occurred while sending your message. Please try again later.' 
+      {
+        success: false,
+        error:
+          'An error occurred while sending your message. Please try again later.'
       },
       { status: 500 }
     );
@@ -206,22 +213,13 @@ export async function POST(request: NextRequest) {
 
 // Handle unsupported methods
 export async function GET() {
-  return NextResponse.json(
-    { error: 'Method not allowed' },
-    { status: 405 }
-  );
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
 }
 
 export async function PUT() {
-  return NextResponse.json(
-    { error: 'Method not allowed' },
-    { status: 405 }
-  );
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
 }
 
 export async function DELETE() {
-  return NextResponse.json(
-    { error: 'Method not allowed' },
-    { status: 405 }
-  );
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
 }

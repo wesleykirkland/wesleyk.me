@@ -59,7 +59,7 @@ export function getSortedPostsData(): BlogPostMetadata[] {
         author: matterResult.data.author || 'Wesley Kirkland',
         featuredImage: matterResult.data.featuredImage,
         permalink: matterResult.data.permalink,
-        wordpressUrl: matterResult.data.wordpressUrl,
+        wordpressUrl: matterResult.data.wordpressUrl
       };
     });
 
@@ -80,8 +80,8 @@ export function getAllPostSlugs() {
     .map((fileName) => {
       return {
         params: {
-          slug: fileName.replace(/\.md$/, ''),
-        },
+          slug: fileName.replace(/\.md$/, '')
+        }
       };
     });
 }
@@ -103,8 +103,6 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     .process(processedMarkdown);
   const contentHtml = processedContent.toString();
 
-
-
   // Combine the data with the slug and the contentHtml
   return {
     slug,
@@ -117,7 +115,7 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     featuredImage: matterResult.data.featuredImage,
     images: matterResult.data.images || [],
     permalink: matterResult.data.permalink,
-    wordpressUrl: matterResult.data.wordpressUrl,
+    wordpressUrl: matterResult.data.wordpressUrl
   };
 }
 
@@ -197,23 +195,26 @@ export function getPostByPermalink(permalink: string): BlogPostMetadata | null {
   const allPosts = getSortedPostsData();
 
   // First, try to find by modern permalink (slug)
-  let post = allPosts.find(p => getPostPermalink(p) === permalink);
+  let post = allPosts.find((p) => getPostPermalink(p) === permalink);
 
   if (!post) {
     // Try to find by WordPress-style permalink (for backward compatibility)
-    post = allPosts.find(p => getWordPressPermalink(p) === permalink);
+    post = allPosts.find((p) => getWordPressPermalink(p) === permalink);
   }
 
   if (!post) {
     // Try to find by slug (fallback for direct slug access)
-    post = allPosts.find(p => p.slug === permalink);
+    post = allPosts.find((p) => p.slug === permalink);
   }
 
   return post || null;
 }
 
 // Check if a permalink is a WordPress-style URL that should redirect
-export function isWordPressPermalink(permalink: string, post: BlogPostMetadata): boolean {
+export function isWordPressPermalink(
+  permalink: string,
+  post: BlogPostMetadata
+): boolean {
   const wpPermalink = getWordPressPermalink(post);
   const modernPermalink = getPostPermalink(post);
   return permalink === wpPermalink && permalink !== modernPermalink;
@@ -224,8 +225,8 @@ export function getAllTags(): string[] {
   const allPosts = getSortedPostsData();
   const tagSet = new Set<string>();
 
-  allPosts.forEach(post => {
-    post.tags.forEach(tag => tagSet.add(tag));
+  allPosts.forEach((post) => {
+    post.tags.forEach((tag) => tagSet.add(tag));
   });
 
   return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
@@ -233,18 +234,19 @@ export function getAllTags(): string[] {
 
 export function getPostsByTag(tag: string): BlogPostMetadata[] {
   const allPosts = getSortedPostsData();
-  return allPosts.filter(post =>
-    post.tags.some(postTag =>
-      postTag.toLowerCase() === tag.toLowerCase()
-    )
+  return allPosts.filter((post) =>
+    post.tags.some((postTag) => postTag.toLowerCase() === tag.toLowerCase())
   );
 }
 
 export function getTagSlug(tag: string): string {
-  return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return tag
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 export function getTagFromSlug(slug: string): string | null {
   const allTags = getAllTags();
-  return allTags.find(tag => getTagSlug(tag) === slug) || null;
+  return allTags.find((tag) => getTagSlug(tag) === slug) || null;
 }
