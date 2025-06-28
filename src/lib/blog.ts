@@ -208,20 +208,22 @@ export function getBlogPostUrl(post: BlogPostMetadata): string {
 }
 
 // Safe URL functions that explicitly sanitize input
-// These functions prevent XSS and ReDoS by:
+// These functions prevent XSS, HTML attribute injection, and ReDoS by:
 // 1. Validating input at the permalink level
 // 2. Limiting input length to prevent ReDoS attacks
 // 3. Using iterative sanitization to prevent interleaving bypass attacks
-// 4. Applying whitelist filtering as final security layer
-// 5. Using ReDoS-safe string operations instead of vulnerable regex
-// 6. Providing safe fallbacks on error
+// 4. Removing ALL potentially dangerous characters (control chars, whitespace, special chars)
+// 5. Applying strict whitelist filtering as final security layer
+// 6. Using ReDoS-safe string operations instead of vulnerable regex
+// 7. Providing safe fallbacks on error
 //
 // Test cases that should be blocked:
 // - javascript:alert('xss') -> empty string
 // - <script>alert('xss')</script> -> scriptalertxssscript
-// - onclick="alert('xss')" -> alert'xss'
+// - onclick="alert('xss')" -> alertxss
 // - data:text/html,<script>alert('xss')</script> -> texthtmlscriptalertxssscript
 // - javajavascript:script:alert('xss') -> empty string (interleaving bypass prevented)
+// - href="javascript:alert()" -> hrefjavascriptalert (HTML attribute injection blocked)
 // - Very long strings with repeated slashes -> truncated and safely processed
 export function getSafePostUrl(post: BlogPostMetadata): string {
   try {
@@ -339,11 +341,16 @@ function sanitizeUrlPath(path: string): string {
     previousLength = sanitized.length;
     sanitized = sanitized
       .replace(/[<>'"]/g, '') // Remove HTML/JS injection characters
+      .replace(/[`\u0000-\u001f\u007f-\u009f]/g, '') // Remove control characters and backticks
+      .replace(/[\s\t\n\r\f\v]/g, '') // Remove all whitespace characters
+      .replace(/[=;,(){}[\]]/g, '') // Remove characters used in HTML attributes and JS
       .replace(/javascript:/gi, '') // Remove javascript: protocol
       .replace(/data:/gi, '') // Remove data: protocol
       .replace(/vbscript:/gi, '') // Remove vbscript: protocol
       .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
-      .replace(/&[#\w]+;/g, ''); // Remove HTML entities
+      .replace(/&[#\w]+;/g, '') // Remove HTML entities
+      .replace(/\x00/g, '') // Remove null bytes
+      .replace(/\\/g, ''); // Remove backslashes
     sanitizeIterations++;
   } while (
     sanitized.length !== previousLength &&
@@ -351,9 +358,13 @@ function sanitizeUrlPath(path: string): string {
     sanitizeIterations < maxSanitizeIterations
   );
 
-  // Final whitelist filter - only allow safe characters (fixed escape)
+  // Final whitelist filter - only allow safe characters for URL paths
+  // Allow only characters that are safe in URLs and cannot be used for injection
   sanitized = sanitized
-    .replace(/[^\w\-/.]/g, '') // Only allow word chars, hyphens, slashes, and dots
+    .replace(/[^a-zA-Z0-9\-_.\/]/g, '') // Only allow alphanumeric, hyphens, underscores, dots, and slashes
+    .replace(/\.{2,}/g, '.') // Collapse multiple dots (prevent path traversal)
+    .replace(/\-{2,}/g, '-') // Collapse multiple hyphens
+    .replace(/_{2,}/g, '_') // Collapse multiple underscores
     .replace(/\/+/g, '/'); // Collapse multiple slashes
 
   // Remove leading/trailing slashes safely (ReDoS-safe approach)
