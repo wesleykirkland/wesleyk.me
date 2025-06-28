@@ -333,7 +333,7 @@ function sanitizeUrlPath(path: string): string {
 
   // Additional cleanup for URL path safety
   let cleaned = sanitized
-    .replace(/[^a-zA-Z0-9\-_.\/]/g, '') // Only allow safe URL characters
+    .replace(/[^a-zA-Z0-9\-_./]/g, '') // Only allow safe URL characters
     .replace(/\/+/g, '/'); // Collapse multiple slashes
 
   // Remove leading/trailing slashes safely (no ReDoS vulnerability)
