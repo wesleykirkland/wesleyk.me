@@ -17,6 +17,8 @@ on:
 permissions:
   id-token: write
   contents: read
+  issues: write
+  pull-requests: write
 
 env:
   AWS_ACCOUNT_ID: '838419074361'
@@ -117,10 +119,35 @@ jobs:
           terraform plan -detailed-exitcode -out=tfplan
           terraform show -no-color tfplan > plan.txt
 
+      - name: Upload Plan as Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: terraform-plan
+          path: terraform/plan.txt
+          retention-days: 30
+
+      - name: Output Plan Summary
+        if: always()
+        run: |
+          echo "## Terraform Plan Summary 🏗️"
+          if [ -f terraform/plan.txt ]; then
+            echo "Plan file generated successfully"
+            echo "Plan size: $(wc -l < terraform/plan.txt) lines"
+            echo ""
+            echo "### Plan Preview (first 50 lines):"
+            head -50 terraform/plan.txt
+            echo ""
+            echo "### Full plan available in artifacts or PR comment"
+          else
+            echo "❌ Plan file not found"
+          fi
+
       - name: Comment PR with Plan
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const plan = fs.readFileSync('terraform/plan.txt', 'utf8');
@@ -155,13 +182,18 @@ jobs:
             // Split the body into chunks if it's too large
             const chunks = chunkSubstr(body, maxGitHubBodyCharacters);
 
-            for (let i = 0; i < chunks.length; i++) {
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: i === 0 ? chunks[i] : `## Terraform Plan (continued ${i + 1}/${chunks.length})\n\n${chunks[i]}`
-              });
+            try {
+              for (let i = 0; i < chunks.length; i++) {
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: i === 0 ? chunks[i] : `## Terraform Plan (continued ${i + 1}/${chunks.length})\n\n${chunks[i]}`
+                });
+              }
+            } catch (error) {
+              console.log('Error posting comment:', error.message);
+              console.log('Plan output will be available in workflow logs');
             }
 
   terraform-apply:
