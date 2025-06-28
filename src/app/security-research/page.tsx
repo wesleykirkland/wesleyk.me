@@ -1,5 +1,26 @@
 import Link from 'next/link';
 
+// Helper functions for styling
+function getSeverityClasses(severity: string): string {
+  if (severity === 'High') {
+    return 'bg-red-100 text-red-800';
+  }
+  if (severity === 'Medium') {
+    return 'bg-yellow-100 text-yellow-800';
+  }
+  return 'bg-green-100 text-green-800';
+}
+
+function getStatusClasses(status: string): string {
+  if (status === 'Disclosed') {
+    return 'text-green-600';
+  }
+  if (status === 'In Progress') {
+    return 'text-yellow-600';
+  }
+  return 'text-gray-600';
+}
+
 // Mock security research data - we'll replace this with real data later
 const securityResearch = [
   {
@@ -218,13 +239,7 @@ export default function SecurityResearch() {
                   </div>
                   <div className="flex flex-col md:items-end space-y-2">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                        research.severity === 'High'
-                          ? 'bg-red-100 text-red-800'
-                          : research.severity === 'Medium'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-green-100 text-green-800'
-                      }`}
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getSeverityClasses(research.severity)}`}
                     >
                       {research.severity} Severity
                     </span>
@@ -245,13 +260,7 @@ export default function SecurityResearch() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span
-                    className={`text-sm font-medium ${
-                      research.status === 'Disclosed'
-                        ? 'text-green-600'
-                        : research.status === 'In Progress'
-                          ? 'text-yellow-600'
-                          : 'text-gray-600'
-                    }`}
+                    className={`text-sm font-medium ${getStatusClasses(research.status)}`}
                   >
                     Status: {research.status}
                   </span>
