@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getRecentPosts, getPostUrl } from '@/lib/blog';
+import { getRecentPosts, getSafePostUrl } from '@/lib/blog';
 import TagList from '@/components/TagList';
 import PageTracker from '@/components/PageTracker';
 
@@ -74,7 +74,7 @@ export default function Home() {
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                     <Link
-                      href={getPostUrl(post)}
+                      href={getSafePostUrl(post)}
                       className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                     >
                       {post.title}
@@ -92,7 +92,7 @@ export default function Home() {
                       })}
                     </span>
                     <Link
-                      href={getPostUrl(post)}
+                      href={getSafePostUrl(post)}
                       className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                     >
                       Read more →

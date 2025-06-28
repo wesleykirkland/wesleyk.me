@@ -162,6 +162,21 @@ export function generateWordPressPermalink(date: string, slug: string): string {
 
 export function getPostPermalink(post: BlogPostMetadata): string {
   // Always use the modern clean URL (slug-based)
+  // Validate that the slug is safe
+  if (!post.slug || typeof post.slug !== 'string') {
+    throw new Error('Invalid post slug');
+  }
+
+  // Additional validation to prevent XSS
+  if (
+    post.slug.includes('<') ??
+    post.slug.includes('>') ??
+    post.slug.includes('"') ??
+    post.slug.includes("'")
+  ) {
+    throw new Error('Post slug contains potentially dangerous characters');
+  }
+
   return post.slug;
 }
 
@@ -182,12 +197,47 @@ export function getWordPressPermalink(post: BlogPostMetadata): string {
 
 export function getPostUrl(post: BlogPostMetadata): string {
   const permalink = getPostPermalink(post);
-  return `/${permalink}`;
+  const sanitizedPermalink = sanitizeUrlPath(permalink);
+  return `/${sanitizedPermalink}`;
 }
 
 export function getBlogPostUrl(post: BlogPostMetadata): string {
   const permalink = getPostPermalink(post);
-  return `/blog/${permalink}`;
+  const sanitizedPermalink = sanitizeUrlPath(permalink);
+  return `/blog/${sanitizedPermalink}`;
+}
+
+// Safe URL functions that explicitly sanitize input
+// These functions prevent XSS by:
+// 1. Validating input at the permalink level
+// 2. Sanitizing the URL path to remove dangerous characters
+// 3. Providing safe fallbacks on error
+//
+// Test cases that should be blocked:
+// - javascript:alert('xss') -> empty string
+// - <script>alert('xss')</script> -> scriptalertxssscript
+// - onclick="alert('xss')" -> alert'xss'
+// - data:text/html,<script>alert('xss')</script> -> texthtmlscriptalertxssscript
+export function getSafePostUrl(post: BlogPostMetadata): string {
+  try {
+    const permalink = getPostPermalink(post);
+    const sanitizedPermalink = sanitizeUrlPath(permalink);
+    return `/${sanitizedPermalink}`;
+  } catch (error) {
+    console.error('Error generating safe post URL:', error);
+    return '/blog'; // Fallback to blog index
+  }
+}
+
+export function getSafeBlogPostUrl(post: BlogPostMetadata): string {
+  try {
+    const permalink = getPostPermalink(post);
+    const sanitizedPermalink = sanitizeUrlPath(permalink);
+    return `/blog/${sanitizedPermalink}`;
+  } catch (error) {
+    console.error('Error generating safe blog post URL:', error);
+    return '/blog'; // Fallback to blog index
+  }
 }
 
 // Find post by permalink (for routing)
@@ -244,6 +294,25 @@ export function getTagSlug(tag: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-)|(-$)/g, '');
+}
+
+// URL sanitization function to prevent XSS
+function sanitizeUrlPath(path: string): string {
+  if (!path || typeof path !== 'string') {
+    return '';
+  }
+
+  // Remove dangerous characters that could be used for XSS while preserving valid URL structure
+  return path
+    .replace(/[<>'"]/g, '') // Remove HTML/JS injection characters
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/data:/gi, '') // Remove data: protocol
+    .replace(/vbscript:/gi, '') // Remove vbscript: protocol
+    .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
+    .replace(/&[#\w]+;/g, '') // Remove HTML entities
+    .replace(/[^\w\-\/\.]/g, '') // Only allow word chars, hyphens, slashes, and dots
+    .replace(/\/+/g, '/') // Collapse multiple slashes
+    .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
 }
 
 export function getTagFromSlug(slug: string): string | null {

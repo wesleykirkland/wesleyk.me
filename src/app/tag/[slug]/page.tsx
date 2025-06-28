@@ -4,7 +4,7 @@ import {
   getAllTags,
   getTagFromSlug,
   getPostsByTag,
-  getPostUrl,
+  getSafePostUrl,
   getTagSlug
 } from '@/lib/blog';
 import { format } from 'date-fns';
@@ -114,7 +114,7 @@ export default async function TagPage({ params }: TagPageProps) {
               >
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   <Link
-                    href={getPostUrl(post)}
+                    href={getSafePostUrl(post)}
                     className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                   >
                     {post.title}
@@ -149,7 +149,7 @@ export default async function TagPage({ params }: TagPageProps) {
                 </div>
 
                 <Link
-                  href={getPostUrl(post)}
+                  href={getSafePostUrl(post)}
                   className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                 >
                   Read more →
