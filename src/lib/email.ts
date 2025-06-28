@@ -92,7 +92,9 @@ export async function sendContactEmail(
       
       <div style="background-color: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
         <h3 style="color: #1e40af; margin-top: 0;">Message</h3>
-        <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(formData.message)}</div>
+        <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(
+          formData.message
+        )}</div>
       </div>
       
       <div style="margin-top: 20px; padding: 15px; background-color: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">

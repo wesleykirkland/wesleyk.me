@@ -239,7 +239,9 @@ export default function SecurityResearch() {
                   </div>
                   <div className="flex flex-col md:items-end space-y-2">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getSeverityClasses(research.severity)}`}
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getSeverityClasses(
+                        research.severity
+                      )}`}
                     >
                       {research.severity} Severity
                     </span>
@@ -260,7 +262,9 @@ export default function SecurityResearch() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span
-                    className={`text-sm font-medium ${getStatusClasses(research.status)}`}
+                    className={`text-sm font-medium ${getStatusClasses(
+                      research.status
+                    )}`}
                   >
                     Status: {research.status}
                   </span>

@@ -49,7 +49,9 @@ export default function TagList({
         <Link
           key={tag}
           href={`/tag/${getTagSlug(tag)}`}
-          className={`inline-flex items-center rounded-full font-medium transition-colors duration-200 ${sizeClasses[size]} ${getCurrentTagClasses(tag)}`}
+          className={`inline-flex items-center rounded-full font-medium transition-colors duration-200 ${
+            sizeClasses[size]
+          } ${getCurrentTagClasses(tag)}`}
           title={`View all posts tagged with "${tag}"`}
         >
           {tag}
