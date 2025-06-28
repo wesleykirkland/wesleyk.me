@@ -17,9 +17,9 @@ The permalink system supports:
 
 ```yaml
 ---
-title: "My Blog Post"
-date: "2020-01-10"
-permalink: "2020/01/10/my-first-vulnerability-mimecast-sender-address-verification"
+title: 'My Blog Post'
+date: '2020-01-10'
+permalink: '2020/01/10/my-first-vulnerability-mimecast-sender-address-verification'
 ---
 ```
 
@@ -29,9 +29,9 @@ permalink: "2020/01/10/my-first-vulnerability-mimecast-sender-address-verificati
 
 ```yaml
 ---
-title: "My Blog Post"
-date: "2020-01-10"
-wordpressUrl: "custom/path/to/post"
+title: 'My Blog Post'
+date: '2020-01-10'
+wordpressUrl: 'custom/path/to/post'
 ---
 ```
 
@@ -41,8 +41,8 @@ wordpressUrl: "custom/path/to/post"
 
 ```yaml
 ---
-title: "My Blog Post"
-date: "2020-01-10"
+title: 'My Blog Post'
+date: '2020-01-10'
 # No permalink specified
 ---
 ```
@@ -86,7 +86,7 @@ All permalinks are pre-generated at build time for optimal performance:
 export async function generateStaticParams() {
   const posts = getSortedPostsData();
   return posts.map((post) => ({
-    permalink: getPostPermalink(post).split("/"),
+    permalink: getPostPermalink(post).split('/')
   }));
 }
 ```
@@ -105,9 +105,9 @@ For each WordPress post, note the existing URL structure:
 
 ```yaml
 ---
-title: "My first vulnerability – Mimecast Sender Address verification"
-date: "2020-01-10"
-permalink: "2020/01/10/my-first-vulnerability-mimecast-sender-address-verification"
+title: 'My first vulnerability – Mimecast Sender Address verification'
+date: '2020-01-10'
+permalink: '2020/01/10/my-first-vulnerability-mimecast-sender-address-verification'
 ---
 ```
 
@@ -201,11 +201,11 @@ For additional SEO protection, you could add redirects:
 
 ```yaml
 ---
-title: "My Post"
-permalink: "2020/01/10/my-post"
+title: 'My Post'
+permalink: '2020/01/10/my-post'
 redirects:
-  - "old-url-1"
-  - "old-url-2"
+  - 'old-url-1'
+  - 'old-url-2'
 ---
 ```
 
@@ -234,7 +234,7 @@ redirects:
 1. **Add permalink to frontmatter**:
 
    ```yaml
-   permalink: "2020/01/10/test-post"
+   permalink: '2020/01/10/test-post'
    ```
 
 2. **Build and test**:

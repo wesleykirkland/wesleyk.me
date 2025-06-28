@@ -74,7 +74,7 @@ src/
 ```tsx
 <Overtracking
   siteId={process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID}
-  enabled={process.env.NODE_ENV === "production"}
+  enabled={process.env.NODE_ENV === 'production'}
 />
 ```
 
@@ -96,8 +96,8 @@ src/
   pageName="About"
   pageType="profile"
   customProperties={{
-    section: "about-me",
-    hasProfileImage: true,
+    section: 'about-me',
+    hasProfileImage: true
   }}
 />
 ```
@@ -135,7 +135,7 @@ src/
   pageType="landing"
   customProperties={{
     recentPostsCount: recentPosts.length,
-    hasRecentPosts: recentPosts.length > 0,
+    hasRecentPosts: recentPosts.length > 0
   }}
 />
 ```
@@ -154,8 +154,8 @@ src/
   pageName="About"
   pageType="profile"
   customProperties={{
-    section: "about-me",
-    hasProfileImage: true,
+    section: 'about-me',
+    hasProfileImage: true
   }}
 />
 ```
@@ -174,8 +174,8 @@ src/
   pageName="Contact"
   pageType="form"
   customProperties={{
-    formType: "contact",
-    hasContactForm: true,
+    formType: 'contact',
+    hasContactForm: true
   }}
 />
 ```
@@ -195,7 +195,7 @@ src/
   pageType="blog-index"
   customProperties={{
     totalPosts: allPostsData.length,
-    hasPosts: allPostsData.length > 0,
+    hasPosts: allPostsData.length > 0
   }}
 />
 ```
@@ -217,9 +217,9 @@ src/
     postSlug: post.slug,
     postDate: post.date,
     postTags: post.tags,
-    wordCount: post.content.split(" ").length,
+    wordCount: post.content.split(' ').length,
     hasExcerpt: !!post.excerpt,
-    hasFeaturedImage: !!post.featuredImage,
+    hasFeaturedImage: !!post.featuredImage
   }}
 />
 ```
@@ -242,7 +242,7 @@ src/
     tag: tag,
     tagSlug: slug,
     postCount: posts.length,
-    hasPosts: posts.length > 0,
+    hasPosts: posts.length > 0
   }}
 />
 ```
@@ -263,28 +263,28 @@ src/
 trackingEvents.contactFormSubmit(true);
 
 // Error tracking
-trackingEvents.contactFormSubmit(false, "Validation failed");
+trackingEvents.contactFormSubmit(false, 'Validation failed');
 
 // Network error tracking
-trackingEvents.contactFormSubmit(false, "Network error");
+trackingEvents.contactFormSubmit(false, 'Network error');
 ```
 
 ### **Blog Post Engagement**
 
 ```tsx
 trackingEvents.blogPostView(
-  "My First Vulnerability Discovery",
-  "my-first-vulnerability",
-  ["security", "research", "mimecast"],
+  'My First Vulnerability Discovery',
+  'my-first-vulnerability',
+  ['security', 'research', 'mimecast']
 );
 ```
 
 ### **Navigation Tracking**
 
 ```tsx
-trackingEvents.linkClick("https://github.com/wesleykirkland", "GitHub Profile");
+trackingEvents.linkClick('https://github.com/wesleykirkland', 'GitHub Profile');
 
-trackingEvents.tagClicked("security", "blog-post");
+trackingEvents.tagClicked('security', 'blog-post');
 ```
 
 ## 🔒 Privacy & Security
@@ -417,7 +417,7 @@ environment = {
 console.log(window.overtracking);
 
 // Manual event tracking
-window.overtracking?.track("Test Event", { test: true });
+window.overtracking?.track('Test Event', { test: true });
 
 // Check environment
 console.log(process.env.NODE_ENV);

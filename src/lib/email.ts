@@ -47,7 +47,9 @@ export function getEmailConfig(): EmailConfig {
   };
 }
 
-export async function sendContactEmail(formData: ContactFormData): Promise<void> {
+export async function sendContactEmail(
+  formData: ContactFormData
+): Promise<void> {
   const config = getEmailConfig();
 
   // Create transporter
@@ -57,11 +59,13 @@ export async function sendContactEmail(formData: ContactFormData): Promise<void>
     secure: config.port === 465, // true for 465, false for other ports
     auth: {
       user: config.username,
-      pass: config.password,
+      pass: config.password
     },
-    tls: config.tls ? {
-      rejectUnauthorized: false
-    } : undefined,
+    tls: config.tls
+      ? {
+          rejectUnauthorized: false
+        }
+      : undefined
   });
 
   // Verify connection configuration
@@ -120,7 +124,7 @@ This email was sent from the contact form on wesleyk.me
     replyTo: formData.email,
     subject: `Contact Form: ${formData.subject}`,
     text: textContent,
-    html: htmlContent,
+    html: htmlContent
   };
 
   try {
@@ -143,8 +147,6 @@ function escapeHtml(text: string): string {
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
-
-
 
 // Validate form data
 export function validateContactForm(data: ContactFormData): string[] {

@@ -178,7 +178,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 - name: Deploy to Netlify
   uses: nwtgck/actions-netlify@v2.0
   with:
-    publish-dir: "./out"
+    publish-dir: './out'
     production-deploy: false
 
 - name: Run Lighthouse on preview
@@ -255,7 +255,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
   uses: 8398a7/action-slack@v3
   with:
     status: failure
-    text: "Lighthouse CI failed for ${{ github.ref }}"
+    text: 'Lighthouse CI failed for ${{ github.ref }}'
 ```
 
 ## Best Practices

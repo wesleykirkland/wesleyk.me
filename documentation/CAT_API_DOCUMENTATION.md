@@ -139,29 +139,29 @@ public/
 
 ```typescript
 // Basic usage
-const response = await fetch("/api/cat");
+const response = await fetch('/api/cat');
 const catData = await response.json();
 console.log(catData.image); // "/cats/random-cat.jpg"
 
 // With additional info
-const infoResponse = await fetch("/api/cat?info=true");
+const infoResponse = await fetch('/api/cat?info=true');
 const catInfo = await infoResponse.json();
 console.log(`File size: ${catInfo.fileSize} bytes`);
 
 // Direct image URL
-const imageUrl = "/api/cat?format=redirect";
+const imageUrl = '/api/cat?format=redirect';
 ```
 
 ### React Component
 
 ```tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 function RandomCatImage() {
-  const [catUrl, setCatUrl] = useState<string>("");
+  const [catUrl, setCatUrl] = useState<string>('');
 
   const fetchRandomCat = async () => {
-    const response = await fetch("/api/cat");
+    const response = await fetch('/api/cat');
     const data = await response.json();
     if (data.success) {
       setCatUrl(data.image);
@@ -189,10 +189,10 @@ function RandomCatImage() {
 
 <!-- With JavaScript -->
 <script>
-  fetch("/api/cat")
+  fetch('/api/cat')
     .then((response) => response.json())
     .then((data) => {
-      document.getElementById("cat-img").src = data.image;
+      document.getElementById('cat-img').src = data.image;
     });
 </script>
 ```
@@ -344,7 +344,7 @@ Use the API directly in any application:
 
 ```javascript
 // Perfect for Discord bots, Slack integrations, etc.
-const catResponse = await fetch("https://wesleyk.me/api/cat");
+const catResponse = await fetch('https://wesleyk.me/api/cat');
 const catData = await catResponse.json();
 // Send catData.url to chat
 ```

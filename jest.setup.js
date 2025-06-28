@@ -3,7 +3,7 @@
 
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -14,20 +14,20 @@ jest.mock('next/navigation', () => ({
       prefetch: jest.fn(),
       back: jest.fn(),
       forward: jest.fn(),
-      refresh: jest.fn(),
-    }
+      refresh: jest.fn()
+    };
   },
   useSearchParams() {
-    return new URLSearchParams()
+    return new URLSearchParams();
   },
   usePathname() {
-    return '/'
-  },
-}))
+    return '/';
+  }
+}));
 
 // Mock environment variables for testing
-process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID = 'test-site-id'
-process.env.NODE_ENV = 'test'
+process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID = 'test-site-id';
+process.env.NODE_ENV = 'test';
 
 // Mock window.location
 Object.defineProperty(window, 'location', {
@@ -36,49 +36,49 @@ Object.defineProperty(window, 'location', {
     origin: 'http://localhost:3000',
     pathname: '/',
     search: '',
-    hash: '',
+    hash: ''
   },
-  writable: true,
-})
+  writable: true
+});
 
 // Mock document.head for script injection tests
 Object.defineProperty(document, 'head', {
   value: {
     appendChild: jest.fn(),
     removeChild: jest.fn(),
-    querySelector: jest.fn(),
+    querySelector: jest.fn()
   },
-  writable: true,
-})
+  writable: true
+});
 
 // Global test utilities
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}))
+  disconnect: jest.fn()
+}));
 
 // Mock IntersectionObserver
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}))
+  disconnect: jest.fn()
+}));
 
 // Suppress console errors during tests (optional)
-const originalError = console.error
+const originalError = console.error;
 beforeAll(() => {
   console.error = (...args) => {
     if (
       typeof args[0] === 'string' &&
       args[0].includes('Warning: ReactDOM.render is no longer supported')
     ) {
-      return
+      return;
     }
-    originalError.call(console, ...args)
-  }
-})
+    originalError.call(console, ...args);
+  };
+});
 
 afterAll(() => {
-  console.error = originalError
-})
+  console.error = originalError;
+});

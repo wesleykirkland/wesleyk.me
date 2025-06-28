@@ -25,7 +25,7 @@ interface RandomCatProps {
 export default function RandomCat({
   showInfo = false,
   autoRefresh,
-  className = ""
+  className = ''
 }: Readonly<RandomCatProps>) {
   const [catData, setCatData] = useState<CatData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,12 +34,12 @@ export default function RandomCat({
   const fetchRandomCat = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const url = showInfo ? '/api/cat?info=true' : '/api/cat';
       const response = await fetch(url);
       const data: CatData = await response.json();
-      
+
       if (data.success) {
         setCatData(data);
       } else {
@@ -80,7 +80,9 @@ export default function RandomCat({
 
   if (error) {
     return (
-      <div className={`p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg ${className}`}>
+      <div
+        className={`p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg ${className}`}
+      >
         <div className="flex items-center mb-4">
           <div className="text-4xl mr-3">😿</div>
           <div>
@@ -93,7 +95,13 @@ export default function RandomCat({
         <div className="text-sm text-red-600 dark:text-red-400">
           <p>To fix this:</p>
           <ol className="list-decimal list-inside mt-2 space-y-1">
-            <li>Add cat images to the <code className="bg-red-100 dark:bg-red-800 px-1 rounded">/public/cats</code> directory</li>
+            <li>
+              Add cat images to the{' '}
+              <code className="bg-red-100 dark:bg-red-800 px-1 rounded">
+                /public/cats
+              </code>{' '}
+              directory
+            </li>
             <li>Supported formats: .jpg, .jpeg, .png, .gif, .webp</li>
             <li>Refresh this component</li>
           </ol>
@@ -109,7 +117,9 @@ export default function RandomCat({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}
+    >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           🐱 Random Cat
@@ -166,21 +176,23 @@ export default function RandomCat({
                 )}
                 {catData.fileSize && (
                   <div>
-                    <strong>File Size:</strong> {formatFileSize(catData.fileSize)}
+                    <strong>File Size:</strong>{' '}
+                    {formatFileSize(catData.fileSize)}
                   </div>
                 )}
                 {catData.lastModified && (
                   <div>
-                    <strong>Last Modified:</strong> {formatDate(catData.lastModified)}
+                    <strong>Last Modified:</strong>{' '}
+                    {formatDate(catData.lastModified)}
                   </div>
                 )}
               </div>
-              
+
               <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
                 <strong>Direct URL:</strong>{' '}
-                <a 
-                  href={catData.url} 
-                  target="_blank" 
+                <a
+                  href={catData.url}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 dark:text-blue-400 hover:underline break-all"
                 >
