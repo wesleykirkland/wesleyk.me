@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
 import remarkGfm from 'remark-gfm';
+import sanitizeHtml from 'sanitize-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
@@ -207,24 +208,18 @@ export function getBlogPostUrl(post: BlogPostMetadata): string {
   return `/blog/${sanitizedPermalink}`;
 }
 
-// Safe URL functions that explicitly sanitize input
-// These functions prevent XSS, HTML attribute injection, and ReDoS by:
-// 1. Validating input at the permalink level
-// 2. Limiting input length to prevent ReDoS attacks
-// 3. Using iterative sanitization to prevent interleaving bypass attacks
-// 4. Removing ALL potentially dangerous characters (control chars, whitespace, special chars)
-// 5. Applying strict whitelist filtering as final security layer
-// 6. Using ReDoS-safe string operations instead of vulnerable regex
-// 7. Providing safe fallbacks on error
+// Safe URL functions using sanitize-html library
+// These functions prevent XSS and injection attacks by:
+// 1. Using battle-tested sanitize-html library for comprehensive security
+// 2. Applying strict configuration (no tags, attributes, or protocols allowed)
+// 3. Additional whitelist filtering for URL-safe characters only
+// 4. Providing safe fallbacks on error
 //
-// Test cases that should be blocked:
-// - javascript:alert('xss') -> empty string
-// - <script>alert('xss')</script> -> scriptalertxssscript
-// - onclick="alert('xss')" -> alertxss
-// - data:text/html,<script>alert('xss')</script> -> texthtmlscriptalertxssscript
-// - javajavascript:script:alert('xss') -> empty string (interleaving bypass prevented)
-// - href="javascript:alert()" -> hrefjavascriptalert (HTML attribute injection blocked)
-// - Very long strings with repeated slashes -> truncated and safely processed
+// Benefits of using sanitize-html:
+// - Maintained by security experts
+// - Regular security updates
+// - Comprehensive attack vector coverage
+// - Simpler and more reliable than custom sanitization
 export function getSafePostUrl(post: BlogPostMetadata): string {
   try {
     const permalink = getPostPermalink(post);
@@ -317,96 +312,30 @@ export function getTagSlug(tag: string): string {
     .replace(/(^-)|(-$)/g, '');
 }
 
-// URL sanitization function to prevent XSS and injection attacks
-// Inspired by sanitize-html but optimized for URL path sanitization
-// Reference: https://github.com/apostrophecms/sanitize-html
-//
-// Why custom implementation instead of sanitize-html:
-// 1. sanitize-html is designed for HTML content, not URL paths
-// 2. Much smaller bundle size (no dependencies vs ~500KB+)
-// 3. Better performance for this specific use case
-// 4. Simpler configuration and maintenance
-// 5. URL-specific security patterns and optimizations
+// URL sanitization using battle-tested sanitize-html library
+// This approach is much simpler and more secure than custom sanitization
 function sanitizeUrlPath(path: string): string {
   if (!path || typeof path !== 'string') {
     return '';
   }
 
-  // Limit input length to prevent ReDoS attacks
-  if (path.length > 1000) {
-    console.warn('URL path too long, truncating for security');
-    path = path.substring(0, 1000);
-  }
+  // Use sanitize-html with strict configuration for URL paths
+  const sanitized = sanitizeHtml(path, {
+    allowedTags: [], // No HTML tags allowed
+    allowedAttributes: {}, // No attributes allowed
+    allowedSchemes: [], // No protocols allowed
+    allowedSchemesByTag: {},
+    allowedSchemesAppliedToAttributes: [],
+    allowProtocolRelative: false,
+    enforceHtmlBoundary: false,
+    parseStyleAttributes: false
+  });
 
-  // Additional validation inspired by sanitize-html
-  if (path.includes('\0') || path.includes('\uFEFF')) {
-    console.warn('Detected null bytes or BOM in URL path');
-    return '';
-  }
-
-  // Remove dangerous characters that could be used for XSS while preserving valid URL structure
-  // Use iterative approach to prevent bypass through interleaving
-  let sanitized = path;
-  let previousLength;
-  let sanitizeIterations = 0;
-  const maxSanitizeIterations = 10; // Prevent infinite loops
-
-  // Keep sanitizing until no more changes occur (prevents interleaving bypass)
-  // Pattern list inspired by sanitize-html's comprehensive approach
-  do {
-    previousLength = sanitized.length;
-    sanitized = sanitized
-      .replace(/[<>'"]/g, '') // Remove HTML/JS injection characters
-      .replace(/[`\u0000-\u001f\u007f-\u009f]/g, '') // Remove control characters and backticks
-      .replace(/[\s\t\n\r\f\v]/g, '') // Remove all whitespace characters
-      .replace(/[=;,(){}[\]]/g, '') // Remove characters used in HTML attributes and JS
-      .replace(/[#%&+?@]/g, '') // Remove URL special characters that could cause issues
-      .replace(/javascript:/gi, '') // Remove javascript: protocol
-      .replace(/data:/gi, '') // Remove data: protocol
-      .replace(/vbscript:/gi, '') // Remove vbscript: protocol
-      .replace(/livescript:/gi, '') // Remove livescript: protocol
-      .replace(/mocha:/gi, '') // Remove mocha: protocol
-      .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
-      .replace(/&[#\w]+;/g, '') // Remove HTML entities
-      .replace(/\x00/g, '') // Remove null bytes
-      .replace(/\uFEFF/g, '') // Remove BOM
-      .replace(/\\/g, '') // Remove backslashes
-      .replace(/on\w+=/gi, ''); // Ensure complete removal of event handlers
-    sanitizeIterations++;
-  } while (
-    sanitized.length !== previousLength &&
-    sanitized.length > 0 &&
-    sanitizeIterations < maxSanitizeIterations
-  );
-
-  // Final whitelist filter - only allow safe characters for URL paths
-  // Allow only characters that are safe in URLs and cannot be used for injection
-  sanitized = sanitized
-    .replace(/[^a-zA-Z0-9\-_.\/]/g, '') // Only allow alphanumeric, hyphens, underscores, dots, and slashes
-    .replace(/\.{2,}/g, '.') // Collapse multiple dots (prevent path traversal)
-    .replace(/\-{2,}/g, '-') // Collapse multiple hyphens
-    .replace(/_{2,}/g, '_') // Collapse multiple underscores
-    .replace(/\/+/g, '/'); // Collapse multiple slashes
-
-  // Remove leading/trailing slashes safely (ReDoS-safe approach)
-  // Use simple string methods instead of vulnerable regex /^\/+|\/+$/g
-  // This prevents catastrophic backtracking with inputs like "//////////...//////////x"
-  // Performance: O(n) instead of potentially O(2^n) with malicious input
-  let iterations = 0;
-  const maxIterations = 100; // Safety limit to prevent infinite loops
-
-  while (sanitized.startsWith('/') && iterations < maxIterations) {
-    sanitized = sanitized.substring(1);
-    iterations++;
-  }
-
-  iterations = 0; // Reset counter for trailing slashes
-  while (sanitized.endsWith('/') && iterations < maxIterations) {
-    sanitized = sanitized.substring(0, sanitized.length - 1);
-    iterations++;
-  }
-
-  return sanitized;
+  // Additional cleanup for URL path safety
+  return sanitized
+    .replace(/[^a-zA-Z0-9\-_.\/]/g, '') // Only allow safe URL characters
+    .replace(/\/+/g, '/') // Collapse multiple slashes
+    .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
 }
 
 export function getTagFromSlug(slug: string): string | null {
