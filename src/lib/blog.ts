@@ -317,7 +317,16 @@ export function getTagSlug(tag: string): string {
     .replace(/(^-)|(-$)/g, '');
 }
 
-// URL sanitization function to prevent XSS
+// URL sanitization function to prevent XSS and injection attacks
+// Inspired by sanitize-html but optimized for URL path sanitization
+// Reference: https://github.com/apostrophecms/sanitize-html
+//
+// Why custom implementation instead of sanitize-html:
+// 1. sanitize-html is designed for HTML content, not URL paths
+// 2. Much smaller bundle size (no dependencies vs ~500KB+)
+// 3. Better performance for this specific use case
+// 4. Simpler configuration and maintenance
+// 5. URL-specific security patterns and optimizations
 function sanitizeUrlPath(path: string): string {
   if (!path || typeof path !== 'string') {
     return '';
@@ -329,6 +338,12 @@ function sanitizeUrlPath(path: string): string {
     path = path.substring(0, 1000);
   }
 
+  // Additional validation inspired by sanitize-html
+  if (path.includes('\0') || path.includes('\uFEFF')) {
+    console.warn('Detected null bytes or BOM in URL path');
+    return '';
+  }
+
   // Remove dangerous characters that could be used for XSS while preserving valid URL structure
   // Use iterative approach to prevent bypass through interleaving
   let sanitized = path;
@@ -337,6 +352,7 @@ function sanitizeUrlPath(path: string): string {
   const maxSanitizeIterations = 10; // Prevent infinite loops
 
   // Keep sanitizing until no more changes occur (prevents interleaving bypass)
+  // Pattern list inspired by sanitize-html's comprehensive approach
   do {
     previousLength = sanitized.length;
     sanitized = sanitized
@@ -344,13 +360,18 @@ function sanitizeUrlPath(path: string): string {
       .replace(/[`\u0000-\u001f\u007f-\u009f]/g, '') // Remove control characters and backticks
       .replace(/[\s\t\n\r\f\v]/g, '') // Remove all whitespace characters
       .replace(/[=;,(){}[\]]/g, '') // Remove characters used in HTML attributes and JS
+      .replace(/[#%&+?@]/g, '') // Remove URL special characters that could cause issues
       .replace(/javascript:/gi, '') // Remove javascript: protocol
       .replace(/data:/gi, '') // Remove data: protocol
       .replace(/vbscript:/gi, '') // Remove vbscript: protocol
+      .replace(/livescript:/gi, '') // Remove livescript: protocol
+      .replace(/mocha:/gi, '') // Remove mocha: protocol
       .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
       .replace(/&[#\w]+;/g, '') // Remove HTML entities
       .replace(/\x00/g, '') // Remove null bytes
-      .replace(/\\/g, ''); // Remove backslashes
+      .replace(/\uFEFF/g, '') // Remove BOM
+      .replace(/\\/g, '') // Remove backslashes
+      .replace(/on\w+=/gi, ''); // Ensure complete removal of event handlers
     sanitizeIterations++;
   } while (
     sanitized.length !== previousLength &&
