@@ -332,10 +332,20 @@ function sanitizeUrlPath(path: string): string {
   });
 
   // Additional cleanup for URL path safety
-  return sanitized
+  let cleaned = sanitized
     .replace(/[^a-zA-Z0-9\-_.\/]/g, '') // Only allow safe URL characters
-    .replace(/\/+/g, '/') // Collapse multiple slashes
-    .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+    .replace(/\/+/g, '/'); // Collapse multiple slashes
+
+  // Remove leading/trailing slashes safely (no ReDoS vulnerability)
+  // Use simple string methods instead of vulnerable regex
+  while (cleaned.startsWith('/')) {
+    cleaned = cleaned.slice(1);
+  }
+  while (cleaned.endsWith('/')) {
+    cleaned = cleaned.slice(0, -1);
+  }
+
+  return cleaned;
 }
 
 export function getTagFromSlug(slug: string): string | null {
