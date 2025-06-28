@@ -316,8 +316,6 @@ export function getTagSlug(tag: string): string {
 }
 
 // URL sanitization function to prevent XSS
-import sanitizeHtml from 'sanitize-html';
-
 function sanitizeUrlPath(path: string): string {
   if (!path || typeof path !== 'string') {
     return '';
@@ -329,18 +327,54 @@ function sanitizeUrlPath(path: string): string {
     path = path.substring(0, 1000);
   }
 
-  // Use sanitize-html to remove unsafe patterns
-  const sanitized = sanitizeHtml(path, {
-    allowedTags: [], // Disallow all HTML tags
-    allowedAttributes: {}, // Disallow all attributes
-    allowedSchemes: [], // Disallow all URL schemes
-  });
+  // Remove dangerous characters that could be used for XSS while preserving valid URL structure
+  // Use iterative approach to prevent bypass through interleaving
+  let sanitized = path;
+  let previousLength;
+  let sanitizeIterations = 0;
+  const maxSanitizeIterations = 10; // Prevent infinite loops
 
-  // Final whitelist filter - only allow safe characters
-  return sanitized
+  // Keep sanitizing until no more changes occur (prevents interleaving bypass)
+  do {
+    previousLength = sanitized.length;
+    sanitized = sanitized
+      .replace(/[<>'"]/g, '') // Remove HTML/JS injection characters
+      .replace(/javascript:/gi, '') // Remove javascript: protocol
+      .replace(/data:/gi, '') // Remove data: protocol
+      .replace(/vbscript:/gi, '') // Remove vbscript: protocol
+      .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
+      .replace(/&[#\w]+;/g, ''); // Remove HTML entities
+    sanitizeIterations++;
+  } while (
+    sanitized.length !== previousLength &&
+    sanitized.length > 0 &&
+    sanitizeIterations < maxSanitizeIterations
+  );
+
+  // Final whitelist filter - only allow safe characters (fixed escape)
+  sanitized = sanitized
     .replace(/[^\w\-/.]/g, '') // Only allow word chars, hyphens, slashes, and dots
-    .replace(/\/+/g, '/') // Collapse multiple slashes
-    .replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+    .replace(/\/+/g, '/'); // Collapse multiple slashes
+
+  // Remove leading/trailing slashes safely (ReDoS-safe approach)
+  // Use simple string methods instead of vulnerable regex /^\/+|\/+$/g
+  // This prevents catastrophic backtracking with inputs like "//////////...//////////x"
+  // Performance: O(n) instead of potentially O(2^n) with malicious input
+  let iterations = 0;
+  const maxIterations = 100; // Safety limit to prevent infinite loops
+
+  while (sanitized.startsWith('/') && iterations < maxIterations) {
+    sanitized = sanitized.substring(1);
+    iterations++;
+  }
+
+  iterations = 0; // Reset counter for trailing slashes
+  while (sanitized.endsWith('/') && iterations < maxIterations) {
+    sanitized = sanitized.substring(0, sanitized.length - 1);
+    iterations++;
+  }
+
+  return sanitized;
 }
 
 export function getTagFromSlug(slug: string): string | null {
