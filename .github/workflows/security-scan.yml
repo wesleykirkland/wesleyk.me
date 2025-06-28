@@ -174,15 +174,6 @@ jobs:
           fi
         continue-on-error: false
 
-      # Check for secrets with Gitleaks
-      - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          config-path: .gitleaks.toml
-        continue-on-error: false
-
       # Additional secret scanning with TruffleHog
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
