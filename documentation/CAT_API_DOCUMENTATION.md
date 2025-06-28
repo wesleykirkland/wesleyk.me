@@ -12,42 +12,46 @@ Returns a random cat image with various response format options.
 
 #### Query Parameters
 
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `format` | string | Response format: `json`, `redirect`, `image` | `json` |
-| `info` | boolean | Include additional file information | `false` |
+| Parameter | Type    | Description                                  | Default |
+| --------- | ------- | -------------------------------------------- | ------- |
+| `format`  | string  | Response format: `json`, `redirect`, `image` | `json`  |
+| `info`    | boolean | Include additional file information          | `false` |
 
 #### Response Formats
 
 ### 1. **JSON Format** (Default)
+
 ```bash
 GET /api/cat
 GET /api/cat?format=json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "image": "/cats/fluffy-cat.jpg",
-  "filename": "fluffy-cat.jpg", 
+  "filename": "fluffy-cat.jpg",
   "url": "https://wesleyk.me/cats/fluffy-cat.jpg",
   "timestamp": "2024-01-15T10:30:00.000Z"
 }
 ```
 
 ### 2. **JSON with Info**
+
 ```bash
 GET /api/cat?info=true
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "image": "/cats/fluffy-cat.jpg",
   "filename": "fluffy-cat.jpg",
-  "url": "https://wesleyk.me/cats/fluffy-cat.jpg", 
+  "url": "https://wesleyk.me/cats/fluffy-cat.jpg",
   "timestamp": "2024-01-15T10:30:00.000Z",
   "fileSize": 245760,
   "lastModified": "2024-01-10T15:20:00.000Z",
@@ -57,6 +61,7 @@ GET /api/cat?info=true
 ```
 
 ### 3. **Direct Redirect**
+
 ```bash
 GET /api/cat?format=redirect
 ```
@@ -64,6 +69,7 @@ GET /api/cat?format=redirect
 **Response:** HTTP 302 redirect to the image file
 
 ### 4. **Image File**
+
 ```bash
 GET /api/cat?format=image
 ```
@@ -73,12 +79,14 @@ GET /api/cat?format=image
 ## 🔧 Implementation Details
 
 ### Supported Image Formats
+
 - `.jpg` / `.jpeg`
 - `.png`
-- `.gif` 
+- `.gif`
 - `.webp`
 
 ### Caching Strategy
+
 - **File list cache**: 5 minutes (reduces filesystem reads)
 - **Image responses**: 1 hour cache header
 - **JSON responses**: No cache (ensures randomness)
@@ -86,6 +94,7 @@ GET /api/cat?format=image
 ### Error Handling
 
 #### No Images Found (404)
+
 ```json
 {
   "success": false,
@@ -95,15 +104,17 @@ GET /api/cat?format=image
 ```
 
 #### Server Error (500)
+
 ```json
 {
   "success": false,
-  "error": "Internal server error", 
+  "error": "Internal server error",
   "message": "Failed to fetch random cat image"
 }
 ```
 
 #### Method Not Allowed (405)
+
 ```json
 {
   "error": "Method not allowed. Use GET to fetch a random cat."
@@ -125,30 +136,32 @@ public/
 ## 🎯 Usage Examples
 
 ### JavaScript/TypeScript
+
 ```typescript
 // Basic usage
-const response = await fetch('/api/cat');
+const response = await fetch("/api/cat");
 const catData = await response.json();
 console.log(catData.image); // "/cats/random-cat.jpg"
 
 // With additional info
-const infoResponse = await fetch('/api/cat?info=true');
+const infoResponse = await fetch("/api/cat?info=true");
 const catInfo = await infoResponse.json();
 console.log(`File size: ${catInfo.fileSize} bytes`);
 
 // Direct image URL
-const imageUrl = '/api/cat?format=redirect';
+const imageUrl = "/api/cat?format=redirect";
 ```
 
 ### React Component
+
 ```tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function RandomCatImage() {
-  const [catUrl, setCatUrl] = useState<string>('');
+  const [catUrl, setCatUrl] = useState<string>("");
 
   const fetchRandomCat = async () => {
-    const response = await fetch('/api/cat');
+    const response = await fetch("/api/cat");
     const data = await response.json();
     if (data.success) {
       setCatUrl(data.image);
@@ -169,21 +182,23 @@ function RandomCatImage() {
 ```
 
 ### HTML
+
 ```html
 <!-- Direct image embed -->
 <img src="/api/cat?format=image" alt="Random cat" />
 
 <!-- With JavaScript -->
 <script>
-  fetch('/api/cat')
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('cat-img').src = data.image;
+  fetch("/api/cat")
+    .then((response) => response.json())
+    .then((data) => {
+      document.getElementById("cat-img").src = data.image;
     });
 </script>
 ```
 
 ### cURL Examples
+
 ```bash
 # Get JSON response
 curl https://wesleyk.me/api/cat
@@ -201,16 +216,19 @@ curl -L "https://wesleyk.me/api/cat?format=redirect"
 ## 🚀 Performance Features
 
 ### Caching
+
 - **In-memory file list caching** reduces filesystem operations
 - **HTTP cache headers** for optimal browser/CDN caching
 - **Conditional caching** (images cached, JSON not cached)
 
 ### Error Resilience
+
 - **Graceful degradation** when no images found
 - **Comprehensive error handling** with helpful messages
 - **Filesystem error recovery**
 
 ### Scalability
+
 - **Efficient random selection** algorithm
 - **Minimal memory footprint**
 - **Fast response times** with caching
@@ -218,11 +236,13 @@ curl -L "https://wesleyk.me/api/cat?format=redirect"
 ## 🔒 Security Considerations
 
 ### Path Safety
+
 - **No directory traversal** - only reads from `/public/cats`
 - **File extension validation** - only serves supported image formats
 - **Sanitized file paths** - prevents malicious file access
 
 ### Content Type Validation
+
 - **MIME type detection** based on file extension
 - **Proper HTTP headers** for security and caching
 - **Error message sanitization**
@@ -230,6 +250,7 @@ curl -L "https://wesleyk.me/api/cat?format=redirect"
 ## 📊 Monitoring & Analytics
 
 ### Response Headers
+
 ```
 X-Cat-Filename: fluffy-cat.jpg
 X-Cat-Count: 12
@@ -238,6 +259,7 @@ Content-Type: image/jpeg
 ```
 
 ### Logging
+
 - **File access errors** logged to console
 - **Cache hit/miss** information
 - **Performance metrics** available
@@ -245,11 +267,13 @@ Content-Type: image/jpeg
 ## 🛠️ Development & Testing
 
 ### Adding Cat Images
+
 1. Place images in `/public/cats/` directory
 2. Use supported formats: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`
 3. Images are automatically detected (cache refreshes every 5 minutes)
 
 ### Testing the API
+
 ```bash
 # Test basic functionality
 curl http://localhost:3000/api/cat
@@ -264,6 +288,7 @@ curl "http://localhost:3000/api/cat?info=true"
 ```
 
 ### Local Development
+
 ```bash
 # Start development server
 npm run dev
@@ -275,18 +300,21 @@ open http://localhost:3000/api/cat
 ## 🎨 Integration Examples
 
 ### Blog Post Enhancement
+
 ```tsx
 // Add random cats to blog posts
 <RandomCat showInfo={true} className="my-6" />
 ```
 
 ### Easter Egg
+
 ```tsx
 // Auto-refreshing cat for fun
 <RandomCat autoRefresh={30} />
 ```
 
 ### API Showcase
+
 ```tsx
 // Demonstrate API capabilities
 <RandomCat showInfo={true} autoRefresh={10} />
@@ -295,22 +323,28 @@ open http://localhost:3000/api/cat
 ## 🐾 Fun Features
 
 ### Auto-Refresh
+
 The `RandomCat` component supports auto-refresh:
+
 ```tsx
 <RandomCat autoRefresh={30} /> // New cat every 30 seconds
 ```
 
 ### Detailed Information
+
 Show file metadata and statistics:
+
 ```tsx
 <RandomCat showInfo={true} />
 ```
 
 ### Direct Integration
+
 Use the API directly in any application:
+
 ```javascript
 // Perfect for Discord bots, Slack integrations, etc.
-const catResponse = await fetch('https://wesleyk.me/api/cat');
+const catResponse = await fetch("https://wesleyk.me/api/cat");
 const catData = await catResponse.json();
 // Send catData.url to chat
 ```

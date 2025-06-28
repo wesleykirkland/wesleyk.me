@@ -3,6 +3,7 @@
 This guide explains how to manage static assets (images, documents, etc.) for blog posts in your Next.js website.
 
 ## 📁 Directory Structure
+
 All assets are stored within Git LFS for Git efficiency
 
 ```
@@ -83,23 +84,27 @@ The system will automatically convert `screenshot-1.png` to `/images/blog/2024/m
 ## 🖼️ Image Best Practices
 
 ### File Naming
+
 - Use kebab-case: `attack-diagram.svg`, `screenshot-1.png`
 - Be descriptive: `mimecast-vulnerability-poc.png` instead of `image1.png`
 - Include sequence numbers for multiple similar images: `step-1.png`, `step-2.png`
 
 ### File Formats
+
 - **Screenshots**: PNG for crisp text, JPG for photos
 - **Diagrams**: SVG for scalability, PNG as fallback
 - **Photos**: JPG with appropriate compression
 - **Icons**: SVG preferred, PNG for complex icons
 
 ### File Sizes
+
 - Optimize images before adding them
 - Target < 500KB for most images
 - Use WebP format for better compression (modern browsers)
 - Consider responsive images for large displays
 
 ### Organization
+
 - Create a folder per blog post: `/images/blog/YYYY/post-slug/`
 - Group by year to avoid overcrowding
 - Use consistent naming conventions
@@ -109,32 +114,39 @@ The system will automatically convert `screenshot-1.png` to `/images/blog/2024/m
 The blog system includes several utilities:
 
 ### Image Path Processing
+
 ```typescript
 // Automatically converts relative paths to absolute paths
-getBlogImagePath('my-post-slug', 'image.png')
+getBlogImagePath("my-post-slug", "image.png");
 // Returns: '/images/blog/2024/my-post-slug/image.png'
 ```
 
 ### Markdown Processing
+
 The system automatically processes markdown content to convert relative image paths to absolute paths based on the blog post slug.
 
 ## 📋 Workflow for Adding Images
 
 1. **Create the blog post folder**:
+
    ```bash
    mkdir -p public/images/blog/2024/your-post-slug
    ```
 
 2. **Add your images**:
+
    ```bash
    cp ~/Downloads/screenshot.png public/images/blog/2024/your-post-slug/
    ```
 
 3. **Reference in markdown**:
+
    ```markdown
    ![Description](screenshot.png)
    ```
+
    or
+
    ```markdown
    ![Description](/images/blog/2024/your-post-slug/screenshot.png)
    ```
@@ -156,7 +168,7 @@ For production, consider:
 ## 📱 Responsive Images Example
 
 ```jsx
-import Image from 'next/image';
+import Image from "next/image";
 
 <Image
   src="/images/blog/2024/my-post/screenshot.png"
@@ -165,7 +177,7 @@ import Image from 'next/image';
   height={600}
   className="rounded-lg shadow-lg"
   priority={false} // Set to true for above-the-fold images
-/>
+/>;
 ```
 
 ## 🔒 Security Considerations

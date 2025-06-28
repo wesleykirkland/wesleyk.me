@@ -3,11 +3,13 @@
 ## Issue: Artifact Upload Failure
 
 ### Error Message:
+
 ```
 Error: Create Artifact Container failed: The artifact name lighthouse-results is not valid
 ```
 
 ### Root Cause:
+
 - GitHub Actions artifact naming conflicts
 - Lighthouse CI action trying to create duplicate artifacts
 - GitHub's artifact storage limitations
@@ -17,11 +19,13 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ### ✅ **Fixed Configuration:**
 
 1. **Switched to Manual Lighthouse Installation:**
+
    - Removed `treosh/lighthouse-ci-action` (causing conflicts)
    - Added manual `@lhci/cli` installation
    - Direct command execution for better control
 
 2. **Updated Artifact Handling:**
+
    - Unique artifact names with `${{ github.run_id }}`
    - Local filesystem storage instead of temporary public storage
    - Manual artifact upload with proper naming
@@ -68,6 +72,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ```
 
 **Key Changes:**
+
 - ✅ **Filesystem storage** instead of temporary public storage
 - ✅ **Enhanced Chrome flags** for CI environments
 - ✅ **Local output directory** for artifact collection
@@ -75,43 +80,55 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ## Common Lighthouse CI Issues
 
 ### 1. **Artifact Naming Conflicts**
+
 **Symptoms:**
+
 - `artifact name is not valid` errors
 - Duplicate artifact creation failures
 
 **Solutions:**
+
 - Use unique artifact names with run IDs
 - Switch to filesystem storage
 - Manual artifact upload
 
 ### 2. **Chrome/Puppeteer Issues**
+
 **Symptoms:**
+
 - Chrome launch failures
 - Timeout errors
 - Sandbox violations
 
 **Solutions:**
+
 ```json
 "chromeFlags": "--no-sandbox --disable-dev-shm-usage --disable-gpu --headless"
 ```
 
 ### 3. **Server Startup Issues**
+
 **Symptoms:**
+
 - Server not ready timeouts
 - Connection refused errors
 
 **Solutions:**
+
 ```json
 "startServerReadyTimeout": 60000,
 "startServerReadyPattern": "ready"
 ```
 
 ### 4. **Performance Threshold Failures**
+
 **Symptoms:**
+
 - Lighthouse assertions failing
 - Inconsistent performance scores
 
 **Solutions:**
+
 - Adjust thresholds for CI environment
 - Use single run instead of multiple
 - Focus on accessibility over performance in CI
@@ -119,6 +136,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ## Recommended Thresholds for CI
 
 ### Conservative Thresholds (Current):
+
 ```json
 "assertions": {
   "categories:performance": ["warn", {"minScore": 0.6}],
@@ -129,6 +147,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ```
 
 ### Aggressive Thresholds (Production):
+
 ```json
 "assertions": {
   "categories:performance": ["error", {"minScore": 0.9}],
@@ -141,6 +160,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ## Alternative Lighthouse Setups
 
 ### Option 1: GitHub Pages Deployment
+
 ```yaml
 - name: Deploy to GitHub Pages
   uses: peaceiris/actions-gh-pages@v3
@@ -153,11 +173,12 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ```
 
 ### Option 2: Netlify Preview Deployment
+
 ```yaml
 - name: Deploy to Netlify
   uses: nwtgck/actions-netlify@v2.0
   with:
-    publish-dir: './out'
+    publish-dir: "./out"
     production-deploy: false
 
 - name: Run Lighthouse on preview
@@ -165,6 +186,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ```
 
 ### Option 3: Local Static Server
+
 ```yaml
 - name: Serve static files
   run: |
@@ -179,6 +201,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ## Debugging Lighthouse Issues
 
 ### Enable Debug Logging:
+
 ```yaml
 - name: Run Lighthouse CI (Debug)
   run: |
@@ -187,6 +210,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ```
 
 ### Check Lighthouse Version:
+
 ```yaml
 - name: Check Lighthouse Version
   run: |
@@ -195,6 +219,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ```
 
 ### Manual Lighthouse Run:
+
 ```yaml
 - name: Manual Lighthouse Test
   run: |
@@ -207,6 +232,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ## Monitoring and Alerts
 
 ### Performance Budgets:
+
 ```json
 "budgets": [{
   "path": "/*",
@@ -222,6 +248,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ```
 
 ### Slack Notifications:
+
 ```yaml
 - name: Notify Slack on Lighthouse Failure
   if: failure()
@@ -234,6 +261,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ## Best Practices
 
 ### ✅ **Do:**
+
 - Use filesystem storage for CI environments
 - Set realistic performance thresholds
 - Include accessibility as error-level assertion
@@ -241,6 +269,7 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 - Enable continue-on-error for non-blocking
 
 ### ❌ **Don't:**
+
 - Use temporary public storage in CI
 - Set overly aggressive performance thresholds
 - Block deployments on Lighthouse failures
@@ -250,12 +279,14 @@ Error: Create Artifact Container failed: The artifact name lighthouse-results is
 ## Current Status
 
 ✅ **Fixed Issues:**
+
 - Artifact naming conflicts resolved
 - Chrome flags optimized for CI
 - Filesystem storage implemented
 - Unique artifact names with run IDs
 
 ✅ **Working Features:**
+
 - Performance testing
 - Accessibility validation
 - SEO analysis
