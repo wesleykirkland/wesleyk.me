@@ -35,11 +35,13 @@ A modern, responsive personal website and blog built with Next.js, featuring sec
 ### Installation
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -51,11 +53,13 @@ npm run dev
 ### Using Docker
 
 1. Build and run with the provided script:
+
 ```bash
 ./docker-run.sh
 ```
 
 2. Or manually:
+
 ```bash
 # Build the image
 docker build -f Containerfile -t wesleyk-website .
@@ -67,11 +71,13 @@ docker run -d --name wesleyk-website-container -p 3000:3000 wesleyk-website
 ### Using Podman
 
 1. Build and run with the provided script:
+
 ```bash
 ./podman-run.sh
 ```
 
 2. Or manually:
+
 ```bash
 # Build the image
 podman build -f Containerfile -t wesleyk-website .
@@ -89,6 +95,7 @@ The containerized website will be available at [http://localhost:3000](http://lo
 Your professional title and personal information are configured using environment variables. This makes it easy to update your title without touching the code!
 
 **Environment Variables:**
+
 ```bash
 # Professional Information
 NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer"
@@ -122,12 +129,14 @@ SMTP_TLS="true"
 
 **Local Development:**
 Edit `.env.local` and change the `NEXT_PUBLIC_PROFESSIONAL_TITLE` variable:
+
 ```bash
 NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer"
 ```
 
 **Production Deployment:**
 Set the environment variable in your deployment platform (Netlify, Vercel, etc.):
+
 - Netlify: Site settings → Environment variables
 - Vercel: Project settings → Environment Variables
 - Docker: Use `-e` flag or environment file
@@ -135,6 +144,7 @@ Set the environment variable in your deployment platform (Netlify, Vercel, etc.)
 ### Contact Form Setup
 
 The website includes a functional contact form with the following features:
+
 - SMTP email sending
 - HCaptcha spam protection
 - Form validation
@@ -143,6 +153,7 @@ The website includes a functional contact form with the following features:
 **Required Setup:**
 
 1. **HCaptcha Configuration:**
+
    - Sign up at [hCaptcha](https://www.hcaptcha.com/)
    - Get your site key and secret key
    - Add them to your `.env.local` file
@@ -154,6 +165,7 @@ The website includes a functional contact form with the following features:
 **Note:** You'll need to obtain an HCaptcha API key to enable the contact form. The form will display an error message if the captcha site key is not configured.
 
 **Important:** The contact form requires server-side functionality (API routes). This means:
+
 - The site is no longer a static export
 - Deployment requires a platform that supports Next.js API routes (like Netlify with Next.js runtime, Vercel, etc.)
 - For static hosting, you would need to implement the contact form using a third-party service
@@ -161,6 +173,7 @@ The website includes a functional contact form with the following features:
 ### Dark Mode
 
 The website includes a built-in dark mode toggle that:
+
 - **Automatically detects** your system's color scheme preference on first visit
 - **Remembers your choice** using localStorage across sessions
 - **Provides a toggle button** in the header for manual switching
