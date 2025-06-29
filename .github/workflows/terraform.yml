@@ -1,12 +1,6 @@
 name: Terraform
 
 on:
-  workflow_run:
-    workflows: ['Run pre-commit on push']
-    types:
-      - completed
-    branches:
-      - main
   pull_request:
     branches:
       - main
