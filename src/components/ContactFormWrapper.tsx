@@ -8,7 +8,9 @@ const ContactForm = dynamic(() => import('./ContactForm'), {
   ssr: false,
   loading: () => (
     <div className="animate-pulse">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        Send a Message
+      </h2>
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -32,7 +34,7 @@ const ContactForm = dynamic(() => import('./ContactForm'), {
         <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
       </div>
     </div>
-  ),
+  )
 });
 
 export default function ContactFormWrapper() {
@@ -45,7 +47,9 @@ export default function ContactFormWrapper() {
   if (!isMounted) {
     return (
       <div className="animate-pulse">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          Send a Message
+        </h2>
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>

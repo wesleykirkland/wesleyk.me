@@ -1,7 +1,10 @@
 name: Code Quality & Performance
 
 on:
-  push:
+  workflow_run:
+    workflows: ['Run pre-commit on push']
+    types:
+      - completed
     branches-ignore:
       - main
   pull_request:
@@ -12,7 +15,8 @@ jobs:
   code-quality:
     name: Code Quality Analysis
     runs-on: ubuntu-latest
-    
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'pull_request' }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -82,7 +86,7 @@ jobs:
   accessibility:
     name: Accessibility Testing
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -158,7 +162,7 @@ jobs:
   performance:
     name: Performance Testing
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -216,7 +220,7 @@ jobs:
     name: Container Security Scan
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'docker') || contains(github.event.head_commit.message, 'container')
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -243,7 +247,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [code-quality, accessibility, performance]
     if: always()
-    
+
     steps:
       - name: Quality Summary
         run: |
