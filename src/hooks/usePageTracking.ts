@@ -80,11 +80,17 @@ export function useEventTracking() {
         url: window.location.href,
         ...properties
       };
-      
+
       window.overtracking.track(event, eventProperties);
-      console.log('Overtracking: Event tracked', { event, properties: eventProperties });
+      console.log('Overtracking: Event tracked', {
+        event,
+        properties: eventProperties
+      });
     } else {
-      console.log('Overtracking: Event would be tracked', { event, properties });
+      console.log('Overtracking: Event would be tracked', {
+        event,
+        properties
+      });
     }
   };
 

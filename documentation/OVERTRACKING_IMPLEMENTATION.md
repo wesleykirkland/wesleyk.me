@@ -7,6 +7,7 @@ This document outlines the comprehensive Overtracking analytics implementation a
 ## 🎯 Implementation Features
 
 ### ✅ **Complete Page Coverage:**
+
 - **Homepage** - Landing page with recent posts tracking
 - **About Page** - Profile page with user engagement tracking
 - **Contact Page** - Form page with interaction tracking
@@ -16,6 +17,7 @@ This document outlines the comprehensive Overtracking analytics implementation a
 - **Contact Form** - Form submission success/failure tracking
 
 ### ✅ **Advanced Tracking Capabilities:**
+
 - **Automatic page view tracking** on all public pages
 - **Custom event tracking** for user interactions
 - **Form submission tracking** with success/error states
@@ -50,6 +52,7 @@ src/
 **Purpose:** Main analytics script loading using Overtracking's recommended approach
 
 **Features:**
+
 - Loads Overtracking script with site ID in URL path
 - Uses official Overtracking implementation pattern
 - Handles script loading errors gracefully
@@ -57,6 +60,7 @@ src/
 - Provides TypeScript definitions for Overtracking API
 
 **Implementation:**
+
 ```tsx
 <Script
   src={`https://cdn.overtracking.com/t/${siteId}/`}
@@ -66,6 +70,7 @@ src/
 ```
 
 **Usage:**
+
 ```tsx
 <Overtracking
   siteId={process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID}
@@ -78,14 +83,16 @@ src/
 **Purpose:** Page-specific tracking wrapper for enhanced analytics
 
 **Features:**
+
 - Automatic page view tracking
 - Custom properties for each page type
 - Page categorization (landing, profile, form, blog-post, etc.)
 - Content-specific metadata tracking
 
 **Usage:**
+
 ```tsx
-<PageTracker 
+<PageTracker
   pageName="About"
   pageType="profile"
   customProperties={{
@@ -100,6 +107,7 @@ src/
 **Purpose:** Custom React hook for advanced tracking functionality
 
 **Features:**
+
 - Automatic page view detection
 - URL parameter tracking (optional)
 - Custom event tracking
@@ -107,6 +115,7 @@ src/
 - TypeScript-safe tracking functions
 
 **Available Events:**
+
 - `linkClick()` - External link tracking
 - `blogPostView()` - Blog post engagement
 - `contactFormSubmit()` - Form submission tracking
@@ -119,8 +128,9 @@ src/
 ## 📊 Tracking Implementation by Page
 
 ### **Homepage** (`/`)
+
 ```tsx
-<PageTracker 
+<PageTracker
   pageName="Home"
   pageType="landing"
   customProperties={{
@@ -131,14 +141,16 @@ src/
 ```
 
 **Tracked Metrics:**
+
 - Page views and session starts
 - Recent posts display count
 - User engagement with hero section
 - Navigation to other sections
 
 ### **About Page** (`/about`)
+
 ```tsx
-<PageTracker 
+<PageTracker
   pageName="About"
   pageType="profile"
   customProperties={{
@@ -149,14 +161,16 @@ src/
 ```
 
 **Tracked Metrics:**
+
 - Profile page engagement
 - Time spent reading about content
 - Skills section interactions
 - Professional background views
 
 ### **Contact Page** (`/contact`)
+
 ```tsx
-<PageTracker 
+<PageTracker
   pageName="Contact"
   pageType="form"
   customProperties={{
@@ -167,14 +181,16 @@ src/
 ```
 
 **Tracked Metrics:**
+
 - Contact page visits
 - Form interaction rates
 - Form submission success/failure
 - Captcha completion rates
 
 ### **Blog Index** (`/blog`)
+
 ```tsx
-<PageTracker 
+<PageTracker
   pageName="Blog"
   pageType="blog-index"
   customProperties={{
@@ -185,14 +201,16 @@ src/
 ```
 
 **Tracked Metrics:**
+
 - Blog discovery and browsing
 - Post listing engagement
 - Tag interaction rates
 - Content discovery patterns
 
 ### **Individual Blog Posts** (`/[...permalink]`)
+
 ```tsx
-<PageTracker 
+<PageTracker
   pageName={post.title}
   pageType="blog-post"
   customProperties={{
@@ -207,6 +225,7 @@ src/
 ```
 
 **Tracked Metrics:**
+
 - Individual post engagement
 - Reading time estimation
 - Content depth analysis
@@ -214,8 +233,9 @@ src/
 - Social sharing potential
 
 ### **Tag Pages** (`/tag/[slug]`)
+
 ```tsx
-<PageTracker 
+<PageTracker
   pageName={`Tag: ${tag}`}
   pageType="tag-archive"
   customProperties={{
@@ -228,6 +248,7 @@ src/
 ```
 
 **Tracked Metrics:**
+
 - Tag-based content discovery
 - Content categorization effectiveness
 - User interest patterns
@@ -236,6 +257,7 @@ src/
 ## 🎯 Event Tracking Examples
 
 ### **Contact Form Tracking**
+
 ```tsx
 // Success tracking
 trackingEvents.contactFormSubmit(true);
@@ -248,6 +270,7 @@ trackingEvents.contactFormSubmit(false, 'Network error');
 ```
 
 ### **Blog Post Engagement**
+
 ```tsx
 trackingEvents.blogPostView(
   'My First Vulnerability Discovery',
@@ -257,11 +280,9 @@ trackingEvents.blogPostView(
 ```
 
 ### **Navigation Tracking**
+
 ```tsx
-trackingEvents.linkClick(
-  'https://github.com/wesleykirkland',
-  'GitHub Profile'
-);
+trackingEvents.linkClick('https://github.com/wesleykirkland', 'GitHub Profile');
 
 trackingEvents.tagClicked('security', 'blog-post');
 ```
@@ -269,12 +290,14 @@ trackingEvents.tagClicked('security', 'blog-post');
 ## 🔒 Privacy & Security
 
 ### **Data Collection:**
+
 - **No personal information** collected without consent
 - **Anonymous analytics** focused on content performance
 - **GDPR compliant** data handling
 - **Client-side only** - no server-side tracking
 
 ### **Environment Controls:**
+
 - **Production only** - Analytics disabled in development
 - **Environment variable controlled** - Easy to disable
 - **Graceful degradation** - Site works without analytics
@@ -283,6 +306,7 @@ trackingEvents.tagClicked('security', 'blog-post');
 ## ⚙️ Configuration
 
 ### **Environment Variables:**
+
 ```bash
 # Required - Your Overtracking site ID
 NEXT_PUBLIC_OVERTRACKING_SITE_ID="your-site-id-here"
@@ -292,12 +316,18 @@ NODE_ENV="production"
 ```
 
 ### **Script Implementation:**
+
 Overtracking provides a simple script tag with the site ID in the URL:
+
 ```html
-<script defer src="https://cdn.overtracking.com/t/NEXT_PUBLIC_OVERTRACKING_SITE_ID/"></script>
+<script
+  defer
+  src="https://cdn.overtracking.com/t/NEXT_PUBLIC_OVERTRACKING_SITE_ID/"
+></script>
 ```
 
 Our Next.js implementation uses this pattern:
+
 ```tsx
 <Script
   src={`https://cdn.overtracking.com/t/${siteId}/`}
@@ -307,6 +337,7 @@ Our Next.js implementation uses this pattern:
 ```
 
 ### **Terraform Integration:**
+
 ```hcl
 # In terraform/variables.tf
 variable "overtracking_site_id" {
@@ -325,6 +356,7 @@ environment = {
 ## 📈 Analytics Dashboard
 
 ### **Key Metrics to Monitor:**
+
 1. **Page Views** - Overall site traffic
 2. **User Sessions** - Engagement depth
 3. **Bounce Rate** - Content effectiveness
@@ -334,6 +366,7 @@ environment = {
 7. **Navigation Patterns** - User journey analysis
 
 ### **Custom Events to Track:**
+
 1. **Contact Form Submissions** - Lead generation
 2. **Blog Post Views** - Content performance
 3. **Tag Interactions** - Content discovery
@@ -343,6 +376,7 @@ environment = {
 ## 🚀 Performance Impact
 
 ### **Optimizations:**
+
 - **Lazy loading** - Script loads after page interaction
 - **Error boundaries** - Analytics failures don't break site
 - **Minimal payload** - Lightweight tracking implementation
@@ -350,6 +384,7 @@ environment = {
 - **Async initialization** - Non-blocking page load
 
 ### **Bundle Size Impact:**
+
 - **Overtracking script**: ~15KB (external CDN)
 - **Custom tracking code**: ~3KB (included in bundle)
 - **Total impact**: Minimal, loaded asynchronously
@@ -359,11 +394,13 @@ environment = {
 ### **Common Issues:**
 
 1. **Analytics not loading:**
+
    - Check `NEXT_PUBLIC_OVERTRACKING_SITE_ID` environment variable
    - Verify production environment
    - Check browser console for script loading errors
 
 2. **Events not tracking:**
+
    - Ensure Overtracking script has loaded
    - Check network tab for API calls
    - Verify site ID is correct
@@ -374,6 +411,7 @@ environment = {
    - Monitor network requests to Overtracking API
 
 ### **Debug Commands:**
+
 ```javascript
 // Check if Overtracking is loaded
 console.log(window.overtracking);

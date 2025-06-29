@@ -5,6 +5,7 @@ This repository uses [Gitleaks](https://github.com/gitleaks/gitleaks) for compre
 ## What Gitleaks Detects
 
 ### 🔍 **Secret Types Detected:**
+
 - API keys and tokens
 - Database connection strings
 - Email/SMTP credentials
@@ -15,6 +16,7 @@ This repository uses [Gitleaks](https://github.com/gitleaks/gitleaks) for compre
 - And 100+ other secret patterns
 
 ### 🎯 **Custom Rules for This Project:**
+
 - Next.js environment variables (`NEXT_PUBLIC_*`)
 - SMTP credentials (`SMTP_USER`, `SMTP_PASS`, etc.)
 - Email service credentials
@@ -24,19 +26,23 @@ This repository uses [Gitleaks](https://github.com/gitleaks/gitleaks) for compre
 ## Configuration
 
 ### File: `.gitleaks.toml`
+
 The configuration file includes:
+
 - **Custom rules** for project-specific secrets
 - **Allowlist** for false positives
 - **Entropy settings** to detect high-entropy strings
 - **Stopwords** to reduce noise
 
 ### Allowlisted Paths:
+
 - `.env.example` - Template files
 - `README.md` - Documentation
 - `.github/workflows/` - CI/CD files
 - `docs/` - Documentation directories
 
 ### Allowlisted Patterns:
+
 - Example domains (`example.com`)
 - Placeholder values (`your-secret-key-here`)
 - Test/mock values (`test-*`, `mock-*`)
@@ -46,12 +52,14 @@ The configuration file includes:
 ## GitHub Actions Integration
 
 Gitleaks runs automatically on:
+
 - ✅ Every push to non-main branches
 - ✅ Every pull request
 - ✅ Scans entire git history
 - ✅ Results uploaded to GitHub Security tab
 
 ### Workflow Configuration:
+
 ```yaml
 - name: Run Gitleaks
   uses: gitleaks/gitleaks-action@v2
@@ -65,6 +73,7 @@ Gitleaks runs automatically on:
 ## Local Usage
 
 ### Install Gitleaks:
+
 ```bash
 # macOS
 brew install gitleaks
@@ -77,6 +86,7 @@ choco install gitleaks
 ```
 
 ### Run Locally:
+
 ```bash
 # Scan current repository
 gitleaks detect --config .gitleaks.toml
@@ -94,7 +104,9 @@ gitleaks detect --config .gitleaks.toml --log-opts="--all"
 ## Handling False Positives
 
 ### 1. Update Configuration:
+
 Add patterns to `.gitleaks.toml` allowlist:
+
 ```toml
 [allowlist]
 regexes = [
@@ -103,17 +115,21 @@ regexes = [
 ```
 
 ### 2. Inline Comments:
+
 Suppress specific lines:
+
 ```javascript
-const apiKey = "not-a-real-key"; // gitleaks:allow
+const apiKey = 'not-a-real-key'; // gitleaks:allow
 ```
 
 ### 3. File-level Suppression:
+
 Add to file header:
+
 ```javascript
 // gitleaks:disable
 const config = {
-    secret: "example-value"
+  secret: 'example-value'
 };
 // gitleaks:enable
 ```
@@ -121,6 +137,7 @@ const config = {
 ## Best Practices
 
 ### ✅ **Do:**
+
 - Use `.env.example` for templates
 - Store real secrets in GitHub Secrets
 - Use environment variables for configuration
@@ -128,6 +145,7 @@ const config = {
 - Update allowlist for legitimate false positives
 
 ### ❌ **Don't:**
+
 - Commit real secrets to git
 - Ignore all Gitleaks findings
 - Use production secrets in development
@@ -137,6 +155,7 @@ const config = {
 ## Integration with Other Tools
 
 Gitleaks works alongside:
+
 - **TruffleHog** - Additional secret detection
 - **Snyk** - Vulnerability scanning
 - **CodeQL** - Static analysis
@@ -147,11 +166,13 @@ Gitleaks works alongside:
 ### Common Issues:
 
 1. **High False Positive Rate:**
+
    - Update `.gitleaks.toml` allowlist
    - Add project-specific stopwords
    - Adjust entropy thresholds
 
 2. **Missing Secrets:**
+
    - Check if pattern is in default rules
    - Add custom rules for project-specific secrets
    - Verify file paths aren't allowlisted

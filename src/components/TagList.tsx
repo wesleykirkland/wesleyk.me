@@ -10,9 +10,9 @@ interface TagListProps {
   currentTag?: string;
 }
 
-export default function TagList({ 
-  tags, 
-  className = '', 
+export default function TagList({
+  tags,
+  className = '',
   size = 'md',
   variant = 'default',
   showCount = false,
@@ -29,8 +29,10 @@ export default function TagList({
   };
 
   const variantClasses = {
-    default: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800',
-    outline: 'border border-blue-300 text-blue-700 dark:border-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20',
+    default:
+      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800',
+    outline:
+      'border border-blue-300 text-blue-700 dark:border-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20',
     solid: 'bg-blue-600 text-white hover:bg-blue-700'
   };
 
@@ -47,7 +49,9 @@ export default function TagList({
         <Link
           key={tag}
           href={`/tag/${getTagSlug(tag)}`}
-          className={`inline-flex items-center rounded-full font-medium transition-colors duration-200 ${sizeClasses[size]} ${getCurrentTagClasses(tag)}`}
+          className={`inline-flex items-center rounded-full font-medium transition-colors duration-200 ${
+            sizeClasses[size]
+          } ${getCurrentTagClasses(tag)}`}
           title={`View all posts tagged with "${tag}"`}
         >
           {tag}

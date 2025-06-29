@@ -5,6 +5,7 @@ This document explains the flexible permalink system implemented for maintaining
 ## 🎯 Overview
 
 The permalink system supports:
+
 - **WordPress-style URLs**: `YYYY/MM/DD/post-slug/`
 - **Custom permalinks**: Any custom URL structure defined in frontmatter
 - **Backward compatibility**: Maintains existing URLs from WordPress migration
@@ -16,9 +17,9 @@ The permalink system supports:
 
 ```yaml
 ---
-title: "My Blog Post"
-date: "2020-01-10"
-permalink: "2020/01/10/my-first-vulnerability-mimecast-sender-address-verification"
+title: 'My Blog Post'
+date: '2020-01-10'
+permalink: '2020/01/10/my-first-vulnerability-mimecast-sender-address-verification'
 ---
 ```
 
@@ -28,9 +29,9 @@ permalink: "2020/01/10/my-first-vulnerability-mimecast-sender-address-verificati
 
 ```yaml
 ---
-title: "My Blog Post"
-date: "2020-01-10"
-wordpressUrl: "custom/path/to/post"
+title: 'My Blog Post'
+date: '2020-01-10'
+wordpressUrl: 'custom/path/to/post'
 ---
 ```
 
@@ -40,8 +41,8 @@ wordpressUrl: "custom/path/to/post"
 
 ```yaml
 ---
-title: "My Blog Post"
-date: "2020-01-10"
+title: 'My Blog Post'
+date: '2020-01-10'
 # No permalink specified
 ---
 ```
@@ -71,6 +72,7 @@ getPostByPermalink(permalink: string): BlogPostMetadata | null
 The system uses a catch-all route: `/blog/[...permalink]/page.tsx`
 
 This handles:
+
 - `/blog/2020/01/10/my-post/` ✅
 - `/blog/custom/path/` ✅
 - `/blog/simple-slug/` ✅
@@ -84,7 +86,7 @@ All permalinks are pre-generated at build time for optimal performance:
 export async function generateStaticParams() {
   const posts = getSortedPostsData();
   return posts.map((post) => ({
-    permalink: getPostPermalink(post).split('/'),
+    permalink: getPostPermalink(post).split('/')
   }));
 }
 ```
@@ -94,6 +96,7 @@ export async function generateStaticParams() {
 ### Step 1: Identify Existing URLs
 
 For each WordPress post, note the existing URL structure:
+
 - `https://wesleyk.me/2020/01/10/my-first-vulnerability/`
 - `https://wesleyk.me/category/security/post-name/`
 - `https://wesleyk.me/custom-page/`
@@ -102,15 +105,16 @@ For each WordPress post, note the existing URL structure:
 
 ```yaml
 ---
-title: "My first vulnerability – Mimecast Sender Address verification"
-date: "2020-01-10"
-permalink: "2020/01/10/my-first-vulnerability-mimecast-sender-address-verification"
+title: 'My first vulnerability – Mimecast Sender Address verification'
+date: '2020-01-10'
+permalink: '2020/01/10/my-first-vulnerability-mimecast-sender-address-verification'
 ---
 ```
 
 ### Step 3: Test URLs
 
 The system will automatically:
+
 1. Generate static routes for all permalinks
 2. Handle requests to the old URLs
 3. Serve the correct content
@@ -120,22 +124,23 @@ The system will automatically:
 
 ### WordPress Migration Examples
 
-| WordPress URL | Frontmatter | Next.js URL |
-|---------------|-------------|-------------|
+| WordPress URL                | Frontmatter                             | Next.js URL                       |
+| ---------------------------- | --------------------------------------- | --------------------------------- |
 | `/2020/01/10/vulnerability/` | `permalink: "2020/01/10/vulnerability"` | `/blog/2020/01/10/vulnerability/` |
-| `/category/security/post/` | `permalink: "category/security/post"` | `/blog/category/security/post/` |
-| `/custom-page/` | `permalink: "custom-page"` | `/blog/custom-page/` |
+| `/category/security/post/`   | `permalink: "category/security/post"`   | `/blog/category/security/post/`   |
+| `/custom-page/`              | `permalink: "custom-page"`              | `/blog/custom-page/`              |
 
 ### Auto-generated Examples
 
-| Date | Slug | Generated Permalink |
-|------|------|-------------------|
-| `2024-01-15` | `my-new-post` | `2024/01/15/my-new-post` |
+| Date         | Slug                | Generated Permalink            |
+| ------------ | ------------------- | ------------------------------ |
+| `2024-01-15` | `my-new-post`       | `2024/01/15/my-new-post`       |
 | `2023-12-25` | `christmas-special` | `2023/12/25/christmas-special` |
 
 ## 🔍 SEO Considerations
 
 ### Canonical URLs
+
 Each post automatically gets proper canonical URLs:
 
 ```html
@@ -143,6 +148,7 @@ Each post automatically gets proper canonical URLs:
 ```
 
 ### Open Graph
+
 Proper Open Graph tags are generated:
 
 ```html
@@ -152,16 +158,19 @@ Proper Open Graph tags are generated:
 ```
 
 ### Structured Data
+
 Article structured data is included for better search engine understanding.
 
 ## 🚀 Performance
 
 ### Static Generation
+
 - All permalinks are pre-generated at build time
 - No runtime permalink resolution
 - Optimal Core Web Vitals scores
 
 ### Caching
+
 - Static files are cached indefinitely
 - CDN-friendly URLs
 - No database queries needed
@@ -192,17 +201,18 @@ For additional SEO protection, you could add redirects:
 
 ```yaml
 ---
-title: "My Post"
-permalink: "2020/01/10/my-post"
+title: 'My Post'
+permalink: '2020/01/10/my-post'
 redirects:
-  - "old-url-1"
-  - "old-url-2"
+  - 'old-url-1'
+  - 'old-url-2'
 ---
 ```
 
 ## 📊 Current Implementation Status
 
 ✅ **Implemented:**
+
 - Custom permalink support in frontmatter
 - WordPress-style auto-generation
 - Catch-all routing
@@ -211,6 +221,7 @@ redirects:
 - Backward compatibility
 
 🔄 **Future Enhancements:**
+
 - Redirect handling for changed URLs
 - Category-based permalinks
 - Automatic slug generation improvements
@@ -221,11 +232,13 @@ redirects:
 ### Test Your Permalinks
 
 1. **Add permalink to frontmatter**:
+
    ```yaml
-   permalink: "2020/01/10/test-post"
+   permalink: '2020/01/10/test-post'
    ```
 
 2. **Build and test**:
+
    ```bash
    npm run build
    npm run start
@@ -239,6 +252,7 @@ redirects:
 ### Verify SEO
 
 Check that:
+
 - ✅ URL matches expected permalink
 - ✅ Canonical URL is correct
 - ✅ Open Graph tags are present
