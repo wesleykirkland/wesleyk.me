@@ -1,4 +1,4 @@
-name: "CodeQL Configuration"
+name: 'CodeQL Configuration'
 
 # Disable default queries and use custom query suites
 disable-default-queries: false
@@ -24,17 +24,17 @@ paths-ignore:
   - build/
   - dist/
   - coverage/
-  - "**/*.test.ts"
-  - "**/*.test.tsx"
-  - "**/*.spec.ts"
-  - "**/*.spec.tsx"
-  - "**/*.d.ts"
-  - "**/test/**"
-  - "**/tests/**"
-  - "**/__tests__/**"
-  - "**/mocks/**"
-  - "**/*.config.js"
-  - "**/*.config.ts"
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
+  - '**/*.d.ts'
+  - '**/test/**'
+  - '**/tests/**'
+  - '**/__tests__/**'
+  - '**/mocks/**'
+  - '**/*.config.js'
+  - '**/*.config.ts'
 
 # Additional packs to include
 packs:

@@ -47,7 +47,9 @@ export function getEmailConfig(): EmailConfig {
   };
 }
 
-export async function sendContactEmail(formData: ContactFormData): Promise<void> {
+export async function sendContactEmail(
+  formData: ContactFormData
+): Promise<void> {
   const config = getEmailConfig();
 
   // Create transporter
@@ -57,11 +59,13 @@ export async function sendContactEmail(formData: ContactFormData): Promise<void>
     secure: config.port === 465, // true for 465, false for other ports
     auth: {
       user: config.username,
-      pass: config.password,
+      pass: config.password
     },
-    tls: config.tls ? {
-      rejectUnauthorized: false
-    } : undefined,
+    tls: config.tls
+      ? {
+          rejectUnauthorized: false
+        }
+      : undefined
   });
 
   // Verify connection configuration
@@ -88,7 +92,9 @@ export async function sendContactEmail(formData: ContactFormData): Promise<void>
       
       <div style="background-color: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
         <h3 style="color: #1e40af; margin-top: 0;">Message</h3>
-        <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(formData.message)}</div>
+        <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(
+          formData.message
+        )}</div>
       </div>
       
       <div style="margin-top: 20px; padding: 15px; background-color: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
@@ -120,7 +126,7 @@ This email was sent from the contact form on wesleyk.me
     replyTo: formData.email,
     subject: `Contact Form: ${formData.subject}`,
     text: textContent,
-    html: htmlContent,
+    html: htmlContent
   };
 
   try {
@@ -143,8 +149,6 @@ function escapeHtml(text: string): string {
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
-
-
 
 // Validate form data
 export function validateContactForm(data: ContactFormData): string[] {

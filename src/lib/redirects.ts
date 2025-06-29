@@ -6,7 +6,10 @@ export function redirect301(url: string): NextResponse {
 }
 
 // For use in middleware
-export function createRedirect301(request: Request, newPath: string): NextResponse {
+export function createRedirect301(
+  request: Request,
+  newPath: string
+): NextResponse {
   const url = new URL(newPath, request.url);
   return NextResponse.redirect(url, 301);
 }

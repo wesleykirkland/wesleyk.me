@@ -40,20 +40,21 @@ describe('Overtracking Component', () => {
 
   it('renders script when site ID is provided and enabled', () => {
     process.env.NODE_ENV = 'production';
-    
+
     const { getByTestId } = render(
       <Overtracking siteId="test-site-id" enabled={true} />
     );
 
     const script = getByTestId('overtracking-script');
     expect(script).toBeInTheDocument();
-    expect(script).toHaveAttribute('data-src', 'https://cdn.overtracking.com/t/test-site-id/');
+    expect(script).toHaveAttribute(
+      'data-src',
+      'https://cdn.overtracking.com/t/test-site-id/'
+    );
   });
 
   it('does not render when site ID is missing', () => {
-    const { queryByTestId } = render(
-      <Overtracking siteId="" enabled={true} />
-    );
+    const { queryByTestId } = render(<Overtracking siteId="" enabled={true} />);
 
     expect(queryByTestId('overtracking-script')).not.toBeInTheDocument();
   });
@@ -73,15 +74,16 @@ describe('Overtracking Component', () => {
     const { getByTestId } = render(<Overtracking />);
 
     const script = getByTestId('overtracking-script');
-    expect(script).toHaveAttribute('data-src', 'https://cdn.overtracking.com/t/env-site-id/');
+    expect(script).toHaveAttribute(
+      'data-src',
+      'https://cdn.overtracking.com/t/env-site-id/'
+    );
   });
 
   it('defaults to production-only when no enabled prop provided', () => {
     process.env.NODE_ENV = 'development';
-    
-    const { queryByTestId } = render(
-      <Overtracking siteId="test-site-id" />
-    );
+
+    const { queryByTestId } = render(<Overtracking siteId="test-site-id" />);
 
     expect(queryByTestId('overtracking-script')).not.toBeInTheDocument();
   });
