@@ -12,6 +12,7 @@ on:
       - main
     paths:
       - 'terraform/**'
+    types: [labeled] # https://docs.github.com/actions/learn-github-actions/events-that-trigger-workflows
   workflow_dispatch:
 
 permissions:
@@ -44,16 +45,16 @@ jobs:
           role-to-assume: 'arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-oidc'
           aws-region: '${{ env.AWS_REGION }}'
 
-      # - name: Create Terraform plugin cache
-      #   run: |
-      #     mkdir --parents $HOME/.terraform.d/plugin-cache
-      #     echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> $GITHUB_ENV
+      - name: Create Terraform plugin cache
+        run: |
+          mkdir --parents $HOME/.terraform.d/plugin-cache
+          echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >> $GITHUB_ENV
 
-      # - name: Cache Terraform plugins
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.terraform.d/plugin-cache
-      #     key: cache-tf-${{ runner.os }}-${{ hashFiles('terraform/.terraform.lock.hcl') }}
+      - name: Cache Terraform plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: cache-tf-${{ runner.os }}-${{ hashFiles('terraform/.terraform.lock.hcl') }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -62,52 +63,37 @@ jobs:
           terraform_wrapper: false # Required for TF-via-PR to get detailed exit codes
 
       # Security scanning for Terraform
-      # - name: Run Checkov
-      #   uses: bridgecrewio/checkov-action@master
-      #   with:
-      #     directory: ${{ env.TF_WORKING_DIR }}
-      #     framework: terraform
-      #     output_format: sarif
-      #     output_file_path: terraform-checkov.sarif
-      #   continue-on-error: true
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ${{ env.TF_WORKING_DIR }}
+          framework: terraform
+          output_format: sarif
+          output_file_path: terraform-checkov.sarif
+        continue-on-error: true
 
-      # - name: Upload Checkov results
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   if: always() && hashFiles('terraform-checkov.sarif') != ''
-      #   with:
-      #     sarif_file: terraform-checkov.sarif
-      #   continue-on-error: true
+      - name: Upload Checkov results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('terraform-checkov.sarif') != ''
+        with:
+          sarif_file: terraform-checkov.sarif
+        continue-on-error: true
 
       # TFSec security scanning
-      # - name: Run tfsec
-      #   uses: aquasecurity/tfsec-action@v1.0.3
-      #   with:
-      #     working_directory: ${{ env.TF_WORKING_DIR }}
-      #     soft_fail: true
-      #   continue-on-error: true
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: ${{ env.TF_WORKING_DIR }}
+          soft_fail: true
+        continue-on-error: true
 
       # TF-via-PR: Plan on PR, Apply on push to main
-      # - name: Terraform Plan & Apply via PR
-      #   uses: op5dev/tf-via-pr@v13
-      #   env:
-      #     NETLIFY_API_TOKEN: ${{ secrets.NETLIFY_API_TOKEN }}
-      #     TF_LOG: ERROR
-      #     TF_IN_AUTOMATION: true
-      #   with:
-      #     working-directory: ${{ env.TF_WORKING_DIR }}
-      #     command: ${{ github.event_name == 'push' && 'apply' || 'plan' }}
-      #     arg-lock: ${{ github.event_name == 'push' }}
-      #     plan-encrypt: ${{ secrets.TF_PLAN_PASSPHRASE }}
-      #     validate: true
-      #     format: true
-      #     expand-diff: true
-      #     comment-pr: always
-      #     retention-days: 7
-
-      - name: Provision TF
+      - name: Terraform Plan & Apply via PR
         uses: op5dev/tf-via-pr@v13
         env:
           NETLIFY_API_TOKEN: ${{ secrets.NETLIFY_API_TOKEN }}
+          TF_LOG: ERROR
+          TF_IN_AUTOMATION: true
         with:
           working-directory: ${{ env.TF_WORKING_DIR }}
           command: ${{ github.event_name == 'push' && 'apply' || 'plan' }}
@@ -115,3 +101,28 @@ jobs:
           plan-encrypt: ${{ secrets.TF_PLAN_PASSPHRASE }}
           validate: true
           format: true
+          expand-diff: true
+          comment-pr: always
+          retention-days: 7
+
+      - name: Provision TF
+        uses: op5dev/tf-via-pr@v13
+        env:
+          NETLIFY_API_TOKEN: ${{ secrets.NETLIFY_API_TOKEN }}
+        with:
+          working-directory: ${{ env.TF_WORKING_DIR }}
+          command: ${{ inputs.command != '' && inputs.command || contains(github.event.pull_request.labels.*.name, 'run-apply') && 'apply' || 'plan' }}
+          arg-lock: ${{ inputs.lock != '' && inputs.lock || contains(github.event.pull_request.labels.*.name, 'run-apply') }}
+          plan-encrypt: ${{ secrets.TF_PLAN_PASSPHRASE }}
+          validate: true
+          format: true
+
+      - name: Remove label
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'run-plan') ||
+          contains(github.event.pull_request.labels.*.name, 'run-apply')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+          PR_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-plan') && 'run-plan' || 'run-apply' }}
+        run: gh api /repos/{owner}/{repo}/issues/${PR_NUMBER}/labels/${PR_LABEL} --method DELETE
