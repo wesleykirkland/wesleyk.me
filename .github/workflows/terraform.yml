@@ -1,12 +1,18 @@
 name: Terraform
 
 on:
+  workflow_run:
+    workflows: ['Run pre-commit on push']
+    types:
+      - completed
+    branches:
+      - main
   pull_request:
     branches:
       - main
     paths:
       - 'terraform/**'
-    types: [labeled] # https://docs.github.com/actions/learn-github-actions/events-that-trigger-workflows
+    # types: [labeled] # https://docs.github.com/actions/learn-github-actions/events-that-trigger-workflows
   workflow_dispatch:
     inputs:
       command:
