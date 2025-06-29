@@ -62,8 +62,9 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false # Required for TF-via-PR to get detailed exit codes
 
-      # Security scanning for Terraform
+      # Security scanning for Terraform (skip for label events)
       - name: Run Checkov
+        if: github.event_name != 'pull_request' || github.event.action != 'labeled'
         uses: bridgecrewio/checkov-action@master
         with:
           directory: ${{ env.TF_WORKING_DIR }}
@@ -73,22 +74,23 @@ jobs:
         continue-on-error: true
 
       - name: Upload Checkov results
+        if: (github.event_name != 'pull_request' || github.event.action != 'labeled') && always() && hashFiles('terraform-checkov.sarif') != ''
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('terraform-checkov.sarif') != ''
         with:
           sarif_file: terraform-checkov.sarif
         continue-on-error: true
 
-      # TFSec security scanning
+      # TFSec security scanning (skip for label events)
       - name: Run tfsec
+        if: github.event_name != 'pull_request' || github.event.action != 'labeled'
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: ${{ env.TF_WORKING_DIR }}
           soft_fail: true
         continue-on-error: true
 
-      # TF-via-PR: Plan on PR, Apply on push to main
-      - name: Terraform Plan & Apply via PR
+      # TF-via-PR: Plan on PR, Apply on push to main, or based on labels
+      - name: Provision TF
         uses: op5dev/tf-via-pr@v13
         env:
           NETLIFY_API_TOKEN: ${{ secrets.NETLIFY_API_TOKEN }}
@@ -96,26 +98,14 @@ jobs:
           TF_IN_AUTOMATION: true
         with:
           working-directory: ${{ env.TF_WORKING_DIR }}
-          command: ${{ github.event_name == 'push' && 'apply' || 'plan' }}
-          arg-lock: ${{ github.event_name == 'push' }}
+          command: ${{ github.event_name == 'push' && 'apply' || contains(github.event.pull_request.labels.*.name, 'run-apply') && 'apply' || 'plan' }}
+          arg-lock: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'run-apply') }}
           plan-encrypt: ${{ secrets.TF_PLAN_PASSPHRASE }}
           validate: true
           format: true
           expand-diff: true
           comment-pr: always
-          retention-days: 7
-
-      - name: Provision TF
-        uses: op5dev/tf-via-pr@v13
-        env:
-          NETLIFY_API_TOKEN: ${{ secrets.NETLIFY_API_TOKEN }}
-        with:
-          working-directory: ${{ env.TF_WORKING_DIR }}
-          command: ${{ inputs.command != '' && inputs.command || contains(github.event.pull_request.labels.*.name, 'run-apply') && 'apply' || 'plan' }}
-          arg-lock: ${{ inputs.lock != '' && inputs.lock || contains(github.event.pull_request.labels.*.name, 'run-apply') }}
-          plan-encrypt: ${{ secrets.TF_PLAN_PASSPHRASE }}
-          validate: true
-          format: true
+          retention-days: 30
 
       - name: Remove label
         if: |
