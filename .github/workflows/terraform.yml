@@ -20,6 +20,7 @@ permissions:
   contents: read # Required to checkout repository
   id-token: write # Required to authenticate via OIDC
   pull-requests: write # Required to add PR comment
+  issues: write # Required to add label.
 
 env:
   AWS_ACCOUNT_ID: '838419074361'
