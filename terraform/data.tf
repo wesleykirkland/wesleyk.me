@@ -6,10 +6,3 @@ data "netlify_site" "wesleyk_me" {
 data "netlify_team" "team" {
   slug = "wesley-q8pstfm"
 }
-
-data "aws_region" "this" {}
-
-output "region" {
-  description = "test"
-  value       = data.aws_region.this.region
-}
