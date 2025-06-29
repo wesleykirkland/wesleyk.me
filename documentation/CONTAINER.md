@@ -5,6 +5,7 @@ This guide explains how to containerize and run Wesley Kirkland's personal websi
 ## 🐳 Container Overview
 
 The website is containerized using a multi-stage build process that:
+
 1. Installs dependencies
 2. Builds the Next.js static export
 3. Serves the static files using a lightweight HTTP server
@@ -13,6 +14,7 @@ The website is containerized using a multi-stage build process that:
 ## 📋 Prerequisites
 
 Choose one of the following container runtimes:
+
 - **Docker**: [Install Docker](https://docs.docker.com/get-docker/)
 - **Podman**: [Install Podman](https://podman.io/getting-started/installation)
 
@@ -93,6 +95,7 @@ podman rmi wesleyk-website
 ## 🌐 Accessing the Website
 
 Once the container is running, visit:
+
 - **Local**: [http://localhost:3000](http://localhost:3000)
 - **Network**: `http://<your-ip>:3000` (accessible from other devices on your network)
 
@@ -107,6 +110,7 @@ Once the container is running, visit:
 ## 🔍 Troubleshooting
 
 ### Container won't start
+
 ```bash
 # Check if the container is running
 docker ps -a
@@ -120,6 +124,7 @@ podman logs wesleyk-website-container
 ```
 
 ### Port already in use
+
 ```bash
 # Find what's using port 3000
 lsof -i :3000
@@ -131,6 +136,7 @@ podman run -d --name wesleyk-website-container -p 8080:3000 wesleyk-website
 ```
 
 ### Build fails
+
 ```bash
 # Clean up and rebuild
 docker system prune -f
@@ -165,6 +171,7 @@ For production deployment, consider:
 5. **Logging**: Configure proper log aggregation
 
 Example with resource limits:
+
 ```bash
 docker run -d \
   --name wesleyk-website-container \
@@ -177,10 +184,12 @@ docker run -d \
 ## 📝 Environment Variables
 
 ### Server Configuration
+
 - `PORT`: Server port (default: 3000)
 - `HOSTNAME`: Bind hostname (default: 0.0.0.0)
 
 ### Personal Information (Build-time)
+
 These environment variables are used during the build process and must be set when building the container:
 
 - `NEXT_PUBLIC_PROFESSIONAL_TITLE`: Your job title (default: "Sr. Cloud Engineer")
@@ -210,6 +219,7 @@ docker run -d --name my-website-container -p 3000:3000 my-website
 ### Using Environment File
 
 Create a `.env.docker` file:
+
 ```bash
 # Personal Information (Build-time)
 NEXT_PUBLIC_PROFESSIONAL_TITLE=Sr. Cloud Engineer
@@ -225,6 +235,7 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY=your-hcaptcha-site-key
 ```
 
 For runtime environment variables (SMTP and captcha secret), create a `.env.runtime` file:
+
 ```bash
 # SMTP Configuration (Runtime)
 SMTP_HOST=
@@ -240,6 +251,7 @@ HCAPTCHA_SECRET_KEY=your-hcaptcha-secret-key
 ```
 
 Then build with build-time variables and run with runtime variables:
+
 ```bash
 # Build with build-time environment variables
 docker build -f Containerfile --env-file .env.docker -t my-website .
@@ -257,11 +269,13 @@ docker run -d \
 The contact form requires additional configuration:
 
 1. **HCaptcha Setup**:
+
    - Sign up at [hCaptcha](https://www.hcaptcha.com/)
    - Get your site key and secret key
    - Add them to your environment files
 
 2. **SMTP Configuration**:
+
    - Use your email provider's SMTP settings
 
 3. **Environment Variables**:

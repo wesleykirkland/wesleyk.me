@@ -36,7 +36,10 @@ export default function Overtracking({
         strategy="afterInteractive"
         defer
         onLoad={() => {
-          console.log('Overtracking: Script loaded successfully for site:', siteId);
+          console.log(
+            'Overtracking: Script loaded successfully for site:',
+            siteId
+          );
         }}
         onError={(e) => {
           console.error('Overtracking: Failed to load script', e);

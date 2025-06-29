@@ -5,7 +5,11 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Handle /blog/permalink redirects to root-level permalinks
-  if (pathname.startsWith('/blog/') && pathname !== '/blog' && pathname !== '/blog/') {
+  if (
+    pathname.startsWith('/blog/') &&
+    pathname !== '/blog' &&
+    pathname !== '/blog/'
+  ) {
     // Extract the permalink part after /blog/
     const permalink = pathname.replace('/blog/', '');
 
@@ -30,6 +34,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - images (public images)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|images).*)',
-  ],
+    '/((?!api|_next/static|_next/image|favicon.ico|images).*)'
+  ]
 };

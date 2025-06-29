@@ -12,15 +12,15 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 function getCatImages(): string[] {
   const now = Date.now();
-  
+
   // Return cached results if still valid
-  if (catImagesCache && (now - cacheTimestamp) < CACHE_DURATION) {
+  if (catImagesCache && now - cacheTimestamp < CACHE_DURATION) {
     return catImagesCache;
   }
 
   try {
     const catsDirectory = path.join(process.cwd(), 'public', 'cats');
-    
+
     // Check if cats directory exists
     if (!fs.existsSync(catsDirectory)) {
       console.warn('Cats directory not found at:', catsDirectory);
@@ -29,9 +29,9 @@ function getCatImages(): string[] {
 
     // Read all files in the cats directory
     const files = fs.readdirSync(catsDirectory);
-    
+
     // Filter for supported image formats
-    const imageFiles = files.filter(file => {
+    const imageFiles = files.filter((file) => {
       const ext = path.extname(file).toLowerCase();
       return SUPPORTED_FORMATS.includes(ext);
     });
@@ -39,7 +39,7 @@ function getCatImages(): string[] {
     // Update cache
     catImagesCache = imageFiles;
     cacheTimestamp = now;
-    
+
     console.log(`Found ${imageFiles.length} cat images in ${catsDirectory}`);
     return imageFiles;
   } catch (error) {
@@ -50,11 +50,11 @@ function getCatImages(): string[] {
 
 function getRandomCatImage(): string | null {
   const catImages = getCatImages();
-  
+
   if (catImages.length === 0) {
     return null;
   }
-  
+
   const randomIndex = Math.floor(Math.random() * catImages.length);
   return catImages[randomIndex];
 }
@@ -62,11 +62,11 @@ function getRandomCatImage(): string | null {
 export async function GET(request: NextRequest) {
   try {
     const randomCat = getRandomCatImage();
-    
+
     if (!randomCat) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'No cat images found',
           message: 'Please add cat images to the /public/cats directory'
         },
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
     if (info === 'true') {
       const catImages = getCatImages();
       const catPath = path.join(process.cwd(), 'public', 'cats', randomCat);
-      
+
       try {
         const stats = fs.statSync(catPath);
         Object.assign(catData, {
@@ -110,15 +110,22 @@ export async function GET(request: NextRequest) {
     switch (format) {
       case 'redirect':
         // Redirect directly to the image
-        return NextResponse.redirect(new URL(`/cats/${randomCat}`, request.url));
-      
+        return NextResponse.redirect(
+          new URL(`/cats/${randomCat}`, request.url)
+        );
+
       case 'image':
         // Return the image file directly
         try {
-          const imagePath = path.join(process.cwd(), 'public', 'cats', randomCat);
+          const imagePath = path.join(
+            process.cwd(),
+            'public',
+            'cats',
+            randomCat
+          );
           const imageBuffer = fs.readFileSync(imagePath);
           const ext = path.extname(randomCat).toLowerCase();
-          
+
           // Determine content type
           let contentType = 'image/jpeg'; // default
           switch (ext) {
@@ -132,7 +139,7 @@ export async function GET(request: NextRequest) {
               contentType = 'image/webp';
               break;
           }
-          
+
           return new NextResponse(imageBuffer, {
             headers: {
               'Content-Type': contentType,
@@ -147,7 +154,7 @@ export async function GET(request: NextRequest) {
             { status: 500 }
           );
         }
-      
+
       case 'json':
       default:
         // Return JSON response (default)
@@ -160,10 +167,10 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error('Cat API error:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Internal server error',
         message: 'Failed to fetch random cat image'
       },
