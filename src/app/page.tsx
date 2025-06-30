@@ -26,9 +26,13 @@ export default function Home() {
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-6 max-w-3xl mx-auto">
                 I&apos;m {process.env.NEXT_PUBLIC_NAME}, a{' '}
                 {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} specializing in
-                PowerShell, O365, Azure, and Security Research. Here you&apos;ll
-                find my thoughts on technology, security vulnerabilities
-                I&apos;ve discovered, and various technical adventures.
+                Cloud Technologies. With a focus on AWS, CI/CD,
+                Containerization, Networking, Observability, and PowerShell.
+                Additionally I love doing Security Research through misuse of
+                systems. Here you&apos;ll find my thoughts on technology,
+                security vulnerabilities I&apos;ve discovered, and various
+                technical adventures and some of my thoughts on Home Automation
+                and standards.
               </p>
               <div className="flex justify-center space-x-4">
                 <Link
@@ -110,24 +114,20 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Skills & Expertise
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
-              Wesley Kirkland started his career back in 2013 working as a
-              lonely intern racking and stacking servers. Throughout the years
-              he quickly advanced through his company and eventually found an
-              all-star team to work with. Currently he is a{' '}
-              {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} working with
-              PowerShell, O365, Exchange, Azure, and various SaaS applications.
-            </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 'PowerShell',
-                'Azure',
+                'AWS',
                 'O365',
                 'Security Research',
-                'SCCM',
-                'Active Directory',
                 'Networking',
-                'Documentation'
+                'Active Directory',
+                'Documentation',
+                'Email',
+                'SQL',
+                'DNS/Domains',
+                'CI/CD',
+                'SSO'
               ].map((skill) => (
                 <div
                   key={skill}
