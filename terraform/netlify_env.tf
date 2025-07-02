@@ -284,3 +284,17 @@ resource "netlify_environment_variable" "next_public_overtracking_site_id" {
   ]
   scopes = local.scopes
 }
+
+
+resource "netlify_environment_variable" "secrets_scan_omit_keys" {
+  site_id = data.netlify_site.wesleyk_me.id
+  team_id = data.netlify_team.team.id
+
+  key = "SECRETS_SCAN_OMIT_KEYS"
+  values = [
+    {
+      value   = "NEXT_PUBLIC_OVERTRACKING_SITE_ID,NEXT_PUBLIC_HCAPTCHA_SITE_KEY,SMTP_USERNAME"
+      context = "all"
+    }
+  ]
+}
