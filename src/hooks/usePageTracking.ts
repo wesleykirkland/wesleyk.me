@@ -82,15 +82,10 @@ export function useEventTracking() {
       };
 
       window.overtracking.track(event, eventProperties);
-      console.log('Overtracking: Event tracked', {
-        event,
-        properties: eventProperties
-      });
+      // Avoid logging event details to prevent potential information exposure
+      console.log('Overtracking: Event tracked');
     } else {
-      console.log('Overtracking: Event would be tracked', {
-        event,
-        properties
-      });
+      console.log('Overtracking: Event would be tracked in production');
     }
   };
 
