@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendContactEmail, type ContactFormData } from '@/lib/email';
+import {
+  sendContactEmail,
+  type ContactFormData
+} from '@/lib/server-only-email';
 import { sanitizeInput, validateContactForm } from '@/lib/validation';
 
 interface HCaptchaResponse {
@@ -47,8 +50,9 @@ async function verifyCaptcha(token: string): Promise<boolean> {
     }
 
     return true;
-  } catch (error) {
-    console.error('Error verifying captcha:', error);
+  } catch {
+    // Avoid logging detailed error to prevent potential information exposure
+    console.error('Error verifying captcha');
     return false;
   }
 }
@@ -159,7 +163,8 @@ export async function POST(request: NextRequest) {
     try {
       await sendContactEmail(formData);
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      // Avoid logging detailed error to prevent credential exposure
+      console.error('Email sending failed');
 
       // Check if it's a configuration error
       if (
@@ -196,8 +201,9 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
-    console.error('Contact form submission error:', error);
+  } catch {
+    // Avoid logging detailed error to prevent potential information exposure
+    console.error('Contact form submission error');
 
     // Return generic error message to avoid exposing internal details
     return NextResponse.json(
