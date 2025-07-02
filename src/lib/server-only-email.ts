@@ -75,9 +75,9 @@ export async function sendContactEmail(
     throw new Error('Valid email address is required');
   }
 
-  // if (!isValidSubject(formData.subject)) {
-  //   throw new Error('Subject must be between 3 and 200 characters long');
-  // }
+  if (!isValidSubject(formData.subject)) {
+    throw new Error('Subject must be between 3 and 200 characters long');
+  }
 
   if (!isValidMessage(formData.message)) {
     throw new Error('Message must be between 10 and 5000 characters long');
