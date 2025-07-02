@@ -23,6 +23,7 @@ export default function Overtracking({
 }: Readonly<OvertrackingProps>) {
   // Don't render anything if disabled or no site ID
   if (!siteId || !enabled) {
+    // Avoid logging site ID to prevent exposure in build logs
     console.log('Overtracking: Disabled or missing site ID');
     return null;
   }
@@ -36,10 +37,8 @@ export default function Overtracking({
         strategy="afterInteractive"
         defer
         onLoad={() => {
-          console.log(
-            'Overtracking: Script loaded successfully for site:',
-            siteId
-          );
+          // Avoid logging site ID to prevent exposure in build logs
+          console.log('Overtracking: Script loaded successfully');
         }}
         onError={(e) => {
           console.error('Overtracking: Failed to load script', e);
@@ -54,27 +53,30 @@ export function useOvertracking() {
   const track = (event: string, properties?: Record<string, unknown>) => {
     if (window.overtracking && process.env.NODE_ENV === 'production') {
       window.overtracking.track(event, properties);
-      console.log('Overtracking: Event tracked:', event, properties);
+      // Avoid logging event details to prevent potential information exposure
+      console.log('Overtracking: Event tracked');
     } else {
-      console.log('Overtracking: Event would be tracked:', event, properties);
+      console.log('Overtracking: Event would be tracked in production');
     }
   };
 
   const identify = (userId: string, traits?: Record<string, unknown>) => {
     if (window.overtracking && process.env.NODE_ENV === 'production') {
       window.overtracking.identify(userId, traits);
-      console.log('Overtracking: User identified:', userId, traits);
+      // Avoid logging user details to prevent potential information exposure
+      console.log('Overtracking: User identified');
     } else {
-      console.log('Overtracking: User would be identified:', userId, traits);
+      console.log('Overtracking: User would be identified in production');
     }
   };
 
   const page = (name?: string, properties?: Record<string, unknown>) => {
     if (window.overtracking && process.env.NODE_ENV === 'production') {
       window.overtracking.page(name, properties);
-      console.log('Overtracking: Page tracked:', name, properties);
+      // Avoid logging page details to prevent potential information exposure
+      console.log('Overtracking: Page tracked');
     } else {
-      console.log('Overtracking: Page would be tracked:', name, properties);
+      console.log('Overtracking: Page would be tracked in production');
     }
   };
 
