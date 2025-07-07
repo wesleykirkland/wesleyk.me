@@ -8,75 +8,69 @@ import sanitizeHtml from 'sanitize-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
-export interface BlogPost {
+// Shared type definitions to eliminate duplication
+export type SecurityResearchMetadata = {
+  severity?: 'Low' | 'Medium' | 'High' | 'Critical';
+  status?: 'Disclosed' | 'In Progress' | 'Under Review' | 'Fixed';
+  cve?: string;
+  vendor?: string;
+  disclosureDate?: string;
+};
+
+export type CaseStudyMetadata = {
+  type?:
+    | 'Security Assessment'
+    | 'Penetration Test'
+    | 'Code Review'
+    | 'Compliance Audit'
+    | 'Incident Response'
+    | 'Other';
+  client?: string;
+  industry?: string;
+  duration?: string;
+  outcome?: string;
+  technologies?: string[];
+};
+
+// Base interface for common blog post fields
+interface BaseBlogPost {
   slug: string;
   title: string;
   date: string;
   excerpt: string;
-  content: string;
   tags: string[];
   author: string;
   featuredImage?: string;
-  images?: string[];
   permalink?: string;
   wordpressUrl?: string;
-  // Security research specific fields
-  securityResearch?: {
-    severity?: 'Low' | 'Medium' | 'High' | 'Critical';
-    status?: 'Disclosed' | 'In Progress' | 'Under Review' | 'Fixed';
-    cve?: string;
-    vendor?: string;
-    disclosureDate?: string;
-  };
-  // Case study specific fields
-  caseStudy?: {
-    type?:
-      | 'Security Assessment'
-      | 'Penetration Test'
-      | 'Code Review'
-      | 'Compliance Audit'
-      | 'Incident Response'
-      | 'Other';
-    client?: string;
-    industry?: string;
-    duration?: string;
-    outcome?: string;
-    technologies?: string[];
-  };
+  securityResearch?: SecurityResearchMetadata;
+  caseStudy?: CaseStudyMetadata;
 }
 
-export interface BlogPostMetadata {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  tags: string[];
-  author: string;
-  featuredImage?: string;
-  permalink?: string;
-  wordpressUrl?: string;
-  // Security research specific fields
-  securityResearch?: {
-    severity?: 'Low' | 'Medium' | 'High' | 'Critical';
-    status?: 'Disclosed' | 'In Progress' | 'Under Review' | 'Fixed';
-    cve?: string;
-    vendor?: string;
-    disclosureDate?: string;
-  };
-  // Case study specific fields
-  caseStudy?: {
-    type?:
-      | 'Security Assessment'
-      | 'Penetration Test'
-      | 'Code Review'
-      | 'Compliance Audit'
-      | 'Incident Response'
-      | 'Other';
-    client?: string;
-    industry?: string;
-    duration?: string;
-    outcome?: string;
-    technologies?: string[];
+export interface BlogPost extends BaseBlogPost {
+  content: string;
+  images?: string[];
+}
+
+export type BlogPostMetadata = BaseBlogPost;
+
+// Helper function to extract metadata from matter result (eliminates duplication)
+function extractPostMetadata(
+  slug: string,
+  matterResult: matter.GrayMatterFile<string>
+): BlogPostMetadata {
+  return {
+    slug,
+    title: matterResult.data.title,
+    date: matterResult.data.date,
+    excerpt: matterResult.data.excerpt,
+    tags: matterResult.data.tags || [],
+    author: matterResult.data.author || 'Wesley Kirkland',
+    featuredImage: matterResult.data.featuredImage,
+    permalink: matterResult.data.permalink,
+    wordpressUrl: matterResult.data.wordpressUrl,
+    securityResearch: matterResult.data.securityResearch,
+    caseStudy: matterResult.data.caseStudy
   };
 }
 
@@ -96,20 +90,8 @@ export function getSortedPostsData(): BlogPostMetadata[] {
       // Use gray-matter to parse the post metadata section
       const matterResult = matter(fileContents);
 
-      // Combine the data with the slug
-      return {
-        slug,
-        title: matterResult.data.title,
-        date: matterResult.data.date,
-        excerpt: matterResult.data.excerpt,
-        tags: matterResult.data.tags || [],
-        author: matterResult.data.author || 'Wesley Kirkland',
-        featuredImage: matterResult.data.featuredImage,
-        permalink: matterResult.data.permalink,
-        wordpressUrl: matterResult.data.wordpressUrl,
-        securityResearch: matterResult.data.securityResearch,
-        caseStudy: matterResult.data.caseStudy
-      };
+      // Extract metadata using helper function
+      return extractPostMetadata(slug, matterResult);
     });
 
   // Sort posts by date
@@ -152,21 +134,12 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     .process(processedMarkdown);
   const contentHtml = processedContent.toString();
 
-  // Combine the data with the slug and the contentHtml
+  // Combine metadata with content and images
+  const metadata = extractPostMetadata(slug, matterResult);
   return {
-    slug,
-    title: matterResult.data.title,
-    date: matterResult.data.date,
-    excerpt: matterResult.data.excerpt,
+    ...metadata,
     content: contentHtml,
-    tags: matterResult.data.tags || [],
-    author: matterResult.data.author || 'Wesley Kirkland',
-    featuredImage: matterResult.data.featuredImage,
-    images: matterResult.data.images || [],
-    permalink: matterResult.data.permalink,
-    wordpressUrl: matterResult.data.wordpressUrl,
-    securityResearch: matterResult.data.securityResearch,
-    caseStudy: matterResult.data.caseStudy
+    images: matterResult.data.images || []
   };
 }
 
@@ -175,32 +148,37 @@ export function getRecentPosts(count: number = 5): BlogPostMetadata[] {
   return allPosts.slice(0, count);
 }
 
+// Helper function for filtering posts by metadata type and tags
+function filterPostsByType(
+  posts: BlogPostMetadata[],
+  hasMetadata: (post: BlogPostMetadata) => boolean,
+  fallbackTags: string[]
+): BlogPostMetadata[] {
+  return posts.filter(
+    (post) =>
+      hasMetadata(post) || post.tags.some((tag) => fallbackTags.includes(tag))
+  );
+}
+
 export function getSecurityResearchPosts(): BlogPostMetadata[] {
   const allPosts = getSortedPostsData();
-  return allPosts.filter(
-    (post) =>
-      post.securityResearch ||
-      post.tags.some((tag) =>
-        ['Security', 'Vulnerability', 'CVE', 'Research'].includes(tag)
-      )
-  );
+  return filterPostsByType(allPosts, (post) => !!post.securityResearch, [
+    'Security',
+    'Vulnerability',
+    'CVE',
+    'Research'
+  ]);
 }
 
 export function getCaseStudyPosts(): BlogPostMetadata[] {
   const allPosts = getSortedPostsData();
-  return allPosts.filter(
-    (post) =>
-      post.caseStudy ||
-      post.tags.some((tag) =>
-        [
-          'Case Study',
-          'Assessment',
-          'Penetration Test',
-          'Security Audit',
-          'Compliance'
-        ].includes(tag)
-      )
-  );
+  return filterPostsByType(allPosts, (post) => !!post.caseStudy, [
+    'Case Study',
+    'Assessment',
+    'Penetration Test',
+    'Security Audit',
+    'Compliance'
+  ]);
 }
 
 // Utility functions for handling blog images
@@ -274,16 +252,19 @@ export function getWordPressPermalink(post: BlogPostMetadata): string {
   return generateWordPressPermalink(post.date, post.slug);
 }
 
-export function getPostUrl(post: BlogPostMetadata): string {
+// Helper function for URL generation (eliminates duplication)
+function generateUrl(post: BlogPostMetadata, prefix: string = ''): string {
   const permalink = getPostPermalink(post);
   const sanitizedPermalink = sanitizeUrlPath(permalink);
-  return `/${sanitizedPermalink}`;
+  return prefix ? `/${prefix}/${sanitizedPermalink}` : `/${sanitizedPermalink}`;
+}
+
+export function getPostUrl(post: BlogPostMetadata): string {
+  return generateUrl(post);
 }
 
 export function getBlogPostUrl(post: BlogPostMetadata): string {
-  const permalink = getPostPermalink(post);
-  const sanitizedPermalink = sanitizeUrlPath(permalink);
-  return `/blog/${sanitizedPermalink}`;
+  return generateUrl(post, 'blog');
 }
 
 // Safe URL functions using sanitize-html library
@@ -298,7 +279,8 @@ export function getBlogPostUrl(post: BlogPostMetadata): string {
 // - Regular security updates
 // - Comprehensive attack vector coverage
 // - Simpler and more reliable than custom sanitization
-export function getSafePostUrl(post: BlogPostMetadata): string {
+// Helper function for safe URL generation with error handling (eliminates duplication)
+function generateSafeUrl(post: BlogPostMetadata, prefix: string = ''): string {
   try {
     const permalink = getPostPermalink(post);
     const sanitizedPermalink = sanitizeUrlPath(permalink);
@@ -309,29 +291,21 @@ export function getSafePostUrl(post: BlogPostMetadata): string {
       return '/blog';
     }
 
-    return `/${sanitizedPermalink}`;
+    return prefix
+      ? `/${prefix}/${sanitizedPermalink}`
+      : `/${sanitizedPermalink}`;
   } catch (error) {
     console.error('Error generating safe post URL:', error);
     return '/blog'; // Fallback to blog index
   }
 }
 
+export function getSafePostUrl(post: BlogPostMetadata): string {
+  return generateSafeUrl(post);
+}
+
 export function getSafeBlogPostUrl(post: BlogPostMetadata): string {
-  try {
-    const permalink = getPostPermalink(post);
-    const sanitizedPermalink = sanitizeUrlPath(permalink);
-
-    // Additional safety check for empty result
-    if (!sanitizedPermalink) {
-      console.warn('Sanitized permalink is empty, using fallback');
-      return '/blog';
-    }
-
-    return `/blog/${sanitizedPermalink}`;
-  } catch (error) {
-    console.error('Error generating safe blog post URL:', error);
-    return '/blog'; // Fallback to blog index
-  }
+  return generateSafeUrl(post, 'blog');
 }
 
 // Find post by permalink (for routing)
