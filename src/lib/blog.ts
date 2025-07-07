@@ -20,6 +20,14 @@ export interface BlogPost {
   images?: string[];
   permalink?: string;
   wordpressUrl?: string;
+  // Security research specific fields
+  securityResearch?: {
+    severity?: 'Low' | 'Medium' | 'High' | 'Critical';
+    status?: 'Disclosed' | 'In Progress' | 'Under Review' | 'Fixed';
+    cve?: string;
+    vendor?: string;
+    disclosureDate?: string;
+  };
 }
 
 export interface BlogPostMetadata {
@@ -32,6 +40,14 @@ export interface BlogPostMetadata {
   featuredImage?: string;
   permalink?: string;
   wordpressUrl?: string;
+  // Security research specific fields
+  securityResearch?: {
+    severity?: 'Low' | 'Medium' | 'High' | 'Critical';
+    status?: 'Disclosed' | 'In Progress' | 'Under Review' | 'Fixed';
+    cve?: string;
+    vendor?: string;
+    disclosureDate?: string;
+  };
 }
 
 export function getSortedPostsData(): BlogPostMetadata[] {
@@ -60,7 +76,8 @@ export function getSortedPostsData(): BlogPostMetadata[] {
         author: matterResult.data.author || 'Wesley Kirkland',
         featuredImage: matterResult.data.featuredImage,
         permalink: matterResult.data.permalink,
-        wordpressUrl: matterResult.data.wordpressUrl
+        wordpressUrl: matterResult.data.wordpressUrl,
+        securityResearch: matterResult.data.securityResearch
       };
     });
 
@@ -116,13 +133,25 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     featuredImage: matterResult.data.featuredImage,
     images: matterResult.data.images || [],
     permalink: matterResult.data.permalink,
-    wordpressUrl: matterResult.data.wordpressUrl
+    wordpressUrl: matterResult.data.wordpressUrl,
+    securityResearch: matterResult.data.securityResearch
   };
 }
 
 export function getRecentPosts(count: number = 5): BlogPostMetadata[] {
   const allPosts = getSortedPostsData();
   return allPosts.slice(0, count);
+}
+
+export function getSecurityResearchPosts(): BlogPostMetadata[] {
+  const allPosts = getSortedPostsData();
+  return allPosts.filter(
+    (post) =>
+      post.securityResearch ||
+      post.tags.some((tag) =>
+        ['Security', 'Vulnerability', 'CVE', 'Research'].includes(tag)
+      )
+  );
 }
 
 // Utility functions for handling blog images
