@@ -28,6 +28,21 @@ export interface BlogPost {
     vendor?: string;
     disclosureDate?: string;
   };
+  // Case study specific fields
+  caseStudy?: {
+    type?:
+      | 'Security Assessment'
+      | 'Penetration Test'
+      | 'Code Review'
+      | 'Compliance Audit'
+      | 'Incident Response'
+      | 'Other';
+    client?: string;
+    industry?: string;
+    duration?: string;
+    outcome?: string;
+    technologies?: string[];
+  };
 }
 
 export interface BlogPostMetadata {
@@ -47,6 +62,21 @@ export interface BlogPostMetadata {
     cve?: string;
     vendor?: string;
     disclosureDate?: string;
+  };
+  // Case study specific fields
+  caseStudy?: {
+    type?:
+      | 'Security Assessment'
+      | 'Penetration Test'
+      | 'Code Review'
+      | 'Compliance Audit'
+      | 'Incident Response'
+      | 'Other';
+    client?: string;
+    industry?: string;
+    duration?: string;
+    outcome?: string;
+    technologies?: string[];
   };
 }
 
@@ -77,7 +107,8 @@ export function getSortedPostsData(): BlogPostMetadata[] {
         featuredImage: matterResult.data.featuredImage,
         permalink: matterResult.data.permalink,
         wordpressUrl: matterResult.data.wordpressUrl,
-        securityResearch: matterResult.data.securityResearch
+        securityResearch: matterResult.data.securityResearch,
+        caseStudy: matterResult.data.caseStudy
       };
     });
 
@@ -134,7 +165,8 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     images: matterResult.data.images || [],
     permalink: matterResult.data.permalink,
     wordpressUrl: matterResult.data.wordpressUrl,
-    securityResearch: matterResult.data.securityResearch
+    securityResearch: matterResult.data.securityResearch,
+    caseStudy: matterResult.data.caseStudy
   };
 }
 
@@ -150,6 +182,23 @@ export function getSecurityResearchPosts(): BlogPostMetadata[] {
       post.securityResearch ||
       post.tags.some((tag) =>
         ['Security', 'Vulnerability', 'CVE', 'Research'].includes(tag)
+      )
+  );
+}
+
+export function getCaseStudyPosts(): BlogPostMetadata[] {
+  const allPosts = getSortedPostsData();
+  return allPosts.filter(
+    (post) =>
+      post.caseStudy ||
+      post.tags.some((tag) =>
+        [
+          'Case Study',
+          'Assessment',
+          'Penetration Test',
+          'Security Audit',
+          'Compliance'
+        ].includes(tag)
       )
   );
 }

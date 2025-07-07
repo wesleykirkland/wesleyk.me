@@ -1,13 +1,24 @@
-# Security Research Integration
+# Security Research & Case Studies Integration
 
-This guide explains how to add security research metadata to blog posts so they automatically appear on the Security Research page.
+This guide explains how to add security research and case study metadata to blog posts so they automatically appear on the Security Research page.
 
 ## 📋 Overview
 
-The Security Research page (`/security-research`) now dynamically loads content from blog posts instead of using hardcoded data. Posts are automatically included if they:
+The Security Research page (`/security-research`) now dynamically loads content from blog posts instead of using hardcoded data. The page displays two sections side by side on desktop (stacked on mobile):
+
+### Published Research
+
+Posts are automatically included if they:
 
 1. Have `securityResearch` metadata in their frontmatter, OR
 2. Have tags that include: `Security`, `Vulnerability`, `CVE`, or `Research`
+
+### Case Studies
+
+Posts are automatically included if they:
+
+1. Have `caseStudy` metadata in their frontmatter, OR
+2. Have tags that include: `Case Study`, `Assessment`, `Penetration Test`, `Security Audit`, or `Compliance`
 
 ## 🏷️ Security Research Metadata
 
@@ -58,21 +69,72 @@ securityResearch:
 - `vendor`: Name of the affected vendor/organization
 - `disclosureDate`: Date when the vulnerability was disclosed
 
+## 🏷️ Case Study Metadata
+
+Add the following optional metadata to your case study blog post frontmatter:
+
+```yaml
+---
+title: 'Your Case Study Title'
+date: '2024-01-15'
+excerpt: 'Brief description of your case study'
+tags: ['Case Study', 'Security Assessment', 'Penetration Test']
+author: 'Wesley Kirkland'
+caseStudy:
+  type: 'Security Assessment' # Security Assessment, Penetration Test, Code Review, Compliance Audit, Incident Response, Other
+  client: 'Confidential' # Client name or 'Confidential'
+  industry: 'E-commerce' # Industry sector
+  duration: '3 weeks' # Project duration
+  outcome: 'Brief outcome summary' # Key results achieved
+  technologies: ['PHP', 'MySQL', 'Apache'] # Technologies involved
+---
+```
+
+### Case Study Field Descriptions
+
+- `type`: Type of security engagement
+
+  - `Security Assessment`: Comprehensive security review
+  - `Penetration Test`: Simulated attack testing
+  - `Code Review`: Source code security analysis
+  - `Compliance Audit`: Regulatory compliance assessment
+  - `Incident Response`: Security incident investigation
+  - `Other`: Custom engagement type
+
+- `client`: Client name (use 'Confidential' for anonymized case studies)
+- `industry`: Industry sector or vertical
+- `duration`: Time spent on the engagement
+- `outcome`: Brief summary of key results or improvements
+- `technologies`: Array of technologies, frameworks, or platforms involved
+
 ## 🎨 Automatic Styling
 
 The Security Research page automatically applies appropriate styling based on metadata:
 
-### Severity Colors
+### Security Research Styling
+
+#### Severity Colors
 
 - **Critical/High**: Red background with red text
 - **Medium**: Yellow background with yellow text
 - **Low**: Green background with green text
 
-### Status Colors
+#### Status Colors
 
 - **Disclosed/Fixed**: Green text
 - **In Progress/Under Review**: Yellow text
 - **Other**: Gray text
+
+### Case Study Styling
+
+#### Type Colors
+
+- **Penetration Test**: Red background (high-impact testing)
+- **Security Assessment**: Orange background (comprehensive review)
+- **Code Review**: Blue background (technical analysis)
+- **Compliance Audit**: Purple background (regulatory focus)
+- **Incident Response**: Yellow background (urgent response)
+- **Other**: Gray background (general category)
 
 ## 📄 Example Blog Post
 

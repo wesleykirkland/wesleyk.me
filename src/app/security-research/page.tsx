@@ -1,5 +1,9 @@
 import Link from 'next/link';
-import { getSecurityResearchPosts, getSafeBlogPostUrl } from '@/lib/blog';
+import {
+  getSecurityResearchPosts,
+  getCaseStudyPosts,
+  getSafeBlogPostUrl
+} from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
 
@@ -27,9 +31,29 @@ function getStatusClasses(status: string): string {
   return 'text-gray-600 dark:text-gray-400';
 }
 
+function getCaseStudyTypeClasses(type: string): string {
+  if (type === 'Penetration Test') {
+    return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+  }
+  if (type === 'Security Assessment') {
+    return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+  }
+  if (type === 'Code Review') {
+    return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+  }
+  if (type === 'Compliance Audit') {
+    return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+  }
+  if (type === 'Incident Response') {
+    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+  }
+  return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+}
+
 export default function SecurityResearch() {
-  // Get security research posts dynamically from blog posts
+  // Get security research posts and case studies dynamically from blog posts
   const securityResearchPosts = getSecurityResearchPosts();
+  const caseStudyPosts = getCaseStudyPosts();
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
@@ -179,100 +203,227 @@ export default function SecurityResearch() {
         </div>
       </section>
 
-      {/* Published Research */}
+      {/* Published Research & Case Studies */}
       <section>
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Published Research
-          </h2>
-          <Link
-            href="/blog"
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-          >
-            View all posts →
-          </Link>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Published Research */}
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Published Research
+              </h2>
+              <Link
+                href="/blog"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+              >
+                View all →
+              </Link>
+            </div>
 
-        {securityResearchPosts.length > 0 ? (
-          <div className="space-y-6">
-            {securityResearchPosts.map((post) => {
-              const formattedDate = format(new Date(post.date), 'MMMM d, yyyy');
-              const postUrl = getSafeBlogPostUrl(post);
+            {securityResearchPosts.length > 0 ? (
+              <div className="space-y-4">
+                {securityResearchPosts.map((post) => {
+                  const formattedDate = format(
+                    new Date(post.date),
+                    'MMMM d, yyyy'
+                  );
+                  const postUrl = getSafeBlogPostUrl(post);
 
-              // Get security research metadata or use defaults based on tags
-              const severity =
-                post.securityResearch?.severity ||
-                (post.tags.includes('Critical')
-                  ? 'Critical'
-                  : post.tags.includes('High')
-                    ? 'High'
-                    : post.tags.includes('Medium')
-                      ? 'Medium'
-                      : 'Low');
+                  // Get security research metadata or use defaults based on tags
+                  const severity =
+                    post.securityResearch?.severity ||
+                    (post.tags.includes('Critical')
+                      ? 'Critical'
+                      : post.tags.includes('High')
+                        ? 'High'
+                        : post.tags.includes('Medium')
+                          ? 'Medium'
+                          : 'Low');
 
-              const status = post.securityResearch?.status || 'Disclosed';
+                  const status = post.securityResearch?.status || 'Disclosed';
 
-              return (
-                <article
-                  key={post.slug}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  return (
+                    <article
+                      key={post.slug}
+                      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
+                    >
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          <Link
+                            href={postUrl}
+                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                          >
+                            {post.title}
+                          </Link>
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-3">
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getSeverityClasses(
+                            severity
+                          )}`}
+                        >
+                          {severity}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {formattedDate}
+                        </span>
+                      </div>
+
+                      <div className="mb-3">
+                        <TagList
+                          tags={post.tags.slice(0, 3)}
+                          size="sm"
+                          variant="default"
+                        />
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span
+                          className={`text-xs font-medium ${getStatusClasses(
+                            status
+                          )}`}
+                        >
+                          {status}
+                        </span>
                         <Link
                           href={postUrl}
-                          className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
                         >
-                          {post.title}
+                          Read more →
                         </Link>
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        {post.excerpt}
-                      </p>
-                    </div>
-                    <div className="flex flex-col md:items-end space-y-2">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getSeverityClasses(
-                          severity
-                        )}`}
-                      >
-                        {severity} Severity
-                      </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {formattedDate}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <TagList tags={post.tags} size="sm" variant="default" />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span
-                      className={`text-sm font-medium ${getStatusClasses(
-                        status
-                      )}`}
-                    >
-                      Status: {status}
-                    </span>
-                    <Link
-                      href={postUrl}
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
-                    >
-                      Read full case study →
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  Security research coming soon!
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center">
-            <p className="text-gray-600 dark:text-gray-300">
-              More security research case studies coming soon!
-            </p>
+
+          {/* Case Studies */}
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Case Studies
+              </h2>
+              <Link
+                href="/blog"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+              >
+                View all →
+              </Link>
+            </div>
+
+            {caseStudyPosts.length > 0 ? (
+              <div className="space-y-4">
+                {caseStudyPosts.map((post) => {
+                  const formattedDate = format(
+                    new Date(post.date),
+                    'MMMM d, yyyy'
+                  );
+                  const postUrl = getSafeBlogPostUrl(post);
+
+                  // Get case study metadata or use defaults based on tags
+                  const type =
+                    post.caseStudy?.type ||
+                    (post.tags.includes('Penetration Test')
+                      ? 'Penetration Test'
+                      : post.tags.includes('Security Assessment')
+                        ? 'Security Assessment'
+                        : post.tags.includes('Code Review')
+                          ? 'Code Review'
+                          : post.tags.includes('Compliance Audit')
+                            ? 'Compliance Audit'
+                            : post.tags.includes('Incident Response')
+                              ? 'Incident Response'
+                              : 'Other');
+
+                  const client = post.caseStudy?.client || 'Confidential';
+                  const industry = post.caseStudy?.industry;
+
+                  return (
+                    <article
+                      key={post.slug}
+                      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
+                    >
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          <Link
+                            href={postUrl}
+                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                          >
+                            {post.title}
+                          </Link>
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-3">
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getCaseStudyTypeClasses(
+                            type
+                          )}`}
+                        >
+                          {type}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {formattedDate}
+                        </span>
+                      </div>
+
+                      {(client !== 'Confidential' || industry) && (
+                        <div className="mb-3 text-xs text-gray-600 dark:text-gray-400">
+                          {client !== 'Confidential' && (
+                            <span>Client: {client}</span>
+                          )}
+                          {client !== 'Confidential' && industry && (
+                            <span> • </span>
+                          )}
+                          {industry && <span>Industry: {industry}</span>}
+                        </div>
+                      )}
+
+                      <div className="mb-3">
+                        <TagList
+                          tags={post.tags.slice(0, 3)}
+                          size="sm"
+                          variant="default"
+                        />
+                      </div>
+
+                      <div className="flex justify-end">
+                        <Link
+                          href={postUrl}
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
+                        >
+                          View case study →
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  Case studies coming soon!
+                </p>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </section>
     </div>
   );
