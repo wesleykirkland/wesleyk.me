@@ -4,7 +4,8 @@ import {
   getTagFromSlug,
   getPostsByTag,
   getSafePostUrl,
-  getTagSlug
+  getTagSlug,
+  parsePostDate
 } from '@/lib/blog';
 import { format } from 'date-fns';
 import PageTracker from '@/components/PageTracker';
@@ -103,7 +104,10 @@ export default async function TagPage({ params }: TagPageProps) {
         {posts.length > 0 ? (
           <div className="grid gap-8 lg:grid-cols-2">
             {posts.map((post) => {
-              const formattedDate = format(new Date(post.date), 'MMMM d, yyyy');
+              const formattedDate = format(
+                parsePostDate(post.date),
+                'MMMM d, yyyy'
+              );
 
               return (
                 <article

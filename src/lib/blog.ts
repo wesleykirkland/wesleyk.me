@@ -6,6 +6,18 @@ import html from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import sanitizeHtml from 'sanitize-html';
 
+// Utility function to parse dates correctly without timezone issues
+export function parsePostDate(dateString: string): Date {
+  // For YYYY-MM-DD format, treat as local date to avoid timezone issues
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    const [year, month, day] = dateString.split('-').map(Number);
+    // Create date in local timezone (month is 0-indexed)
+    return new Date(year, month - 1, day);
+  }
+  // For other formats, use standard parsing
+  return new Date(dateString);
+}
+
 const postsDirectory = path.join(process.cwd(), 'posts');
 
 // Shared type definitions to eliminate duplication
@@ -24,6 +36,7 @@ export type CaseStudyMetadata = {
     | 'Code Review'
     | 'Compliance Audit'
     | 'Incident Response'
+    | 'Marketing'
     | 'Other';
   client?: string;
   industry?: string;
@@ -177,7 +190,8 @@ export function getCaseStudyPosts(): BlogPostMetadata[] {
     'Assessment',
     'Penetration Test',
     'Security Audit',
-    'Compliance'
+    'Compliance',
+    'Marketing'
   ]);
 }
 
@@ -210,7 +224,7 @@ export function processImagePaths(content: string, slug: string): string {
 
 // Permalink utility functions
 export function generateWordPressPermalink(date: string, slug: string): string {
-  const dateObj = new Date(date);
+  const dateObj = parsePostDate(date);
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
   const day = String(dateObj.getDate()).padStart(2, '0');

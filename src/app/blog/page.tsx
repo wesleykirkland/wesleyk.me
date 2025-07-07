@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getSortedPostsData, getSafePostUrl } from '@/lib/blog';
+import { getSortedPostsData, getSafePostUrl, parsePostDate } from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
 import PageTracker from '@/components/PageTracker';
@@ -58,7 +58,7 @@ export default function Blog() {
                   <span>By {post.author}</span>
                   <span className="mx-2">•</span>
                   <time dateTime={post.date}>
-                    {format(new Date(post.date), 'MMMM d, yyyy')}
+                    {format(parsePostDate(post.date), 'MMMM d, yyyy')}
                   </time>
                 </div>
 

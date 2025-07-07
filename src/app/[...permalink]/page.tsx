@@ -7,7 +7,8 @@ import {
   getSortedPostsData,
   getPostPermalink,
   getWordPressPermalink,
-  isWordPressPermalink
+  isWordPressPermalink,
+  parsePostDate
 } from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
@@ -93,7 +94,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const post = await getPostData(postMeta.slug);
-  const formattedDate = format(new Date(post.date), 'MMMM d, yyyy');
+  const formattedDate = format(parsePostDate(post.date), 'MMMM d, yyyy');
 
   return (
     <>
