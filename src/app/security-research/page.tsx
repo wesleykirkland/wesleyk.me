@@ -231,7 +231,7 @@ export default function SecurityResearch() {
 
                   // Get security research metadata or use defaults based on tags
                   const severity =
-                    post.securityResearch?.severity ||
+                    post.securityResearch?.severity ??
                     (post.tags.includes('Critical')
                       ? 'Critical'
                       : post.tags.includes('High')
@@ -240,7 +240,7 @@ export default function SecurityResearch() {
                           ? 'Medium'
                           : 'Low');
 
-                  const status = post.securityResearch?.status || 'Disclosed';
+                  const status = post.securityResearch?.status ?? 'Disclosed';
 
                   return (
                     <article
@@ -335,7 +335,7 @@ export default function SecurityResearch() {
 
                   // Get case study metadata or use defaults based on tags
                   const type =
-                    post.caseStudy?.type ||
+                    post.caseStudy?.type ??
                     (post.tags.includes('Penetration Test')
                       ? 'Penetration Test'
                       : post.tags.includes('Security Assessment')
@@ -348,7 +348,7 @@ export default function SecurityResearch() {
                               ? 'Incident Response'
                               : 'Other');
 
-                  const client = post.caseStudy?.client || 'Confidential';
+                  const client = post.caseStudy?.client ?? 'Confidential';
                   const industry = post.caseStudy?.industry;
 
                   return (
