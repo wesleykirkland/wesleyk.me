@@ -31,6 +31,24 @@ function getStatusClasses(status: string): string {
   return 'text-gray-600 dark:text-gray-400';
 }
 
+// Helper function to determine severity from tags
+function getSeverityFromTags(tags: string[]): 'Low' | 'Medium' | 'High' | 'Critical' {
+  if (tags.includes('Critical')) return 'Critical';
+  if (tags.includes('High')) return 'High';
+  if (tags.includes('Medium')) return 'Medium';
+  return 'Low';
+}
+
+// Helper function to determine case study type from tags
+function getCaseStudyTypeFromTags(tags: string[]): string {
+  if (tags.includes('Penetration Test')) return 'Penetration Test';
+  if (tags.includes('Security Assessment')) return 'Security Assessment';
+  if (tags.includes('Code Review')) return 'Code Review';
+  if (tags.includes('Compliance Audit')) return 'Compliance Audit';
+  if (tags.includes('Incident Response')) return 'Incident Response';
+  return 'Other';
+}
+
 function getCaseStudyTypeClasses(type: string): string {
   if (type === 'Penetration Test') {
     return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
@@ -232,13 +250,7 @@ export default function SecurityResearch() {
                   // Get security research metadata or use defaults based on tags
                   const severity =
                     post.securityResearch?.severity ??
-                    (post.tags.includes('Critical')
-                      ? 'Critical'
-                      : post.tags.includes('High')
-                        ? 'High'
-                        : post.tags.includes('Medium')
-                          ? 'Medium'
-                          : 'Low');
+                    getSeverityFromTags(post.tags);
 
                   const status = post.securityResearch?.status ?? 'Disclosed';
 
@@ -335,18 +347,7 @@ export default function SecurityResearch() {
 
                   // Get case study metadata or use defaults based on tags
                   const type =
-                    post.caseStudy?.type ??
-                    (post.tags.includes('Penetration Test')
-                      ? 'Penetration Test'
-                      : post.tags.includes('Security Assessment')
-                        ? 'Security Assessment'
-                        : post.tags.includes('Code Review')
-                          ? 'Code Review'
-                          : post.tags.includes('Compliance Audit')
-                            ? 'Compliance Audit'
-                            : post.tags.includes('Incident Response')
-                              ? 'Incident Response'
-                              : 'Other');
+                    post.caseStudy?.type ?? getCaseStudyTypeFromTags(post.tags);
 
                   const client = post.caseStudy?.client ?? 'Confidential';
                   const industry = post.caseStudy?.industry;

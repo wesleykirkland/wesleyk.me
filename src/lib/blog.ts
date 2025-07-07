@@ -139,7 +139,7 @@ export async function getPostData(slug: string): Promise<BlogPost> {
   return {
     ...metadata,
     content: contentHtml,
-    images: matterResult.data.images || []
+    images: matterResult.data.images ?? []
   };
 }
 

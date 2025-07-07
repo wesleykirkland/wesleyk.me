@@ -36,7 +36,7 @@ function getTagNameFromSlug(slug: string): string {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: TagPageProps) {
   const { slug } = await params;
-  const tag = getTagFromSlug(slug) || getTagNameFromSlug(slug);
+  const tag = getTagFromSlug(slug) ?? getTagNameFromSlug(slug);
   const posts = getPostsByTag(tag);
 
   return {
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: TagPageProps) {
 
 export default async function TagPage({ params }: TagPageProps) {
   const { slug } = await params;
-  const tag = getTagFromSlug(slug) || getTagNameFromSlug(slug);
+  const tag = getTagFromSlug(slug) ?? getTagNameFromSlug(slug);
   const posts = getPostsByTag(tag);
   const allTags = getAllTags();
   const isExistingTag = getTagFromSlug(slug) !== null;

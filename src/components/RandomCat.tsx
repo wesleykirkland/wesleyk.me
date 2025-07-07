@@ -197,7 +197,7 @@ export default function RandomCat({
               <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
                 <strong>Direct URL:</strong>{' '}
                 {(() => {
-                  const safeUrl = sanitizeCatUrl(catData.url || '');
+                  const safeUrl = sanitizeCatUrl(catData.url ?? '');
                   return safeUrl ? (
                     <a
                       href={safeUrl}
