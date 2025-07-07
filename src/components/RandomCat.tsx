@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { sanitizeCatUrl } from '@/lib/urlSanitizer';
 
 interface CatData {
   success: boolean;
@@ -41,7 +42,12 @@ export default function RandomCat({
       const data: CatData = await response.json();
 
       if (data.success) {
-        setCatData(data);
+        // Sanitize the URL before setting the data
+        const sanitizedData = {
+          ...data,
+          url: data.url ? sanitizeCatUrl(data.url) : data.url
+        };
+        setCatData(sanitizedData);
       } else {
         setError(data.error ?? 'Failed to fetch cat image');
       }
@@ -190,14 +196,23 @@ export default function RandomCat({
 
               <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
                 <strong>Direct URL:</strong>{' '}
-                <a
-                  href={catData.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 dark:text-blue-400 hover:underline break-all"
-                >
-                  {catData.url}
-                </a>
+                {(() => {
+                  const safeUrl = sanitizeCatUrl(catData.url ?? '');
+                  return safeUrl ? (
+                    <a
+                      href={safeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline break-all"
+                    >
+                      {safeUrl}
+                    </a>
+                  ) : (
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Invalid URL
+                    </span>
+                  );
+                })()}
               </div>
             </div>
           )}

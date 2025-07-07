@@ -1,42 +1,79 @@
 import Link from 'next/link';
+import {
+  getSecurityResearchPosts,
+  getCaseStudyPosts,
+  getSafeBlogPostUrl
+} from '@/lib/blog';
+import { format } from 'date-fns';
+import TagList from '@/components/TagList';
 
 // Helper functions for styling
 function getSeverityClasses(severity: string): string {
+  if (severity === 'Critical') {
+    return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+  }
   if (severity === 'High') {
-    return 'bg-red-100 text-red-800';
+    return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
   }
   if (severity === 'Medium') {
-    return 'bg-yellow-100 text-yellow-800';
+    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
   }
-  return 'bg-green-100 text-green-800';
+  return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
 }
 
 function getStatusClasses(status: string): string {
-  if (status === 'Disclosed') {
-    return 'text-green-600';
+  if (status === 'Disclosed' || status === 'Fixed') {
+    return 'text-green-600 dark:text-green-400';
   }
-  if (status === 'In Progress') {
-    return 'text-yellow-600';
+  if (status === 'In Progress' || status === 'Under Review') {
+    return 'text-yellow-600 dark:text-yellow-400';
   }
-  return 'text-gray-600';
+  return 'text-gray-600 dark:text-gray-400';
 }
 
-// Mock security research data - we'll replace this with real data later
-const securityResearch = [
-  {
-    id: 1,
-    title: 'Mimecast Sender Address Verification Vulnerability',
-    description:
-      "Discovered a vulnerability in Mimecast's sender address verification system that could allow email spoofing attacks.",
-    date: 'January 10, 2020',
-    status: 'Disclosed',
-    severity: 'High',
-    tags: ['Email Security', 'Mimecast', 'Spoofing'],
-    slug: 'my-first-vulnerability-mimecast-sender-address-verification'
+// Helper function to determine severity from tags
+function getSeverityFromTags(
+  tags: string[]
+): 'Low' | 'Medium' | 'High' | 'Critical' {
+  if (tags.includes('Critical')) return 'Critical';
+  if (tags.includes('High')) return 'High';
+  if (tags.includes('Medium')) return 'Medium';
+  return 'Low';
+}
+
+// Helper function to determine case study type from tags
+function getCaseStudyTypeFromTags(tags: string[]): string {
+  if (tags.includes('Penetration Test')) return 'Penetration Test';
+  if (tags.includes('Security Assessment')) return 'Security Assessment';
+  if (tags.includes('Code Review')) return 'Code Review';
+  if (tags.includes('Compliance Audit')) return 'Compliance Audit';
+  if (tags.includes('Incident Response')) return 'Incident Response';
+  return 'Other';
+}
+
+function getCaseStudyTypeClasses(type: string): string {
+  if (type === 'Penetration Test') {
+    return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
   }
-];
+  if (type === 'Security Assessment') {
+    return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+  }
+  if (type === 'Code Review') {
+    return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+  }
+  if (type === 'Compliance Audit') {
+    return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+  }
+  if (type === 'Incident Response') {
+    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+  }
+  return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+}
 
 export default function SecurityResearch() {
+  // Get security research posts and case studies dynamically from blog posts
+  const securityResearchPosts = getSecurityResearchPosts();
+  const caseStudyPosts = getCaseStudyPosts();
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
@@ -102,7 +139,8 @@ export default function SecurityResearch() {
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
                 Sharing knowledge and methodologies to help others learn about
-                security research and vulnerability assessment.
+                security research and vulnerabilities through abuse and misuse
+                and platforms and services.
               </p>
             </div>
             <div className="text-center">
@@ -126,7 +164,8 @@ export default function SecurityResearch() {
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
                 Contributing to the security community through research,
-                documentation, and collaboration.
+                documentation, and collaboration. With an emphasis on fixing the
+                greater good.
               </p>
             </div>
           </div>
@@ -147,17 +186,11 @@ export default function SecurityResearch() {
               Researching email security mechanisms, SPF/DKIM/DMARC
               implementations, and email gateway vulnerabilities.
             </p>
-            <div className="flex flex-wrap gap-2">
-              <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
-                SMTP
-              </span>
-              <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
-                SPF
-              </span>
-              <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
-                DKIM
-              </span>
-            </div>
+            <TagList
+              tags={['SMTP', 'SPF', 'DKIM', 'Email Security']}
+              size="sm"
+              variant="default"
+            />
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
@@ -167,17 +200,11 @@ export default function SecurityResearch() {
               Analyzing security implementations in Software-as-a-Service
               platforms and cloud-based applications.
             </p>
-            <div className="flex flex-wrap gap-2">
-              <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
-                OAuth
-              </span>
-              <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
-                SAML
-              </span>
-              <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
-                API Security
-              </span>
-            </div>
+            <TagList
+              tags={['OAuth', 'SAML', 'API Security', 'SaaS']}
+              size="sm"
+              variant="default"
+            />
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
@@ -187,104 +214,219 @@ export default function SecurityResearch() {
               Examining authentication mechanisms, single sign-on
               implementations, and identity management systems.
             </p>
-            <div className="flex flex-wrap gap-2">
-              <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs px-2 py-1 rounded-full">
-                SSO
-              </span>
-              <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs px-2 py-1 rounded-full">
-                MFA
-              </span>
-              <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs px-2 py-1 rounded-full">
-                Identity
-              </span>
-            </div>
+            <TagList
+              tags={['SSO', 'MFA', 'Identity', 'Authentication']}
+              size="sm"
+              variant="default"
+            />
           </div>
         </div>
       </section>
 
-      {/* Published Research */}
+      {/* Published Research & Case Studies */}
       <section>
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Published Research
-          </h2>
-          <Link
-            href="/blog"
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-          >
-            View all posts →
-          </Link>
-        </div>
-
-        {securityResearch.length > 0 ? (
-          <div className="space-y-6">
-            {securityResearch.map((research) => (
-              <article
-                key={research.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Published Research */}
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Published Research
+              </h2>
+              <Link
+                href="/blog"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
               >
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                      <Link
-                        href={`/blog/${research.slug}`}
-                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                      >
-                        {research.title}
-                      </Link>
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
-                      {research.description}
-                    </p>
-                  </div>
-                  <div className="flex flex-col md:items-end space-y-2">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getSeverityClasses(
-                        research.severity
-                      )}`}
+                View all →
+              </Link>
+            </div>
+
+            {securityResearchPosts.length > 0 ? (
+              <div className="space-y-4">
+                {securityResearchPosts.map((post) => {
+                  const formattedDate = format(
+                    new Date(post.date),
+                    'MMMM d, yyyy'
+                  );
+                  const postUrl = getSafeBlogPostUrl(post);
+
+                  // Get security research metadata or use defaults based on tags
+                  const severity =
+                    post.securityResearch?.severity ??
+                    getSeverityFromTags(post.tags);
+
+                  const status = post.securityResearch?.status ?? 'Disclosed';
+
+                  return (
+                    <article
+                      key={post.slug}
+                      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
                     >
-                      {research.severity} Severity
-                    </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {research.date}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {research.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full"
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          <Link
+                            href={postUrl}
+                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                          >
+                            {post.title}
+                          </Link>
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-3">
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getSeverityClasses(
+                            severity
+                          )}`}
+                        >
+                          {severity}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {formattedDate}
+                        </span>
+                      </div>
+
+                      <div className="mb-3">
+                        <TagList
+                          tags={post.tags.slice(0, 3)}
+                          size="sm"
+                          variant="default"
+                        />
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span
+                          className={`text-xs font-medium ${getStatusClasses(
+                            status
+                          )}`}
+                        >
+                          {status}
+                        </span>
+                        <Link
+                          href={postUrl}
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
+                        >
+                          Read more →
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  Security research coming soon!
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Case Studies */}
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Case Studies
+              </h2>
+              <Link
+                href="/blog"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+              >
+                View all →
+              </Link>
+            </div>
+
+            {caseStudyPosts.length > 0 ? (
+              <div className="space-y-4">
+                {caseStudyPosts.map((post) => {
+                  const formattedDate = format(
+                    new Date(post.date),
+                    'MMMM d, yyyy'
+                  );
+                  const postUrl = getSafeBlogPostUrl(post);
+
+                  // Get case study metadata or use defaults based on tags
+                  const type =
+                    post.caseStudy?.type ?? getCaseStudyTypeFromTags(post.tags);
+
+                  const client = post.caseStudy?.client ?? 'Confidential';
+                  const industry = post.caseStudy?.industry;
+
+                  return (
+                    <article
+                      key={post.slug}
+                      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
                     >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex justify-between items-center">
-                  <span
-                    className={`text-sm font-medium ${getStatusClasses(
-                      research.status
-                    )}`}
-                  >
-                    Status: {research.status}
-                  </span>
-                  <Link
-                    href={`/blog/${research.slug}`}
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
-                  >
-                    Read full case study →
-                  </Link>
-                </div>
-              </article>
-            ))}
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          <Link
+                            href={postUrl}
+                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                          >
+                            {post.title}
+                          </Link>
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-3">
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getCaseStudyTypeClasses(
+                            type
+                          )}`}
+                        >
+                          {type}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {formattedDate}
+                        </span>
+                      </div>
+
+                      {(client !== 'Confidential' || industry) && (
+                        <div className="mb-3 text-xs text-gray-600 dark:text-gray-400">
+                          {client !== 'Confidential' && (
+                            <span>Client: {client}</span>
+                          )}
+                          {client !== 'Confidential' && industry && (
+                            <span> • </span>
+                          )}
+                          {industry && <span>Industry: {industry}</span>}
+                        </div>
+                      )}
+
+                      <div className="mb-3">
+                        <TagList
+                          tags={post.tags.slice(0, 3)}
+                          size="sm"
+                          variant="default"
+                        />
+                      </div>
+
+                      <div className="flex justify-end">
+                        <Link
+                          href={postUrl}
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-medium"
+                        >
+                          View case study →
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  Case studies coming soon!
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center">
-            <p className="text-gray-600 dark:text-gray-300">
-              More security research case studies coming soon!
-            </p>
-          </div>
-        )}
+        </div>
       </section>
     </div>
   );
