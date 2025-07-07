@@ -190,6 +190,7 @@
 /* Global link styles for consistent theming */
 .link-external {
   color: #2563eb; /* blue-600 */
+  /* text-decoration: underline !important; */
   transition: color 0.2s ease-in-out;
 }
 
@@ -204,4 +205,24 @@
 
 .dark .link-external:hover {
   color: #93c5fd; /* blue-300 */
+}
+
+/* Apply link-external styling to prose links */
+.prose a {
+  color: #2563eb !important; /* blue-600 */
+  /* text-decoration: underline !important; */
+  transition: color 0.2s ease-in-out !important;
+}
+
+.prose a:hover {
+  color: #1d4ed8 !important; /* blue-700 */
+}
+
+/* Dark mode prose link styles */
+.dark .prose a {
+  color: #60a5fa !important; /* blue-400 */
+}
+
+.dark .prose a:hover {
+  color: #93c5fd !important; /* blue-300 */
 }
