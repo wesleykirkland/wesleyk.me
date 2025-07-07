@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { sanitizeCatUrl } from '@/lib/urlSanitizer';
 
 interface CatLinkProps {
   children: React.ReactNode;
@@ -28,7 +29,8 @@ export default function CatLink({
         const data: CatData = await response.json();
 
         if (data.success && data.url) {
-          setCatUrl(data.url);
+          const sanitizedUrl = sanitizeCatUrl(data.url);
+          setCatUrl(sanitizedUrl || '/api/cat'); // Use fallback if sanitization fails
         } else {
           // Fallback to a placeholder or the API endpoint itself
           setCatUrl('/api/cat');
@@ -50,9 +52,12 @@ export default function CatLink({
     return <span className={className}>{children}</span>;
   }
 
+  // Double-check URL sanitization before rendering
+  const safeCatUrl = sanitizeCatUrl(catUrl) || '/api/cat';
+
   return (
     <a
-      href={catUrl}
+      href={safeCatUrl}
       target="_blank"
       rel="noopener noreferrer"
       className={`text-blue-600 dark:text-blue-400 hover:underline ${className}`}
