@@ -61,7 +61,7 @@ export default function Header() {
               href="/security-research"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
-              Security Research
+              Security Research/Case Studies
             </Link>
           </nav>
 
@@ -180,7 +180,7 @@ export default function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors duration-200"
               >
-                Security Research
+                Security Research/Case Studies
               </Link>
 
               {/* Mobile social links */}
