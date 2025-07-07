@@ -32,7 +32,9 @@ function getStatusClasses(status: string): string {
 }
 
 // Helper function to determine severity from tags
-function getSeverityFromTags(tags: string[]): 'Low' | 'Medium' | 'High' | 'Critical' {
+function getSeverityFromTags(
+  tags: string[]
+): 'Low' | 'Medium' | 'High' | 'Critical' {
   if (tags.includes('Critical')) return 'Critical';
   if (tags.includes('High')) return 'High';
   if (tags.includes('Medium')) return 'Medium';

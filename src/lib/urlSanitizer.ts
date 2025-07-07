@@ -5,6 +5,29 @@
  * before they are used in href attributes or other contexts.
  */
 
+// Helper function to validate URL protocol
+function isValidProtocol(protocol: string): boolean {
+  return ['http:', 'https:'].includes(protocol);
+}
+
+// Helper function to check if path is allowed
+function isPathAllowed(pathname: string, allowedPaths?: string[]): boolean {
+  if (!allowedPaths || allowedPaths.length === 0) {
+    return true;
+  }
+  return allowedPaths.some((path) => pathname.startsWith(path));
+}
+
+// Helper function to check if domain is allowed
+function isDomainAllowed(hostname: string, allowedDomains?: string[]): boolean {
+  if (!allowedDomains || allowedDomains.length === 0) {
+    return true;
+  }
+  return allowedDomains.some(
+    (domain) => hostname === domain || hostname.endsWith('.' + domain)
+  );
+}
+
 /**
  * Sanitizes a URL to prevent XSS attacks
  * @param url - The URL to sanitize
@@ -31,7 +54,7 @@ export function sanitizeUrl(
     );
 
     // Only allow http and https protocols
-    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    if (!isValidProtocol(parsedUrl.protocol)) {
       console.warn(
         'Blocked potentially dangerous URL protocol:',
         parsedUrl.protocol
@@ -44,32 +67,17 @@ export function sanitizeUrl(
       typeof window !== 'undefined' &&
       parsedUrl.origin === window.location.origin
     ) {
-      if (allowedPaths && allowedPaths.length > 0) {
-        const isAllowedPath = allowedPaths.some((path) =>
-          parsedUrl.pathname.startsWith(path)
-        );
-        if (!isAllowedPath) {
-          console.warn(
-            'Blocked URL outside allowed paths:',
-            parsedUrl.pathname
-          );
-          return '';
-        }
+      if (!isPathAllowed(parsedUrl.pathname, allowedPaths)) {
+        console.warn('Blocked URL outside allowed paths:', parsedUrl.pathname);
+        return '';
       }
       return parsedUrl.href;
     }
 
     // For external URLs, check allowed domains if specified
-    if (allowedDomains && allowedDomains.length > 0) {
-      const isAllowedDomain = allowedDomains.some(
-        (domain) =>
-          parsedUrl.hostname === domain ||
-          parsedUrl.hostname.endsWith('.' + domain)
-      );
-      if (!isAllowedDomain) {
-        console.warn('Blocked URL from disallowed domain:', parsedUrl.hostname);
-        return '';
-      }
+    if (!isDomainAllowed(parsedUrl.hostname, allowedDomains)) {
+      console.warn('Blocked URL from disallowed domain:', parsedUrl.hostname);
+      return '';
     }
 
     return parsedUrl.href;
