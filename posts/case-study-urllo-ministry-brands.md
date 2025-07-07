@@ -2,9 +2,7 @@
 title: 'Urllo Case Study: Ministry Brands'
 date: '2023-05-25'
 excerpt: 'While helping Ministry Brands scale and modernize infrastructure across 25+ applications and 50+ white-label websites, I led efforts to eliminate SSL and redirect chaos by partnering with Urllo-transforming a fragile, manual process into a secure, automated system that business leaders noticed for its reliability.'
-tags: ['Case Study', 'Redirects', 'Domain Management', 'Web Presence', 'SSL']
-featuredImageDark: '/images/blog/2023/case-study-urllo-ministry-brands/urllo_hero_dark.jpg'
-featuredImageLight: '/images/blog/2023/case-study-urllo-ministry-brands/urllo_hero_light.jpg'
+tags: ['Case Study', 'Redirects', 'Domains', 'Web Security', 'SSL']
 author: 'Wesley Kirkland'
 caseStudy:
   type: 'Marketing'
