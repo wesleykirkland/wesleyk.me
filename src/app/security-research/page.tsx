@@ -95,7 +95,8 @@ export default function SecurityResearch() {
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
                 Sharing knowledge and methodologies to help others learn about
-                security research and vulnerability assessment.
+                security research and vulnerabilities through abuse and misuse
+                and platforms and services.
               </p>
             </div>
             <div className="text-center">
@@ -119,7 +120,8 @@ export default function SecurityResearch() {
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
                 Contributing to the security community through research,
-                documentation, and collaboration.
+                documentation, and collaboration. With an emphasis on fixing the
+                greater good.
               </p>
             </div>
           </div>
