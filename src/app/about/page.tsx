@@ -190,7 +190,16 @@ export default function About() {
                   One of my <CatLink>cats</CatLink> is &ldquo;famous&rdquo; on
                   Amazon
                 </li>
-                <li>I&apos;m a published Author</li>
+                <li>
+                  I&apos;m a{' '}
+                  <a
+                    href="https://www.amazon.com/PowerShell-Conference-Book-Books/dp/1720169977"
+                    target="_blank"
+                    className="link-external"
+                  >
+                    published Author
+                  </a>
+                </li>
               </ul>
             </div>
           </section>
