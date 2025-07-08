@@ -105,7 +105,11 @@ export function validateContactForm(data: {
   }
 
   if (!isValidEmail(data.email)) {
-    errors.email = 'Please enter a valid email address';
+    if (!data.email || !data.email.trim()) {
+      errors.email = 'Email is required';
+    } else {
+      errors.email = 'Please enter a valid email address';
+    }
   }
 
   if (!isValidSubject(data.subject)) {

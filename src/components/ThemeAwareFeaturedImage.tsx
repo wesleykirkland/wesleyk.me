@@ -86,7 +86,6 @@ export default function ThemeAwareFeaturedImage({
         height={0}
         sizes="100vw"
         className={className}
-        priority={false}
       />
     </div>
   );
