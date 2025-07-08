@@ -12,11 +12,7 @@ interface ThemeAwareFeaturedImageProps {
 export default function ThemeAwareFeaturedImage({
   post,
   className = 'w-full h-auto rounded-lg'
-<<<<<<< HEAD
 }: Readonly<ThemeAwareFeaturedImageProps>) {
-=======
-}: ThemeAwareFeaturedImageProps) {
->>>>>>> 7e1d2a1 (Theme aware heros)
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
 
@@ -90,10 +86,6 @@ export default function ThemeAwareFeaturedImage({
         height={0}
         sizes="100vw"
         className={className}
-<<<<<<< HEAD
-=======
-        priority={false}
->>>>>>> 7e1d2a1 (Theme aware heros)
       />
     </div>
   );
