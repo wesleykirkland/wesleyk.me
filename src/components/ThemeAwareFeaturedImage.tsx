@@ -12,7 +12,7 @@ interface ThemeAwareFeaturedImageProps {
 export default function ThemeAwareFeaturedImage({
   post,
   className = 'w-full h-auto rounded-lg'
-}: ThemeAwareFeaturedImageProps) {
+}: Readonly<ThemeAwareFeaturedImageProps>) {
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
 
