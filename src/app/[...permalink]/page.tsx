@@ -167,9 +167,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <Image
                   src={post.featuredImage}
                   alt={post.title}
-                  width={800}
-                  height={256}
-                  className="w-full h-64 object-cover rounded-lg shadow-lg"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-full h-auto rounded-lg"
                 />
               </div>
             )}
