@@ -162,7 +162,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             {/* Featured Image */}
-            <ThemeAwareFeaturedImage post={post} />
+            {post.featuredImage && (
+              <div className="mb-8">
+                <Image
+                  src={post.featuredImage}
+                  alt={post.title}
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-full h-auto rounded-lg"
+                />
+              </div>
+            )}
           </header>
 
           {/* Content */}
