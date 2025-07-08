@@ -54,6 +54,8 @@ interface BaseBlogPost {
   tags: string[];
   author: string;
   featuredImage?: string;
+  featuredImageLight?: string;
+  featuredImageDark?: string;
   permalink?: string;
   wordpressUrl?: string;
   securityResearch?: SecurityResearchMetadata;
@@ -80,11 +82,30 @@ function extractPostMetadata(
     tags: matterResult.data.tags || [],
     author: matterResult.data.author || 'Wesley Kirkland',
     featuredImage: matterResult.data.featuredImage,
+    featuredImageLight: matterResult.data.featuredImageLight,
+    featuredImageDark: matterResult.data.featuredImageDark,
     permalink: matterResult.data.permalink,
     wordpressUrl: matterResult.data.wordpressUrl,
     securityResearch: matterResult.data.securityResearch,
     caseStudy: matterResult.data.caseStudy
   };
+}
+
+// Helper function to get the appropriate featured image based on theme
+export function getFeaturedImage(
+  post: BlogPostMetadata,
+  theme?: 'light' | 'dark'
+): string | undefined {
+  // If theme-specific images are available, use them
+  if (theme === 'dark' && post.featuredImageDark) {
+    return post.featuredImageDark;
+  }
+  if (theme === 'light' && post.featuredImageLight) {
+    return post.featuredImageLight;
+  }
+
+  // Fallback to default featured image
+  return post.featuredImage;
 }
 
 export function getSortedPostsData(): BlogPostMetadata[] {

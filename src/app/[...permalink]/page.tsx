@@ -1,6 +1,5 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   getPostByPermalink,
   getPostData,
@@ -13,6 +12,7 @@ import {
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
 import PageTracker from '@/components/PageTracker';
+import ThemeAwareFeaturedImage from '@/components/ThemeAwareFeaturedImage';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -162,18 +162,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             {/* Featured Image */}
-            {post.featuredImage && (
-              <div className="mb-8">
-                <Image
-                  src={post.featuredImage}
-                  alt={post.title}
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  className="w-full h-auto rounded-lg"
-                />
-              </div>
-            )}
+            <ThemeAwareFeaturedImage post={post} />
           </header>
 
           {/* Content */}
