@@ -413,14 +413,30 @@ export interface SearchResult {
   matchedFields: string[];
 }
 
-// Helper function to calculate relevance score for a post
-async function calculatePostRelevance(
-  post: BlogPostMetadata,
-  searchTerms: string[],
-  includeContent: boolean
-): Promise<{ relevanceScore: number; matchedFields: string[] }> {
-  let relevanceScore = 0;
-  const matchedFields: string[] = [];
+<<<<<<< HEAD
+export async function searchPosts(
+  options: SearchOptions
+): Promise<SearchResult[]> {
+=======
+export function searchPosts(options: SearchOptions): SearchResult[] {
+>>>>>>> e3faeb4 (Add search functionality)
+  const { query, tags, limit, includeContent = false } = options;
+  const allPosts = getSortedPostsData();
+
+  if (!query.trim() && (!tags || tags.length === 0)) {
+    return [];
+  }
+
+  const searchTerms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((term) => term.length > 0);
+<<<<<<< HEAD
+  // Process posts in parallel for better performance
+  const postResults = await Promise.all(
+    allPosts.map(async (post) => {
+      let relevanceScore = 0;
+      const matchedFields: string[] = [];
 
   // Search in title (highest weight)
   const titleMatches = searchTerms.filter((term) =>
@@ -538,15 +554,83 @@ export async function searchPosts(
     relevanceScore: baseScore,
     matchedFields
   } of postResults) {
-    const { relevanceScore, shouldInclude } = applyTagFilter(
-      post,
-      tags,
-      query,
-      baseScore,
-      matchedFields
-    );
+    let relevanceScore = baseScore;
+=======
+  const results: SearchResult[] = [];
 
-    if (shouldInclude) {
+  for (const post of allPosts) {
+    let relevanceScore = 0;
+    const matchedFields: string[] = [];
+
+    // Search in title (highest weight)
+    const titleMatches = searchTerms.filter((term) =>
+      post.title.toLowerCase().includes(term)
+    );
+    if (titleMatches.length > 0) {
+      relevanceScore += titleMatches.length * 10;
+      matchedFields.push('title');
+    }
+
+    // Search in excerpt (medium weight)
+    const excerptMatches = searchTerms.filter((term) =>
+      post.excerpt.toLowerCase().includes(term)
+    );
+    if (excerptMatches.length > 0) {
+      relevanceScore += excerptMatches.length * 5;
+      matchedFields.push('excerpt');
+    }
+
+    // Search in tags (medium weight)
+    const tagMatches = searchTerms.filter((term) =>
+      post.tags.some((tag) => tag.toLowerCase().includes(term))
+    );
+    if (tagMatches.length > 0) {
+      relevanceScore += tagMatches.length * 5;
+      matchedFields.push('tags');
+    }
+
+    // Search in content if requested (lower weight)
+    if (includeContent) {
+      try {
+        const postData = getPostData(post.slug);
+        const contentMatches = searchTerms.filter((term) =>
+          postData.content.toLowerCase().includes(term)
+        );
+        if (contentMatches.length > 0) {
+          relevanceScore += contentMatches.length * 2;
+          matchedFields.push('content');
+        }
+      } catch {
+        // Skip content search if post data can't be loaded
+      }
+    }
+>>>>>>> e3faeb4 (Add search functionality)
+
+    // Filter by tags if specified
+    if (tags && tags.length > 0) {
+      const hasMatchingTag = tags.some((tag) =>
+<<<<<<< HEAD
+        post.tags.some(
+          (postTag: string) => postTag.toLowerCase() === tag.toLowerCase()
+        )
+=======
+        post.tags.some((postTag) => postTag.toLowerCase() === tag.toLowerCase())
+>>>>>>> e3faeb4 (Add search functionality)
+      );
+      if (hasMatchingTag) {
+        relevanceScore += 3;
+        if (!matchedFields.includes('tags')) {
+          matchedFields.push('tags');
+        }
+      } else if (query.trim() === '') {
+        // If only filtering by tags and no text query, include posts with matching tags
+        relevanceScore = 1;
+        matchedFields.push('tags');
+      }
+    }
+
+    // Only include posts with matches
+    if (relevanceScore > 0) {
       results.push({
         post,
         relevanceScore,

@@ -15,11 +15,15 @@ jest.mock('@/lib/blog', () => ({
 }));
 
 const mockPush = jest.fn();
+<<<<<<< HEAD
 import { getSearchSuggestions } from '@/lib/blog';
 
 const mockGetSearchSuggestions = getSearchSuggestions as jest.MockedFunction<
   typeof getSearchSuggestions
 >;
+=======
+const mockGetSearchSuggestions = require('@/lib/blog').getSearchSuggestions;
+>>>>>>> e3faeb4 (Add search functionality)
 
 describe('SearchBox Component', () => {
   beforeEach(() => {

@@ -42,7 +42,11 @@ export async function GET(request: NextRequest) {
       limit
     };
 
+<<<<<<< HEAD
     const results = await searchPosts(searchOptions);
+=======
+    const results = searchPosts(searchOptions);
+>>>>>>> e3faeb4 (Add search functionality)
 
     return NextResponse.json({
       success: true,
