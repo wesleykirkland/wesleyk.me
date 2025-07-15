@@ -201,32 +201,35 @@ export default function SearchBox({
           ref={suggestionsRef}
           id="search-suggestions"
           className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto"
-          role="listbox"
         >
-          {suggestions.map((suggestion, index) => (
-            <button
-              key={suggestion}
-              id={`suggestion-${index}`}
-              type="button"
-              onClick={() => handleSuggestionClick(suggestion)}
-              className={`
-                w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700
-                transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg
-                ${
-                  selectedSuggestion === index
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-900 dark:text-gray-100'
-                }
-              `}
-              role="option"
-              aria-selected={selectedSuggestion === index}
-            >
-              <div className="flex items-center">
-                <MagnifyingGlassIcon className="h-4 w-4 mr-2 text-gray-400" />
-                <span className="truncate">{suggestion}</span>
-              </div>
-            </button>
-          ))}
+          {suggestions.map((suggestion, index) => {
+            const isSelected = selectedSuggestion === index;
+            const buttonClasses = `
+              w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700
+              transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg
+              ${
+                isSelected
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                  : 'text-gray-900 dark:text-gray-100'
+              }
+            `;
+
+            return (
+              <button
+                key={suggestion}
+                id={`suggestion-${index}`}
+                type="button"
+                onClick={() => handleSuggestionClick(suggestion)}
+                className={buttonClasses}
+                aria-current={isSelected ? 'true' : 'false'}
+              >
+                <div className="flex items-center">
+                  <MagnifyingGlassIcon className="h-4 w-4 mr-2 text-gray-400" />
+                  <span className="truncate">{suggestion}</span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

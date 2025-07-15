@@ -1,4 +1,5 @@
 // Client-safe blog utilities that don't depend on server-side APIs
+import sanitizeHtml from 'sanitize-html';
 
 export interface BlogPostMetadata {
   slug: string;
@@ -37,13 +38,21 @@ export function parsePostDate(dateString: string): Date {
   return new Date(dateString);
 }
 
-// URL sanitization function (simplified version for client-side)
+// URL sanitization function using sanitize-html for security
 function sanitizeUrlPath(path: string): string {
-  return path
+  // First sanitize any potential HTML/script content
+  const cleanPath = sanitizeHtml(path, {
+    allowedTags: [],
+    allowedAttributes: {},
+    disallowedTagsMode: 'discard'
+  });
+
+  // Then apply URL-safe transformations
+  return cleanPath
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/(^-)|(-$)/g, '');
 }
 
 // Generate safe URL for a post
@@ -89,7 +98,7 @@ export function getPostPermalink(post: BlogPostMetadata): string {
 
 export function getWordPressPermalink(post: BlogPostMetadata): string {
   if (post.permalink) {
-    return post.permalink.replace(/^\/|\/$/g, '');
+    return post.permalink.replace(/(^\/)|(\/$)/g, '');
   }
   return generateWordPressPermalink(post.date, post.slug);
 }

@@ -64,23 +64,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST() {
+// Handle unsupported methods
+function methodNotAllowed() {
   return NextResponse.json(
     { error: 'Method not allowed. Use GET to search posts.' },
     { status: 405 }
   );
 }
 
-export async function PUT() {
-  return NextResponse.json(
-    { error: 'Method not allowed. Use GET to search posts.' },
-    { status: 405 }
-  );
-}
-
-export async function DELETE() {
-  return NextResponse.json(
-    { error: 'Method not allowed. Use GET to search posts.' },
-    { status: 405 }
-  );
-}
+export const POST = methodNotAllowed;
+export const PUT = methodNotAllowed;
+export const DELETE = methodNotAllowed;

@@ -168,13 +168,17 @@ function SearchContent() {
             {/* Results header */}
             <div className="mb-6">
               <p className="text-gray-600 dark:text-gray-400">
-                {results.length === 0
-                  ? query.trim() || selectedTags.length > 0
-                    ? 'No posts found'
-                    : 'Enter a search term to get started'
-                  : `Found ${results.length} ${
-                      results.length === 1 ? 'post' : 'posts'
-                    }`}
+                {(() => {
+                  if (results.length === 0) {
+                    const hasSearchCriteria =
+                      query.trim() || selectedTags.length > 0;
+                    return hasSearchCriteria
+                      ? 'No posts found'
+                      : 'Enter a search term to get started';
+                  }
+                  const postText = results.length === 1 ? 'post' : 'posts';
+                  return `Found ${results.length} ${postText}`;
+                })()}
                 {query.trim() && (
                   <span>
                     {' '}
