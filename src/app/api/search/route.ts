@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       limit
     };
 
-    const results = searchPosts(searchOptions);
+    const results = await searchPosts(searchOptions);
 
     return NextResponse.json({
       success: true,

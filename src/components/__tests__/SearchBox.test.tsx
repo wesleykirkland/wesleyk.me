@@ -15,7 +15,11 @@ jest.mock('@/lib/blog', () => ({
 }));
 
 const mockPush = jest.fn();
-const mockGetSearchSuggestions = require('@/lib/blog').getSearchSuggestions;
+import { getSearchSuggestions } from '@/lib/blog';
+
+const mockGetSearchSuggestions = getSearchSuggestions as jest.MockedFunction<
+  typeof getSearchSuggestions
+>;
 
 describe('SearchBox Component', () => {
   beforeEach(() => {

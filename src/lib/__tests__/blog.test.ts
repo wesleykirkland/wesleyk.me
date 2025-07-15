@@ -55,8 +55,8 @@ jest.mock('remark-html', () => jest.fn());
 jest.mock('remark-gfm', () => jest.fn());
 jest.mock('sanitize-html', () => jest.fn((html: string) => html));
 
-const fs = require('fs');
-const matter = require('gray-matter');
+import fs from 'fs';
+import matter from 'gray-matter';
 
 describe('Blog Utilities', () => {
   const createMockPost = (

@@ -307,7 +307,9 @@ describe('Client Blog Utilities', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       // Create a post that might cause issues
-      const problematicPost = createMockPost({ slug: null as any });
+      const problematicPost = createMockPost({
+        slug: null as unknown as string
+      });
 
       // The function should handle this gracefully
       const url = getSafePostUrl(problematicPost);
