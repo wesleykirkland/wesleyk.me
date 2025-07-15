@@ -24,7 +24,7 @@ export default function SearchBox({
   autoFocus = false,
   initialValue = '',
   suggestions: propSuggestions = []
-}: SearchBoxProps) {
+}: Readonly<SearchBoxProps>) {
   const [query, setQuery] = useState(initialValue);
   const [suggestions, setSuggestions] = useState<string[]>(propSuggestions);
   const [showSuggestionsList, setShowSuggestionsList] = useState(false);

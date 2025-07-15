@@ -495,9 +495,9 @@ describe('Blog Utilities', () => {
           tags: ['Security']
         });
         // Should find posts that contain the Security tag
-        const securityPosts = results.filter((r) =>
-          r.post.tags.includes('Security')
-        );
+        const hasSecurityTag = (r: { post: { tags: string[] } }) =>
+          r.post.tags.includes('Security');
+        const securityPosts = results.filter(hasSecurityTag);
         expect(securityPosts).toHaveLength(1);
         expect(securityPosts[0].post.tags).toContain('Security');
       });
@@ -538,26 +538,14 @@ describe('Blog Utilities', () => {
       });
 
       it('should include content search when requested', async () => {
-        // Mock getPostData for content search
-        const mockGetPostData = jest.fn().mockResolvedValue({
-          content:
-            'This content contains detailed JavaScript examples and tutorials'
-        });
-
-        // We need to mock the module to include our mock
-        jest.doMock('../blog', () => ({
-          ...jest.requireActual('../blog'),
-          getPostData: mockGetPostData
-        }));
-
         const results = await searchPosts({
           query: 'examples',
           includeContent: true
         });
 
-        // This test would need the actual implementation to work with mocked getPostData
-        // For now, we'll just verify the function doesn't crash
+        // Verify the function doesn't crash with includeContent flag
         expect(results).toBeDefined();
+        expect(Array.isArray(results)).toBe(true);
       });
     });
 
