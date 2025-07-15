@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getRecentPosts, getSafePostUrl } from '@/lib/blog';
 import TagList from '@/components/TagList';
 import PageTracker from '@/components/PageTracker';
+import SearchBox from '@/components/SearchBox';
 
 export default function Home() {
   const recentPosts = getRecentPosts(2);
@@ -49,6 +50,25 @@ export default function Home() {
                 </Link>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Search Section */}
+        <section className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Find What You&apos;re Looking For
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Search through all blog posts, security research, and case studies
+            </p>
+          </div>
+          <div className="max-w-2xl mx-auto">
+            <SearchBox
+              size="lg"
+              placeholder="Search posts, topics, or technologies..."
+              className="w-full"
+            />
           </div>
         </section>
 

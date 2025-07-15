@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getTagSlug } from '@/lib/blog';
+import { getTagSlug } from '@/lib/client-blog-utils';
 
 interface TagListProps {
   tags: string[];

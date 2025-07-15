@@ -399,6 +399,150 @@ export function getTagSlug(tag: string): string {
     .replace(/(^-)|(-$)/g, '');
 }
 
+// Search functionality
+export interface SearchOptions {
+  query: string;
+  tags?: string[];
+  limit?: number;
+  includeContent?: boolean;
+}
+
+export interface SearchResult {
+  post: BlogPostMetadata;
+  relevanceScore: number;
+  matchedFields: string[];
+}
+
+export function searchPosts(options: SearchOptions): SearchResult[] {
+  const { query, tags, limit, includeContent = false } = options;
+  const allPosts = getSortedPostsData();
+
+  if (!query.trim() && (!tags || tags.length === 0)) {
+    return [];
+  }
+
+  const searchTerms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((term) => term.length > 0);
+  const results: SearchResult[] = [];
+
+  for (const post of allPosts) {
+    let relevanceScore = 0;
+    const matchedFields: string[] = [];
+
+    // Search in title (highest weight)
+    const titleMatches = searchTerms.filter((term) =>
+      post.title.toLowerCase().includes(term)
+    );
+    if (titleMatches.length > 0) {
+      relevanceScore += titleMatches.length * 10;
+      matchedFields.push('title');
+    }
+
+    // Search in excerpt (medium weight)
+    const excerptMatches = searchTerms.filter((term) =>
+      post.excerpt.toLowerCase().includes(term)
+    );
+    if (excerptMatches.length > 0) {
+      relevanceScore += excerptMatches.length * 5;
+      matchedFields.push('excerpt');
+    }
+
+    // Search in tags (medium weight)
+    const tagMatches = searchTerms.filter((term) =>
+      post.tags.some((tag) => tag.toLowerCase().includes(term))
+    );
+    if (tagMatches.length > 0) {
+      relevanceScore += tagMatches.length * 5;
+      matchedFields.push('tags');
+    }
+
+    // Search in content if requested (lower weight)
+    if (includeContent) {
+      try {
+        const postData = getPostData(post.slug);
+        const contentMatches = searchTerms.filter((term) =>
+          postData.content.toLowerCase().includes(term)
+        );
+        if (contentMatches.length > 0) {
+          relevanceScore += contentMatches.length * 2;
+          matchedFields.push('content');
+        }
+      } catch {
+        // Skip content search if post data can't be loaded
+      }
+    }
+
+    // Filter by tags if specified
+    if (tags && tags.length > 0) {
+      const hasMatchingTag = tags.some((tag) =>
+        post.tags.some((postTag) => postTag.toLowerCase() === tag.toLowerCase())
+      );
+      if (hasMatchingTag) {
+        relevanceScore += 3;
+        if (!matchedFields.includes('tags')) {
+          matchedFields.push('tags');
+        }
+      } else if (query.trim() === '') {
+        // If only filtering by tags and no text query, include posts with matching tags
+        relevanceScore = 1;
+        matchedFields.push('tags');
+      }
+    }
+
+    // Only include posts with matches
+    if (relevanceScore > 0) {
+      results.push({
+        post,
+        relevanceScore,
+        matchedFields
+      });
+    }
+  }
+
+  // Sort by relevance score (descending)
+  results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+  // Apply limit if specified
+  if (limit && limit > 0) {
+    return results.slice(0, limit);
+  }
+
+  return results;
+}
+
+export function getSearchSuggestions(
+  query: string,
+  limit: number = 5
+): string[] {
+  if (!query.trim()) {
+    return [];
+  }
+
+  const allPosts = getSortedPostsData();
+  const suggestions = new Set<string>();
+  const queryLower = query.toLowerCase();
+
+  // Get title suggestions
+  for (const post of allPosts) {
+    if (post.title.toLowerCase().includes(queryLower)) {
+      suggestions.add(post.title);
+    }
+
+    // Get tag suggestions
+    for (const tag of post.tags) {
+      if (tag.toLowerCase().includes(queryLower)) {
+        suggestions.add(tag);
+      }
+    }
+
+    if (suggestions.size >= limit * 2) break;
+  }
+
+  return Array.from(suggestions).slice(0, limit);
+}
+
 // URL sanitization using battle-tested sanitize-html library
 // This approach is much simpler and more secure than custom sanitization
 function sanitizeUrlPath(path: string): string {
