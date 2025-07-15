@@ -486,6 +486,26 @@ describe('/api/cat Route', () => {
   });
 
   describe('Error Handling', () => {
+    it('handles cats directory not found', async () => {
+      // Clear mocks and set up error condition
+      jest.clearAllMocks();
+
+      // Set up path.join to work
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+
+      // Make existsSync return false (directory doesn't exist)
+      mockFs.existsSync.mockReturnValue(false);
+
+      const request = new NextRequest('http://localhost:3000/api/cat');
+      const response = await GET(request);
+
+      expect(response.status).toBe(404);
+
+      const data = await response.json();
+      expect(data.success).toBe(false);
+      expect(data.error).toBe('No cat images found');
+    });
+
     it('handles file system errors gracefully', async () => {
       // Clear mocks and set up error condition
       jest.clearAllMocks();
@@ -506,6 +526,59 @@ describe('/api/cat Route', () => {
 
       expect(response.status).toBe(500);
 
+      const data = await response.json();
+      expect(data.success).toBe(false);
+      expect(data.error).toBe('Internal server error');
+      expect(data.message).toBe('Failed to fetch random cat image');
+    });
+
+    it('handles general API errors', async () => {
+      // Clear mocks and set up error condition
+      jest.clearAllMocks();
+
+      // Make path.join throw an error to trigger the main catch block
+      mockPath.join.mockImplementation(() => {
+        throw new Error('Path error');
+      });
+
+      const request = new NextRequest('http://localhost:3000/api/cat');
+      const response = await GET(request);
+
+      expect(response.status).toBe(500);
+
+      const data = await response.json();
+      expect(data.success).toBe(false);
+      expect(data.error).toBe('Internal server error');
+      expect(data.message).toBe('Failed to fetch random cat image');
+    });
+
+    it('handles main catch block errors', async () => {
+      // Clear mocks and set up error condition
+      jest.clearAllMocks();
+
+      // Set up path.join to work initially
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+
+      // Set up existsSync to return true
+      mockFs.existsSync.mockReturnValue(true);
+
+      // Set up readdirSync to work
+      mockFs.readdirSync.mockReturnValue(['cat1.jpg', 'cat2.png', 'cat3.gif']);
+
+      // Create a malformed request that will cause an error in URL parsing
+      const malformedRequest = {
+        nextUrl: {
+          searchParams: {
+            get: jest.fn().mockImplementation(() => {
+              throw new Error('URL parsing error');
+            })
+          }
+        }
+      } as any;
+
+      const response = await GET(malformedRequest);
+
+      expect(response.status).toBe(500);
       const data = await response.json();
       expect(data.success).toBe(false);
       expect(data.error).toBe('Internal server error');
