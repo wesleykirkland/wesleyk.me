@@ -20,8 +20,6 @@ import {
   getPostByPermalink,
   isWordPressPermalink,
   getFeaturedImage,
-  searchPosts,
-  getSearchSuggestions,
   type BlogPostMetadata
 } from '../blog';
 import { createMockPost, sharedTestSuites } from './test-utils.helper';
@@ -56,8 +54,9 @@ jest.mock('remark-html', () => jest.fn());
 jest.mock('remark-gfm', () => jest.fn());
 jest.mock('sanitize-html', () => jest.fn((html: string) => html));
 
-import fs from 'fs';
-import matter from 'gray-matter';
+const fs = require('fs');
+const path = require('path');
+const matter = require('gray-matter');
 
 describe('Blog Utilities', () => {
   beforeEach(() => {
@@ -210,9 +209,6 @@ describe('Blog Utilities', () => {
 
     it('should throw error for non-existent post', async () => {
       fs.existsSync.mockReturnValue(false);
-      fs.readFileSync.mockImplementation(() => {
-        throw new Error('File not found');
-      });
 
       await expect(getPostData('non-existent')).rejects.toThrow();
     });
@@ -249,6 +245,75 @@ describe('Blog Utilities', () => {
         type: 'Security Assessment',
         client: 'Test Client'
       });
+    });
+  });
+
+  describe('URL Generation Error Handling', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should handle empty sanitized permalink', () => {
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      // Mock sanitizeUrlPath to return empty string
+      const mockSanitizeUrlPath = jest.fn().mockReturnValue('');
+      jest.doMock('../urlSanitizer', () => ({
+        sanitizeUrlPath: mockSanitizeUrlPath
+      }));
+
+      const { generateSafeUrl } = require('../blog');
+
+      const post = createMockPost({ slug: 'test-post' });
+      const result = generateSafeUrl(post);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Sanitized permalink is empty, using fallback'
+      );
+      expect(result).toBe('/blog');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle URL generation errors', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      // Mock sanitizeUrlPath to throw an error
+      const mockSanitizeUrlPath = jest.fn().mockImplementation(() => {
+        throw new Error('Sanitization error');
+      });
+      jest.doMock('../urlSanitizer', () => ({
+        sanitizeUrlPath: mockSanitizeUrlPath
+      }));
+
+      const { generateSafeUrl } = require('../blog');
+
+      const post = createMockPost({ slug: 'test-post' });
+      const result = generateSafeUrl(post);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error generating safe post URL:',
+        expect.any(Error)
+      );
+      expect(result).toBe('/blog');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should generate URL with prefix', () => {
+      const post = createMockPost({ slug: 'test-post' });
+      const { generateSafeUrl } = require('../blog');
+
+      const result = generateSafeUrl(post, 'blog');
+      expect(result).toBe('/blog/test-post');
+    });
+
+    it('should generate URL without prefix', () => {
+      const post = createMockPost({ slug: 'test-post' });
+      const { generateSafeUrl } = require('../blog');
+
+      const result = generateSafeUrl(post);
+      expect(result).toBe('/test-post');
     });
   });
 

@@ -29,7 +29,16 @@ jest.mock('next/navigation', () => ({
 process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID = 'test-site-id';
 process.env.NODE_ENV = 'test';
 
-// Window location mocking is handled per test if needed
+// Note: window.location mocking is handled in individual test files as needed
+
+// Mock Next.js Web API globals for API route testing
+if (typeof globalThis.TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util');
+  Object.assign(globalThis, { TextEncoder, TextDecoder });
+}
+
+// Import whatwg-fetch for Request/Response polyfills
+require('whatwg-fetch');
 
 // Mock document.head for script injection tests
 Object.defineProperty(document, 'head', {
