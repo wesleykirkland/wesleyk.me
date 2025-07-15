@@ -24,6 +24,7 @@ import {
   getSearchSuggestions,
   type BlogPostMetadata
 } from '../blog';
+import { createMockPost, sharedTestSuites } from './test-utils.helper';
 
 // Mock the dependencies
 jest.mock('fs', () => ({
@@ -59,18 +60,6 @@ import fs from 'fs';
 import matter from 'gray-matter';
 
 describe('Blog Utilities', () => {
-  const createMockPost = (
-    overrides: Partial<BlogPostMetadata> = {}
-  ): BlogPostMetadata => ({
-    slug: 'test-post',
-    title: 'Test Post',
-    date: '2024-01-01',
-    tags: [],
-    excerpt: '',
-    author: 'Test Author',
-    ...overrides
-  });
-
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -91,36 +80,8 @@ describe('Blog Utilities', () => {
     });
   });
 
-  describe('getTagSlug', () => {
-    it('should convert tags to URL-safe slugs', () => {
-      expect(getTagSlug('JavaScript')).toBe('javascript');
-      expect(getTagSlug('Case Study')).toBe('case-study');
-      expect(getTagSlug('Node.js')).toBe('node-js');
-      expect(getTagSlug('C++')).toBe('c');
-      expect(getTagSlug('React/Next.js')).toBe('react-next-js');
-    });
-
-    it('should handle special characters', () => {
-      expect(getTagSlug('C#')).toBe('c');
-      expect(getTagSlug('Vue.js 3.0')).toBe('vue-js-3-0');
-      expect(getTagSlug('API & REST')).toBe('api-rest');
-      expect(getTagSlug('Front-end Development')).toBe('front-end-development');
-    });
-
-    it('should handle edge cases', () => {
-      expect(getTagSlug('')).toBe('');
-      expect(getTagSlug('   ')).toBe('');
-      expect(getTagSlug('123')).toBe('123');
-      expect(getTagSlug('---')).toBe('');
-      expect(getTagSlug('Multiple   Spaces')).toBe('multiple-spaces');
-    });
-
-    it('should handle unicode characters', () => {
-      expect(getTagSlug('JavaScript 中文')).toBe('javascript');
-      expect(getTagSlug('Café')).toBe('caf');
-      expect(getTagSlug('naïve')).toBe('na-ve'); // The actual implementation keeps the dash
-    });
-  });
+  // Use shared test suite for getTagSlug
+  sharedTestSuites.getTagSlug(getTagSlug);
 
   describe('getTagFromSlug', () => {
     it('should return tag from slug', () => {
@@ -192,122 +153,14 @@ describe('Blog Utilities', () => {
     });
   });
 
-  describe('generateWordPressPermalink', () => {
-    it('should generate correct WordPress-style permalinks', () => {
-      expect(generateWordPressPermalink('2024-03-15', 'my-post')).toBe(
-        '2024/03/15/my-post'
-      );
-      expect(generateWordPressPermalink('2024-01-05', 'another-post')).toBe(
-        '2024/01/05/another-post'
-      );
-    });
+  // Use shared test suite for generateWordPressPermalink
+  sharedTestSuites.generateWordPressPermalink(generateWordPressPermalink);
 
-    it('should handle different date formats', () => {
-      expect(generateWordPressPermalink('2024-12-31', 'year-end-post')).toBe(
-        '2024/12/31/year-end-post'
-      );
-    });
+  // Use shared test suite for getFeaturedImage
+  sharedTestSuites.getFeaturedImage(getFeaturedImage);
 
-    it('should pad single digit months and days', () => {
-      expect(generateWordPressPermalink('2024-01-01', 'new-year')).toBe(
-        '2024/01/01/new-year'
-      );
-      expect(generateWordPressPermalink('2024-09-05', 'september-post')).toBe(
-        '2024/09/05/september-post'
-      );
-    });
-  });
-
-  describe('getFeaturedImage', () => {
-    const mockPost: BlogPostMetadata = {
-      slug: 'test-post',
-      title: 'Test Post',
-      date: '2024-03-15',
-      excerpt: 'Test excerpt',
-      tags: ['test'],
-      author: 'Test Author',
-      featuredImage: '/images/default.jpg',
-      featuredImageLight: '/images/light.jpg',
-      featuredImageDark: '/images/dark.jpg'
-    };
-
-    it('should return theme-specific image when available', () => {
-      expect(getFeaturedImage(mockPost, 'light')).toBe('/images/light.jpg');
-      expect(getFeaturedImage(mockPost, 'dark')).toBe('/images/dark.jpg');
-    });
-
-    it('should fallback to default image when theme-specific not available', () => {
-      const postWithoutThemeImages: BlogPostMetadata = {
-        ...mockPost,
-        featuredImageLight: undefined,
-        featuredImageDark: undefined
-      };
-
-      expect(getFeaturedImage(postWithoutThemeImages, 'light')).toBe(
-        '/images/default.jpg'
-      );
-      expect(getFeaturedImage(postWithoutThemeImages, 'dark')).toBe(
-        '/images/default.jpg'
-      );
-    });
-
-    it('should return default image when no theme specified', () => {
-      expect(getFeaturedImage(mockPost)).toBe('/images/default.jpg');
-    });
-
-    it('should return undefined when no images available', () => {
-      const postWithoutImages: BlogPostMetadata = {
-        ...mockPost,
-        featuredImage: undefined,
-        featuredImageLight: undefined,
-        featuredImageDark: undefined
-      };
-
-      expect(getFeaturedImage(postWithoutImages, 'light')).toBeUndefined();
-      expect(getFeaturedImage(postWithoutImages, 'dark')).toBeUndefined();
-      expect(getFeaturedImage(postWithoutImages)).toBeUndefined();
-    });
-
-    it('should handle partial theme image availability', () => {
-      const postWithOnlyDark: BlogPostMetadata = {
-        ...mockPost,
-        featuredImageLight: undefined
-      };
-
-      expect(getFeaturedImage(postWithOnlyDark, 'light')).toBe(
-        '/images/default.jpg'
-      );
-      expect(getFeaturedImage(postWithOnlyDark, 'dark')).toBe(
-        '/images/dark.jpg'
-      );
-
-      const postWithOnlyLight: BlogPostMetadata = {
-        ...mockPost,
-        featuredImageDark: undefined
-      };
-
-      expect(getFeaturedImage(postWithOnlyLight, 'light')).toBe(
-        '/images/light.jpg'
-      );
-      expect(getFeaturedImage(postWithOnlyLight, 'dark')).toBe(
-        '/images/default.jpg'
-      );
-    });
-  });
-
-  describe('parsePostDate', () => {
-    it('should parse YYYY-MM-DD format correctly', () => {
-      const date = parsePostDate('2024-01-15');
-      expect(date.getFullYear()).toBe(2024);
-      expect(date.getMonth()).toBe(0); // 0-indexed
-      expect(date.getDate()).toBe(15);
-    });
-
-    it('should handle other date formats', () => {
-      const date = parsePostDate('2024-12-25T10:30:00Z');
-      expect(date).toBeInstanceOf(Date);
-    });
-  });
+  // Use shared test suite for parsePostDate
+  sharedTestSuites.parsePostDate(parsePostDate);
 
   describe('getSortedPostsData', () => {
     it('should return sorted posts data', () => {
@@ -601,13 +454,13 @@ describe('Blog Utilities', () => {
     });
 
     describe('searchPosts', () => {
-      it('should return empty results for empty query and no tags', () => {
-        const results = searchPosts({ query: '' });
+      it('should return empty results for empty query and no tags', async () => {
+        const results = await searchPosts({ query: '' });
         expect(results).toEqual([]);
       });
 
-      it('should search by title with high relevance', () => {
-        const results = searchPosts({ query: 'JavaScript' });
+      it('should search by title with high relevance', async () => {
+        const results = await searchPosts({ query: 'JavaScript' });
         expect(results).toHaveLength(2);
         expect(results[0].post.title).toContain('JavaScript');
         expect(results[0].relevanceScore).toBeGreaterThan(
@@ -616,28 +469,28 @@ describe('Blog Utilities', () => {
         expect(results[0].matchedFields).toContain('title');
       });
 
-      it('should search by excerpt with medium relevance', () => {
-        const results = searchPosts({ query: 'comprehensive' });
+      it('should search by excerpt with medium relevance', async () => {
+        const results = await searchPosts({ query: 'comprehensive' });
         expect(results).toHaveLength(1);
         expect(results[0].post.excerpt).toContain('comprehensive');
         expect(results[0].matchedFields).toContain('excerpt');
       });
 
-      it('should search by tags with medium relevance', () => {
-        const results = searchPosts({ query: 'Security' });
+      it('should search by tags with medium relevance', async () => {
+        const results = await searchPosts({ query: 'Security' });
         expect(results).toHaveLength(1);
         expect(results[0].post.tags).toContain('Security');
         expect(results[0].matchedFields).toContain('tags');
       });
 
-      it('should handle multiple search terms', () => {
-        const results = searchPosts({ query: 'React JavaScript' });
+      it('should handle multiple search terms', async () => {
+        const results = await searchPosts({ query: 'React JavaScript' });
         expect(results).toHaveLength(2);
         // Should find posts containing either React or JavaScript
       });
 
-      it('should filter by tags when specified', () => {
-        const results = searchPosts({
+      it('should filter by tags when specified', async () => {
+        const results = await searchPosts({
           query: '',
           tags: ['Security']
         });
@@ -649,8 +502,8 @@ describe('Blog Utilities', () => {
         expect(securityPosts[0].post.tags).toContain('Security');
       });
 
-      it('should combine text search with tag filtering', () => {
-        const results = searchPosts({
+      it('should combine text search with tag filtering', async () => {
+        const results = await searchPosts({
           query: 'guide',
           tags: ['React']
         });
@@ -659,21 +512,21 @@ describe('Blog Utilities', () => {
         expect(results[0].post.excerpt).toContain('guide');
       });
 
-      it('should respect limit parameter', () => {
-        const results = searchPosts({
+      it('should respect limit parameter', async () => {
+        const results = await searchPosts({
           query: 'JavaScript',
           limit: 1
         });
         expect(results).toHaveLength(1);
       });
 
-      it('should handle case-insensitive search', () => {
-        const results = searchPosts({ query: 'javascript' });
+      it('should handle case-insensitive search', async () => {
+        const results = await searchPosts({ query: 'javascript' });
         expect(results).toHaveLength(2);
       });
 
-      it('should sort results by relevance score', () => {
-        const results = searchPosts({ query: 'JavaScript Tutorial' });
+      it('should sort results by relevance score', async () => {
+        const results = await searchPosts({ query: 'JavaScript Tutorial' });
         expect(results.length).toBeGreaterThan(1);
 
         // Check that results are sorted by relevance (descending)
@@ -684,7 +537,7 @@ describe('Blog Utilities', () => {
         }
       });
 
-      it('should include content search when requested', () => {
+      it('should include content search when requested', async () => {
         // Mock getPostData for content search
         const mockGetPostData = jest.fn().mockResolvedValue({
           content:
@@ -697,7 +550,7 @@ describe('Blog Utilities', () => {
           getPostData: mockGetPostData
         }));
 
-        const results = searchPosts({
+        const results = await searchPosts({
           query: 'examples',
           includeContent: true
         });

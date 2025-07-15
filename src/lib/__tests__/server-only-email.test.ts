@@ -38,7 +38,7 @@ describe('Server-Only Email', () => {
       SMTP_HOST: 'smtp.example.com',
       SMTP_PORT: '587',
       SMTP_USERNAME: 'test@example.com',
-      SMTP_PASSWORD: 'test-password',
+      SMTP_PASSWORD: 'password123',
       SMTP_FROM: 'noreply@example.com',
       SMTP_TO: 'contact@example.com',
       SMTP_TLS: 'true'
@@ -67,7 +67,7 @@ describe('Server-Only Email', () => {
         secure: false,
         auth: {
           user: 'test@example.com',
-          pass: 'test-password'
+          pass: 'password123'
         },
         tls: {
           rejectUnauthorized: false
@@ -156,7 +156,7 @@ describe('Server-Only Email', () => {
     it('should detect and block suspicious content', async () => {
       const suspiciousData = {
         ...validFormData,
-        message: 'This contains javascript:void(0) malicious content'
+        message: 'This contains javascript:alert("xss") malicious content'
       };
 
       await expect(sendContactEmail(suspiciousData)).rejects.toThrow(
@@ -166,10 +166,10 @@ describe('Server-Only Email', () => {
 
     it('should detect various suspicious patterns', async () => {
       const patterns = [
-        'javascript:void(0)',
-        'onclick="test()"',
-        'data:text/html,test',
-        'vbscript:test'
+        'javascript:alert(1)',
+        'onclick="malicious()"',
+        'data:text/html,<script>',
+        'vbscript:msgbox(1)'
       ];
 
       for (const pattern of patterns) {
