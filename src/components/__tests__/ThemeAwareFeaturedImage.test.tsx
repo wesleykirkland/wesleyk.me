@@ -66,8 +66,7 @@ describe('ThemeAwareFeaturedImage Component', () => {
     it('renders nothing before mounting', () => {
       // Mock useState to return false for mounted state
       const mockUseState = jest.spyOn(React, 'useState');
-      mockUseState.mockReturnValueOnce([false, jest.fn()]); // mounted = false
-      mockUseState.mockReturnValueOnce(['light', jest.fn()]); // currentTheme = light
+      mockUseState.mockReturnValue([false, jest.fn()]); // Always return mounted = false
 
       const { container } = render(<ThemeAwareFeaturedImage post={mockPost} />);
       expect(container.firstChild).toBeNull();

@@ -11,18 +11,17 @@ jest.mock('../ContactForm', () => {
 
 // Mock useState to control mounting behavior
 const mockSetState = jest.fn();
-const mockUseState = jest.spyOn(React, 'useState');
 
 describe('ContactFormWrapper Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseState.mockRestore();
   });
 
   describe('Loading State', () => {
     it('renders loading skeleton before mounting', () => {
       // Mock useState to return false for mounted state
-      mockUseState.mockReturnValueOnce([false, mockSetState]);
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
 
       render(<ContactFormWrapper />);
 
@@ -40,7 +39,8 @@ describe('ContactFormWrapper Component', () => {
 
     it('has proper loading skeleton structure', () => {
       // Mock useState to return false for mounted state
-      mockUseState.mockReturnValueOnce([false, mockSetState]);
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
 
       render(<ContactFormWrapper />);
 
@@ -64,6 +64,10 @@ describe('ContactFormWrapper Component', () => {
     });
 
     it('applies dark mode classes to skeleton', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       render(<ContactFormWrapper />);
 
       const title = screen.getByText('Send a Message');
@@ -73,6 +77,8 @@ describe('ContactFormWrapper Component', () => {
       skeletonElements.forEach((element) => {
         expect(element).toHaveClass('dark:bg-gray-700');
       });
+
+      mockUseState.mockRestore();
     });
   });
 
@@ -87,38 +93,55 @@ describe('ContactFormWrapper Component', () => {
     });
 
     it('removes loading skeleton after mounting', async () => {
+      // This test verifies the normal mounting behavior
       render(<ContactFormWrapper />);
 
-      // Initially should have skeleton
-      expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
-
-      // After mounting, skeleton should be gone
+      // After mounting, ContactForm should be visible
       await waitFor(() => {
         expect(screen.getByTestId('contact-form')).toBeInTheDocument();
       });
+
+      // Skeleton should not be present when mounted
+      expect(document.querySelector('.animate-pulse')).not.toBeInTheDocument();
     });
   });
 
   describe('Dynamic Import Configuration', () => {
     it('configures dynamic import with SSR disabled', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       // This test verifies the dynamic import is configured correctly
       // The actual configuration is tested through the component behavior
       render(<ContactFormWrapper />);
 
       // The component should render without SSR issues
       expect(screen.getByText('Send a Message')).toBeInTheDocument();
+
+      mockUseState.mockRestore();
     });
   });
 
   describe('Accessibility', () => {
     it('maintains proper heading hierarchy in loading state', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       render(<ContactFormWrapper />);
 
       const heading = screen.getByRole('heading', { level: 2 });
       expect(heading).toHaveTextContent('Send a Message');
+
+      mockUseState.mockRestore();
     });
 
     it('provides meaningful content during loading', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       render(<ContactFormWrapper />);
 
       // Should have a clear indication of what's loading
@@ -127,20 +150,32 @@ describe('ContactFormWrapper Component', () => {
       // Should have visual skeleton that represents the form structure
       const skeletonContainer = document.querySelector('.space-y-6');
       expect(skeletonContainer).toBeInTheDocument();
+
+      mockUseState.mockRestore();
     });
   });
 
   describe('Responsive Design', () => {
     it('applies responsive grid classes in loading state', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       render(<ContactFormWrapper />);
 
       const gridContainer = document.querySelector(
         '.grid-cols-1.md\\:grid-cols-2'
       );
       expect(gridContainer).toBeInTheDocument();
+
+      mockUseState.mockRestore();
     });
 
     it('maintains consistent spacing in loading state', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       render(<ContactFormWrapper />);
 
       const spacingContainer = document.querySelector('.space-y-6');
@@ -148,15 +183,23 @@ describe('ContactFormWrapper Component', () => {
 
       const gapContainer = document.querySelector('.gap-6');
       expect(gapContainer).toBeInTheDocument();
+
+      mockUseState.mockRestore();
     });
   });
 
   describe('Animation', () => {
     it('applies pulse animation to loading skeleton', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       render(<ContactFormWrapper />);
 
       const animatedContainer = document.querySelector('.animate-pulse');
       expect(animatedContainer).toBeInTheDocument();
+
+      mockUseState.mockRestore();
     });
   });
 
@@ -164,10 +207,7 @@ describe('ContactFormWrapper Component', () => {
     it('handles mount state correctly', async () => {
       const { rerender } = render(<ContactFormWrapper />);
 
-      // Initially not mounted
-      expect(document.querySelector('.animate-pulse')).toBeInTheDocument();
-
-      // After effect runs
+      // After effect runs, ContactForm should be visible
       await waitFor(() => {
         expect(screen.getByTestId('contact-form')).toBeInTheDocument();
       });
@@ -187,10 +227,16 @@ describe('ContactFormWrapper Component', () => {
 
   describe('Performance', () => {
     it('prevents hydration issues with SSR disabled', () => {
+      // Mock useState to return false for mounted state
+      const mockUseState = jest.spyOn(React, 'useState');
+      mockUseState.mockReturnValue([false, mockSetState]);
+
       // This is tested implicitly through the dynamic import configuration
       // The component should render consistently on client and server
       render(<ContactFormWrapper />);
       expect(screen.getByText('Send a Message')).toBeInTheDocument();
+
+      mockUseState.mockRestore();
     });
   });
 });

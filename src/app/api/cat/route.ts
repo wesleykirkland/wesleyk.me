@@ -10,6 +10,12 @@ let catImagesCache: string[] | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+// Function to clear cache (for testing)
+export function clearCatImagesCache(): void {
+  catImagesCache = null;
+  cacheTimestamp = 0;
+}
+
 function getCatImages(): string[] {
   const now = Date.now();
 
@@ -108,11 +114,17 @@ export async function GET(request: NextRequest) {
 
     // Return different formats based on query parameter
     switch (format) {
-      case 'redirect':
+      case 'redirect': {
         // Redirect directly to the image
-        return NextResponse.redirect(
+        const redirectResponse = NextResponse.redirect(
           new URL(`/cats/${randomCat}`, request.url)
         );
+        redirectResponse.headers.set(
+          'X-Cat-Count',
+          getCatImages().length.toString()
+        );
+        return redirectResponse;
+      }
 
       case 'image':
         // Return the image file directly
@@ -129,6 +141,10 @@ export async function GET(request: NextRequest) {
           // Determine content type
           let contentType = 'image/jpeg'; // default
           switch (ext) {
+            case '.jpg':
+            case '.jpeg':
+              contentType = 'image/jpeg';
+              break;
             case '.png':
               contentType = 'image/png';
               break;

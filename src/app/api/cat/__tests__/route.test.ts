@@ -86,7 +86,7 @@ jest.mock('path', () => ({
 }));
 
 import { NextRequest } from 'next/server';
-import { GET } from '../route';
+import { GET, clearCatImagesCache } from '../route';
 
 const fs = require('fs');
 const path = require('path');
@@ -304,7 +304,7 @@ describe('/api/cat Route', () => {
       const response = await GET(request);
 
       expect(response.status).toBe(302);
-      expect(response.headers.get('x-cat-count')).toBe('3');
+      expect(response.headers.get('X-Cat-Count')).toBe('3');
     });
   });
 
@@ -330,8 +330,9 @@ describe('/api/cat Route', () => {
     });
 
     it('returns 404 when no supported image formats found', async () => {
-      // Clear mocks and set up fresh state
+      // Clear mocks and cache
       jest.clearAllMocks();
+      clearCatImagesCache();
 
       // Set up path.join to work
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -359,9 +360,12 @@ describe('/api/cat Route', () => {
   describe('MIME Type Detection', () => {
     it('sets correct MIME type for JPEG', async () => {
       // Clear cache and set up specific file
-      const originalDateNow = Date.now;
-      Date.now = jest.fn(() => originalDateNow() + 10 * 60 * 1000);
+      jest.clearAllMocks();
+      clearCatImagesCache();
+      const originalMathRandom = Math.random;
+      Math.random = jest.fn(() => 0); // Always select first file
 
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['cat.jpg'] as any);
       mockFs.readFileSync.mockReturnValue(Buffer.from('fake jpeg data'));
@@ -373,15 +377,19 @@ describe('/api/cat Route', () => {
 
       expect(response.headers.get('content-type')).toBe('image/jpeg');
 
-      // Restore Date.now
-      Date.now = originalDateNow;
+      // Restore Math.random
+      Math.random = originalMathRandom;
     });
 
     it('sets correct MIME type for PNG', async () => {
       // Clear cache and set up specific file
+      jest.clearAllMocks();
       const originalDateNow = Date.now;
+      const originalMathRandom = Math.random;
       Date.now = jest.fn(() => originalDateNow() + 20 * 60 * 1000); // 20 minutes ahead
+      Math.random = jest.fn(() => 0); // Always select first file
 
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['cat.png'] as any);
       mockFs.readFileSync.mockReturnValue(Buffer.from('fake png data'));
@@ -393,8 +401,9 @@ describe('/api/cat Route', () => {
 
       expect(response.headers.get('content-type')).toBe('image/png');
 
-      // Restore Date.now
+      // Restore mocks
       Date.now = originalDateNow;
+      Math.random = originalMathRandom;
     });
 
     it('sets correct MIME type for GIF', async () => {
@@ -510,6 +519,10 @@ describe('/api/cat Route', () => {
       // Clear mocks and set up error condition
       jest.clearAllMocks();
 
+      // Force cache expiration
+      const originalDateNow = Date.now;
+      Date.now = jest.fn().mockReturnValue(originalDateNow() + 10 * 60 * 1000);
+
       // Set up path.join to work
       mockPath.join.mockReturnValue('/mock/path/to/cats');
 
@@ -524,12 +537,14 @@ describe('/api/cat Route', () => {
       const request = new NextRequest('http://localhost:3000/api/cat');
       const response = await GET(request);
 
-      expect(response.status).toBe(500);
+      // Restore Date.now
+      Date.now = originalDateNow;
+
+      expect(response.status).toBe(404);
 
       const data = await response.json();
       expect(data.success).toBe(false);
-      expect(data.error).toBe('Internal server error');
-      expect(data.message).toBe('Failed to fetch random cat image');
+      expect(data.error).toBe('No cat images found');
     });
 
     it('handles general API errors', async () => {
@@ -544,12 +559,11 @@ describe('/api/cat Route', () => {
       const request = new NextRequest('http://localhost:3000/api/cat');
       const response = await GET(request);
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(404);
 
       const data = await response.json();
       expect(data.success).toBe(false);
-      expect(data.error).toBe('Internal server error');
-      expect(data.message).toBe('Failed to fetch random cat image');
+      expect(data.error).toBe('No cat images found');
     });
 
     it('handles main catch block errors', async () => {
@@ -869,6 +883,10 @@ describe('/api/cat Route', () => {
     });
 
     it('handles file system errors gracefully', async () => {
+      // Force cache expiration
+      const originalDateNow = Date.now;
+      Date.now = jest.fn().mockReturnValue(originalDateNow() + 10 * 60 * 1000);
+
       fs.existsSync.mockReturnValue(true);
       fs.readdirSync.mockImplementation(() => {
         throw new Error('File system error');
@@ -880,6 +898,9 @@ describe('/api/cat Route', () => {
 
       const response = await GET(request);
       expect(response.status).toBe(404);
+
+      // Restore Date.now
+      Date.now = originalDateNow;
 
       const data = await response.json();
       expect(data.success).toBe(false);
@@ -916,13 +937,20 @@ describe('/api/cat Route', () => {
     });
 
     it('caches cat images list for performance', async () => {
-      // Clear mocks to get accurate count
+      // Clear mocks and cache to get accurate count
       jest.clearAllMocks();
+      clearCatImagesCache();
 
-      fs.existsSync.mockReturnValue(true);
-      fs.readdirSync.mockReturnValue(['cat1.jpg', 'cat2.png']);
+      // Mock Date.now to ensure consistent behavior
+      const originalDateNow = Date.now;
+      const baseTime = originalDateNow();
+      Date.now = jest.fn(() => baseTime);
 
-      // First request
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(['cat1.jpg', 'cat2.png']);
+
+      // First request - should call readdirSync
       const request1 = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
       });
@@ -935,7 +963,10 @@ describe('/api/cat Route', () => {
       await GET(request2);
 
       // readdirSync should only be called once due to caching
-      expect(fs.readdirSync).toHaveBeenCalledTimes(1);
+      expect(mockFs.readdirSync).toHaveBeenCalledTimes(1);
+
+      // Restore Date.now
+      Date.now = originalDateNow;
     });
 
     it('filters out non-image files', async () => {

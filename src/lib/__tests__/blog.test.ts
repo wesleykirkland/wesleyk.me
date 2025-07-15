@@ -345,6 +345,26 @@ describe('Blog Utilities', () => {
 
       expect(() => getPostPermalink(post)).toThrow('Invalid post slug');
     });
+
+    it('should throw error for dangerous characters in slug', () => {
+      // This will test lines 269-270
+      const postWithScript = createMockPost({
+        slug: 'test<script>alert("xss")</script>'
+      });
+      expect(() => getPostPermalink(postWithScript)).toThrow(
+        'Post slug contains potentially dangerous characters'
+      );
+
+      const postWithQuote = createMockPost({ slug: 'test"quote' });
+      expect(() => getPostPermalink(postWithQuote)).toThrow(
+        'Post slug contains potentially dangerous characters'
+      );
+
+      const postWithSingleQuote = createMockPost({ slug: "test'quote" });
+      expect(() => getPostPermalink(postWithSingleQuote)).toThrow(
+        'Post slug contains potentially dangerous characters'
+      );
+    });
   });
 
   describe('getWordPressPermalink', () => {
@@ -360,6 +380,14 @@ describe('Blog Utilities', () => {
 
       const permalink = getWordPressPermalink(post);
       expect(permalink).toBe('custom/permalink');
+    });
+
+    it('should use wordpressUrl if provided', () => {
+      // This will test lines 283-284
+      const post = createMockPost({ wordpressUrl: '/wordpress/custom/url/' });
+
+      const permalink = getWordPressPermalink(post);
+      expect(permalink).toBe('/wordpress/custom/url/');
     });
   });
 
@@ -759,8 +787,8 @@ describe('Blog Utilities', () => {
 
       it('should handle content search errors gracefully', async () => {
         // This will test lines 475-476 (catch block for content search errors)
-        // Since the content search is wrapped in a try-catch, we can test it
-        // by ensuring the function doesn't crash when content search fails
+        // Since the catch block is designed to silently handle errors,
+        // we just need to verify the function doesn't crash when content search fails
         const results = await searchPosts({
           query: 'test',
           includeContent: true

@@ -261,9 +261,9 @@ export function getPostPermalink(post: BlogPostMetadata): string {
 
   // Additional validation to prevent XSS
   if (
-    post.slug.includes('<') ??
-    post.slug.includes('>') ??
-    post.slug.includes('"') ??
+    post.slug.includes('<') ||
+    post.slug.includes('>') ||
+    post.slug.includes('"') ||
     post.slug.includes("'")
   ) {
     throw new Error('Post slug contains potentially dangerous characters');
