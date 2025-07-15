@@ -1,4 +1,5 @@
 import { GET, POST, PUT, DELETE } from '../route';
+import { NextRequest } from 'next/server';
 
 // Mock NextResponse
 jest.mock('next/server', () => ({
@@ -18,16 +19,20 @@ jest.mock('@/lib/blog', () => ({
   getAllTags: jest.fn()
 }));
 
-const mockSearchPosts = require('@/lib/blog').searchPosts;
-const mockGetSearchSuggestions = require('@/lib/blog').getSearchSuggestions;
-const mockGetAllTags = require('@/lib/blog').getAllTags;
+import { searchPosts, getSearchSuggestions, getAllTags } from '@/lib/blog';
+
+const mockSearchPosts = searchPosts as jest.MockedFunction<typeof searchPosts>;
+const mockGetSearchSuggestions = getSearchSuggestions as jest.MockedFunction<
+  typeof getSearchSuggestions
+>;
+const mockGetAllTags = getAllTags as jest.MockedFunction<typeof getAllTags>;
 
 // Helper function to create mock request
 function createMockRequest(url: string) {
   return {
     url,
     nextUrl: new URL(url)
-  } as any;
+  } as NextRequest;
 }
 
 describe('/api/search Route', () => {
