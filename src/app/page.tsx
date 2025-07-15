@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getRecentPosts, getSafePostUrl } from '@/lib/blog';
 import TagList from '@/components/TagList';
 import PageTracker from '@/components/PageTracker';
+import SearchBox from '@/components/SearchBox';
 
 export default function Home() {
   const recentPosts = getRecentPosts(2);

@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       limit
     };
 
-    const results = await searchPosts(searchOptions);
+    const results = searchPosts(searchOptions);
 
     return NextResponse.json({
       success: true,
@@ -64,14 +64,23 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Handle unsupported methods
-function methodNotAllowed() {
+export async function POST() {
   return NextResponse.json(
     { error: 'Method not allowed. Use GET to search posts.' },
     { status: 405 }
   );
 }
 
-export const POST = methodNotAllowed;
-export const PUT = methodNotAllowed;
-export const DELETE = methodNotAllowed;
+export async function PUT() {
+  return NextResponse.json(
+    { error: 'Method not allowed. Use GET to search posts.' },
+    { status: 405 }
+  );
+}
+
+export async function DELETE() {
+  return NextResponse.json(
+    { error: 'Method not allowed. Use GET to search posts.' },
+    { status: 405 }
+  );
+}
