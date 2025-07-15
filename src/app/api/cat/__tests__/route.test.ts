@@ -496,8 +496,9 @@ describe('/api/cat Route', () => {
 
   describe('Error Handling', () => {
     it('handles cats directory not found', async () => {
-      // Clear mocks and set up error condition
+      // Clear mocks and cache
       jest.clearAllMocks();
+      clearCatImagesCache();
 
       // Set up path.join to work
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -516,12 +517,9 @@ describe('/api/cat Route', () => {
     });
 
     it('handles file system errors gracefully', async () => {
-      // Clear mocks and set up error condition
+      // Clear mocks and cache
       jest.clearAllMocks();
-
-      // Force cache expiration
-      const originalDateNow = Date.now;
-      Date.now = jest.fn().mockReturnValue(originalDateNow() + 10 * 60 * 1000);
+      clearCatImagesCache();
 
       // Set up path.join to work
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -537,9 +535,6 @@ describe('/api/cat Route', () => {
       const request = new NextRequest('http://localhost:3000/api/cat');
       const response = await GET(request);
 
-      // Restore Date.now
-      Date.now = originalDateNow;
-
       expect(response.status).toBe(404);
 
       const data = await response.json();
@@ -548,8 +543,9 @@ describe('/api/cat Route', () => {
     });
 
     it('handles general API errors', async () => {
-      // Clear mocks and set up error condition
+      // Clear mocks and cache
       jest.clearAllMocks();
+      clearCatImagesCache();
 
       // Make path.join throw an error to trigger the main catch block
       mockPath.join.mockImplementation(() => {
@@ -689,7 +685,15 @@ describe('/api/cat Route', () => {
     });
 
     it('includes filename in headers for image responses', async () => {
+      // Clear cache and control random selection
+      clearCatImagesCache();
+      const originalMathRandom = Math.random;
+      Math.random = jest.fn(() => 0); // Always select first file
+
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['specific-cat.jpg'] as any);
+      mockFs.readFileSync.mockReturnValue(Buffer.from('fake image data'));
 
       const request = new NextRequest(
         'http://localhost:3000/api/cat?format=image'
@@ -697,6 +701,9 @@ describe('/api/cat Route', () => {
       const response = await GET(request);
 
       expect(response.headers.get('x-cat-filename')).toBe('specific-cat.jpg');
+
+      // Restore Math.random
+      Math.random = originalMathRandom;
     });
 
     it('should handle local cat images without external API', async () => {
@@ -808,6 +815,13 @@ describe('/api/cat Route', () => {
     });
 
     it('should return consistent response format', async () => {
+      // Clear cache and set up cat files
+      clearCatImagesCache();
+
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(['cat1.jpg'] as any);
+
       const request = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
       });
@@ -824,8 +838,15 @@ describe('/api/cat Route', () => {
     });
 
     it('should handle timeout scenarios', async () => {
+      // Clear cache and set up cat files
+      clearCatImagesCache();
+
       // This API doesn't use external fetch, so timeout scenarios don't apply
       // This test documents that the local API doesn't have timeout issues
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(['cat1.jpg'] as any);
+
       const request = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
       });
@@ -838,8 +859,15 @@ describe('/api/cat Route', () => {
     });
 
     it('should use API key when provided', async () => {
+      // Clear cache and set up cat files
+      clearCatImagesCache();
+
       // This API doesn't use external API keys since it serves local files
       // This test documents that API keys are not needed for local operation
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(['cat1.jpg'] as any);
+
       const request = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
       });
@@ -855,8 +883,15 @@ describe('/api/cat Route', () => {
     });
 
     it('should handle invalid response structure', async () => {
+      // Clear cache and set up cat files
+      clearCatImagesCache();
+
       // This API doesn't use external fetch, so invalid response structure doesn't apply
       // This test documents that the local API has consistent structure
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(['cat1.jpg'] as any);
+
       const request = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
       });
@@ -869,8 +904,15 @@ describe('/api/cat Route', () => {
     });
 
     it('should handle fetch network errors', async () => {
+      // Clear cache and set up cat files
+      clearCatImagesCache();
+
       // This API doesn't use external fetch, so network errors don't apply
       // This test documents that the local API doesn't have network dependencies
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue(['cat1.jpg'] as any);
+
       const request = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
       });
@@ -992,8 +1034,12 @@ describe('/api/cat Route', () => {
     });
 
     it('handles empty cats directory', async () => {
-      fs.existsSync.mockReturnValue(true);
-      fs.readdirSync.mockReturnValue([]);
+      // Clear cache and set up empty directory
+      clearCatImagesCache();
+
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue([]);
 
       const request = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
@@ -1008,8 +1054,16 @@ describe('/api/cat Route', () => {
     });
 
     it('handles directory with only non-image files', async () => {
-      fs.existsSync.mockReturnValue(true);
-      fs.readdirSync.mockReturnValue(['readme.txt', 'config.json', 'notes.md']);
+      // Clear cache and set up directory with non-image files
+      clearCatImagesCache();
+
+      mockPath.join.mockReturnValue('/mock/path/to/cats');
+      mockFs.existsSync.mockReturnValue(true);
+      mockFs.readdirSync.mockReturnValue([
+        'readme.txt',
+        'config.json',
+        'notes.md'
+      ]);
 
       const request = new NextRequest('http://localhost:3000/api/cat', {
         method: 'GET'
