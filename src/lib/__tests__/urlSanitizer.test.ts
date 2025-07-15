@@ -33,9 +33,10 @@ describe('URL Sanitizer', () => {
     });
 
     it('should block dangerous protocols', () => {
-      expect(sanitizeUrl('javascript:alert(1)')).toBe('');
-      expect(sanitizeUrl('data:text/html,<script>alert(1)</script>')).toBe('');
-      expect(sanitizeUrl('vbscript:msgbox(1)')).toBe('');
+      // Use safe test strings that represent dangerous patterns without being executable
+      expect(sanitizeUrl('javascript:void(0)')).toBe('');
+      expect(sanitizeUrl('data:text/html,test')).toBe('');
+      expect(sanitizeUrl('vbscript:test')).toBe('');
       expect(sanitizeUrl('file:///etc/passwd')).toBe('');
 
       expect(mockConsoleWarn).toHaveBeenCalledWith(
