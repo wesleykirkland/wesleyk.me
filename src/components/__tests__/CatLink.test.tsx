@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import CatLink from '../CatLink';
 
 // Mock the URL sanitizer
@@ -51,7 +51,9 @@ describe('CatLink Component', () => {
         json: () => Promise.resolve(mockCatData)
       });
 
-      render(<CatLink>Click for cats!</CatLink>);
+      await act(async () => {
+        render(<CatLink>Click for cats!</CatLink>);
+      });
 
       await waitFor(() => {
         const element = screen.getByText('Click for cats!');
@@ -70,7 +72,9 @@ describe('CatLink Component', () => {
         json: () => Promise.resolve(mockCatData)
       });
 
-      render(<CatLink>Click for cats!</CatLink>);
+      await act(async () => {
+        render(<CatLink>Click for cats!</CatLink>);
+      });
 
       await waitFor(() => {
         const link = screen.getByRole('link');
@@ -93,7 +97,9 @@ describe('CatLink Component', () => {
         json: () => Promise.resolve(mockCatData)
       });
 
-      render(<CatLink className="custom-class">Click for cats!</CatLink>);
+      await act(async () => {
+        render(<CatLink className="custom-class">Click for cats!</CatLink>);
+      });
 
       await waitFor(() => {
         const link = screen.getByRole('link');

@@ -74,6 +74,15 @@ beforeAll(() => {
     ) {
       return;
     }
+    // Suppress JSDOM navigation errors
+    if (
+      args[0] &&
+      typeof args[0] === 'object' &&
+      args[0].message &&
+      args[0].message.includes('Not implemented: navigation')
+    ) {
+      return;
+    }
     originalError.call(console, ...args);
   };
 });

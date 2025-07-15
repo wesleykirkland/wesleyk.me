@@ -74,7 +74,9 @@ describe('RandomCat Component', () => {
         json: () => Promise.resolve(mockCatData)
       });
 
-      render(<RandomCat />);
+      await act(async () => {
+        render(<RandomCat />);
+      });
 
       expect(global.fetch).toHaveBeenCalledWith('/api/cat');
     });

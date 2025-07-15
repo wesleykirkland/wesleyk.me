@@ -25,13 +25,6 @@ const setupWindowMocks = () => {
     configurable: true
   });
 
-  // Delete and recreate location to avoid redefinition errors
-  delete (window as any).location;
-  window.location = {
-    href: 'http://localhost:3000/test-path',
-    search: ''
-  } as any;
-
   Object.defineProperty(document, 'title', {
     value: 'Test Page',
     writable: true,
@@ -129,11 +122,9 @@ describe('usePageTracking Hook', () => {
 
     it('tracks search parameters when enabled', () => {
       // Mock window.location.search
-      delete (window as any).location;
-      window.location = {
-        href: 'http://localhost:3000/test-path?param1=value1&param2=value2',
+      (window as any).location = {
         search: '?param1=value1&param2=value2'
-      } as any;
+      };
 
       renderHook(() => usePageTracking({ trackSearchParams: true }));
 
@@ -150,11 +141,9 @@ describe('usePageTracking Hook', () => {
     });
 
     it('does not include search params when disabled', () => {
-      delete (window as any).location;
-      window.location = {
-        href: 'http://localhost:3000/test-path?param1=value1',
+      (window as any).location = {
         search: '?param1=value1'
-      } as any;
+      };
 
       renderHook(() => usePageTracking({ trackSearchParams: false }));
 
@@ -167,11 +156,9 @@ describe('usePageTracking Hook', () => {
     });
 
     it('handles empty search parameters', () => {
-      delete (window as any).location;
-      window.location = {
-        href: 'http://localhost:3000/test-path',
+      (window as any).location = {
         search: ''
-      } as any;
+      };
 
       renderHook(() => usePageTracking({ trackSearchParams: true }));
 
@@ -349,11 +336,12 @@ describe('useEventTracking Hook', () => {
       configurable: true
     });
 
-    delete (window as any).location;
-    window.location = {
+    // Mock basic location properties
+    (window as any).location = {
       pathname: '/test-path',
-      href: 'http://localhost:3000/test-path'
-    } as any;
+      href: 'http://localhost:3000/test-path',
+      search: ''
+    };
   });
 
   it('tracks events with basic properties', () => {
@@ -731,11 +719,9 @@ describe('trackingEvents', () => {
     });
 
     it('handles malformed search parameters', () => {
-      delete (window as any).location;
-      window.location = {
-        href: 'http://localhost:3000/test?invalid=param&=empty&malformed',
+      (window as any).location = {
         search: '?invalid=param&=empty&malformed'
-      } as any;
+      };
 
       expect(() => {
         renderHook(() => usePageTracking({ trackSearchParams: true }));
