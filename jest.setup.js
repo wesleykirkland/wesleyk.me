@@ -29,17 +29,7 @@ jest.mock('next/navigation', () => ({
 process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID = 'test-site-id';
 process.env.NODE_ENV = 'test';
 
-// Mock window.location
-Object.defineProperty(window, 'location', {
-  value: {
-    href: 'http://localhost:3000',
-    origin: 'http://localhost:3000',
-    pathname: '/',
-    search: '',
-    hash: ''
-  },
-  writable: true
-});
+// Window location mocking is handled per test if needed
 
 // Mock document.head for script injection tests
 Object.defineProperty(document, 'head', {
