@@ -114,8 +114,6 @@ function SearchContent() {
     performSearch(query, newTags, includeContent);
   };
 
-<<<<<<< HEAD
-=======
   const toggleContentSearch = () => {
     const newIncludeContent = !includeContent;
     setIncludeContent(newIncludeContent);
@@ -141,7 +139,6 @@ function SearchContent() {
 
   const hasActiveFilters = selectedTags.length > 0 || includeContent;
 
->>>>>>> e3faeb4 (Add search functionality)
   return (
     <>
       <PageTracker

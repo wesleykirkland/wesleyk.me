@@ -147,13 +147,7 @@ describe('Client Blog Utilities', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       // Create a post that might cause issues
-<<<<<<< HEAD
-      const problematicPost = createMockPost({
-        slug: null as unknown as string
-      });
-=======
       const problematicPost = createMockPost({ slug: null as any });
->>>>>>> e3faeb4 (Add search functionality)
 
       // The function should handle this gracefully
       const url = getSafePostUrl(problematicPost);
