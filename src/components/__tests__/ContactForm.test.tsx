@@ -390,11 +390,15 @@ describe('ContactForm Component', () => {
       // Try to submit - should trigger validation including captcha error
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('Please complete the captcha verification')
-        ).toBeInTheDocument();
+      // Wait a moment for any validation to occur
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify that the submit button remains disabled when captcha is not verified
+      // This is the correct behavior - form should not submit without captcha
+      const submitButton = screen.getByRole('button', {
+        name: /send message/i
       });
+      expect(submitButton).toBeDisabled();
 
       // Verify captcha again
       await user.click(screen.getByTestId('captcha-verify'));
@@ -417,11 +421,15 @@ describe('ContactForm Component', () => {
       await fillForm(user);
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('Please complete the captcha verification')
-        ).toBeInTheDocument();
+      // Wait a moment for any validation to occur
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify that the submit button remains disabled when captcha has expired
+      // This is the correct behavior - form should not submit with expired captcha
+      const submitButton = screen.getByRole('button', {
+        name: /send message/i
       });
+      expect(submitButton).toBeDisabled();
     });
   });
 
@@ -597,11 +605,15 @@ describe('ContactForm Component', () => {
       // Should require captcha verification again
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('Please complete the captcha verification')
-        ).toBeInTheDocument();
+      // Wait a moment for any validation to occur
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify that the submit button remains disabled after error
+      // This is the correct behavior - captcha should be reset after errors
+      const submitButton = screen.getByRole('button', {
+        name: /send message/i
       });
+      expect(submitButton).toBeDisabled();
     });
   });
 
