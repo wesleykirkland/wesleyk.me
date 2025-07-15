@@ -2,7 +2,8 @@ import Link from 'next/link';
 import {
   getSecurityResearchPosts,
   getCaseStudyPosts,
-  getSafeBlogPostUrl
+  getSafeBlogPostUrl,
+  parsePostDate
 } from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
@@ -48,6 +49,7 @@ function getCaseStudyTypeFromTags(tags: string[]): string {
   if (tags.includes('Code Review')) return 'Code Review';
   if (tags.includes('Compliance Audit')) return 'Compliance Audit';
   if (tags.includes('Incident Response')) return 'Incident Response';
+  if (tags.includes('Marketing')) return 'Marketing';
   return 'Other';
 }
 
@@ -66,6 +68,9 @@ function getCaseStudyTypeClasses(type: string): string {
   }
   if (type === 'Incident Response') {
     return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+  }
+  if (type === 'Marketing') {
+    return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
   }
   return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
 }
@@ -244,7 +249,7 @@ export default function SecurityResearch() {
               <div className="space-y-4">
                 {securityResearchPosts.map((post) => {
                   const formattedDate = format(
-                    new Date(post.date),
+                    parsePostDate(post.date),
                     'MMMM d, yyyy'
                   );
                   const postUrl = getSafeBlogPostUrl(post);
@@ -342,7 +347,7 @@ export default function SecurityResearch() {
               <div className="space-y-4">
                 {caseStudyPosts.map((post) => {
                   const formattedDate = format(
-                    new Date(post.date),
+                    parsePostDate(post.date),
                     'MMMM d, yyyy'
                   );
                   const postUrl = getSafeBlogPostUrl(post);

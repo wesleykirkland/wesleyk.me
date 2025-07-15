@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getAllTags, getPostsByTag, getTagSlug } from '@/lib/blog';
+import SearchBox from '@/components/SearchBox';
 
 export const metadata = {
   title: `All Tags - ${process.env.NEXT_PUBLIC_NAME}`,
@@ -37,10 +38,19 @@ export default function TagsPage() {
           All Tags
         </h1>
 
-        <p className="text-lg text-gray-600 dark:text-gray-300">
+        <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
           Browse posts by topic. {allTags.length}{' '}
           {allTags.length === 1 ? 'tag' : 'tags'} available.
         </p>
+
+        {/* Search Box */}
+        <div className="max-w-2xl">
+          <SearchBox
+            placeholder="Search posts or filter by tags..."
+            size="md"
+            className="w-full"
+          />
+        </div>
       </div>
 
       {/* Tags Grid */}

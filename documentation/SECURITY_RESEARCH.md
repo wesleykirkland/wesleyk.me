@@ -81,7 +81,7 @@ excerpt: 'Brief description of your case study'
 tags: ['Case Study', 'Security Assessment', 'Penetration Test']
 author: 'Wesley Kirkland'
 caseStudy:
-  type: 'Security Assessment' # Security Assessment, Penetration Test, Code Review, Compliance Audit, Incident Response, Other
+  type: 'Security Assessment' # Security Assessment, Penetration Test, Code Review, Compliance Audit, Incident Response, Marketing, Other
   client: 'Confidential' # Client name or 'Confidential'
   industry: 'E-commerce' # Industry sector
   duration: '3 weeks' # Project duration
@@ -92,13 +92,14 @@ caseStudy:
 
 ### Case Study Field Descriptions
 
-- `type`: Type of security engagement
+- `type`: Type of engagement
 
   - `Security Assessment`: Comprehensive security review
   - `Penetration Test`: Simulated attack testing
   - `Code Review`: Source code security analysis
   - `Compliance Audit`: Regulatory compliance assessment
   - `Incident Response`: Security incident investigation
+  - `Marketing`: Marketing campaigns, content strategy, or promotional work
   - `Other`: Custom engagement type
 
 - `client`: Client name (use 'Confidential' for anonymized case studies)
@@ -134,6 +135,7 @@ The Security Research page automatically applies appropriate styling based on me
 - **Code Review**: Blue background (technical analysis)
 - **Compliance Audit**: Purple background (regulatory focus)
 - **Incident Response**: Yellow background (urgent response)
+- **Marketing**: Green background (promotional/content work)
 - **Other**: Gray background (general category)
 
 ## 📄 Example Blog Post

@@ -6,6 +6,18 @@ import html from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import sanitizeHtml from 'sanitize-html';
 
+// Utility function to parse dates correctly without timezone issues
+export function parsePostDate(dateString: string): Date {
+  // For YYYY-MM-DD format, treat as local date to avoid timezone issues
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    const [year, month, day] = dateString.split('-').map(Number);
+    // Create date in local timezone (month is 0-indexed)
+    return new Date(year, month - 1, day);
+  }
+  // For other formats, use standard parsing
+  return new Date(dateString);
+}
+
 const postsDirectory = path.join(process.cwd(), 'posts');
 
 // Shared type definitions to eliminate duplication
@@ -24,6 +36,7 @@ export type CaseStudyMetadata = {
     | 'Code Review'
     | 'Compliance Audit'
     | 'Incident Response'
+    | 'Marketing'
     | 'Other';
   client?: string;
   industry?: string;
@@ -41,6 +54,8 @@ interface BaseBlogPost {
   tags: string[];
   author: string;
   featuredImage?: string;
+  featuredImageLight?: string;
+  featuredImageDark?: string;
   permalink?: string;
   wordpressUrl?: string;
   securityResearch?: SecurityResearchMetadata;
@@ -67,11 +82,30 @@ function extractPostMetadata(
     tags: matterResult.data.tags || [],
     author: matterResult.data.author || 'Wesley Kirkland',
     featuredImage: matterResult.data.featuredImage,
+    featuredImageLight: matterResult.data.featuredImageLight,
+    featuredImageDark: matterResult.data.featuredImageDark,
     permalink: matterResult.data.permalink,
     wordpressUrl: matterResult.data.wordpressUrl,
     securityResearch: matterResult.data.securityResearch,
     caseStudy: matterResult.data.caseStudy
   };
+}
+
+// Helper function to get the appropriate featured image based on theme
+export function getFeaturedImage(
+  post: BlogPostMetadata,
+  theme?: 'light' | 'dark'
+): string | undefined {
+  // If theme-specific images are available, use them
+  if (theme === 'dark' && post.featuredImageDark) {
+    return post.featuredImageDark;
+  }
+  if (theme === 'light' && post.featuredImageLight) {
+    return post.featuredImageLight;
+  }
+
+  // Fallback to default featured image
+  return post.featuredImage;
 }
 
 export function getSortedPostsData(): BlogPostMetadata[] {
@@ -177,7 +211,8 @@ export function getCaseStudyPosts(): BlogPostMetadata[] {
     'Assessment',
     'Penetration Test',
     'Security Audit',
-    'Compliance'
+    'Compliance',
+    'Marketing'
   ]);
 }
 
@@ -210,7 +245,7 @@ export function processImagePaths(content: string, slug: string): string {
 
 // Permalink utility functions
 export function generateWordPressPermalink(date: string, slug: string): string {
-  const dateObj = new Date(date);
+  const dateObj = parsePostDate(date);
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
   const day = String(dateObj.getDate()).padStart(2, '0');
@@ -362,6 +397,204 @@ export function getTagSlug(tag: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-)|(-$)/g, '');
+}
+
+// Search functionality
+export interface SearchOptions {
+  query: string;
+  tags?: string[];
+  limit?: number;
+  includeContent?: boolean;
+}
+
+export interface SearchResult {
+  post: BlogPostMetadata;
+  relevanceScore: number;
+  matchedFields: string[];
+}
+
+// Helper function to calculate relevance score for a post
+async function calculatePostRelevance(
+  post: BlogPostMetadata,
+  searchTerms: string[],
+  includeContent: boolean
+): Promise<{ relevanceScore: number; matchedFields: string[] }> {
+  let relevanceScore = 0;
+  const matchedFields: string[] = [];
+
+  // Search in title (highest weight)
+  const titleMatches = searchTerms.filter((term) =>
+    post.title.toLowerCase().includes(term)
+  );
+  if (titleMatches.length > 0) {
+    relevanceScore += titleMatches.length * 10;
+    matchedFields.push('title');
+  }
+
+  // Search in excerpt (medium weight)
+  const excerptMatches = searchTerms.filter((term) =>
+    post.excerpt.toLowerCase().includes(term)
+  );
+  if (excerptMatches.length > 0) {
+    relevanceScore += excerptMatches.length * 5;
+    matchedFields.push('excerpt');
+  }
+
+  // Search in tags (medium weight)
+  const tagMatches = searchTerms.filter((term) =>
+    post.tags.some((tag) => tag.toLowerCase().includes(term))
+  );
+  if (tagMatches.length > 0) {
+    relevanceScore += tagMatches.length * 5;
+    matchedFields.push('tags');
+  }
+
+  // Search in content if requested (lower weight)
+  if (includeContent) {
+    try {
+      const postData = await getPostData(post.slug);
+      const contentMatches = searchTerms.filter((term) =>
+        postData.content.toLowerCase().includes(term)
+      );
+      if (contentMatches.length > 0) {
+        relevanceScore += contentMatches.length * 2;
+        matchedFields.push('content');
+      }
+    } catch {
+      // Skip content search if post data can't be loaded
+    }
+  }
+
+  return { relevanceScore, matchedFields };
+}
+
+// Helper function to apply tag filtering
+function applyTagFilter(
+  post: BlogPostMetadata,
+  tags: string[] | undefined,
+  query: string,
+  baseScore: number,
+  matchedFields: string[]
+): { relevanceScore: number; shouldInclude: boolean } {
+  if (!tags || tags.length === 0) {
+    return { relevanceScore: baseScore, shouldInclude: baseScore > 0 };
+  }
+
+  const hasMatchingTag = tags.some((tag) =>
+    post.tags.some(
+      (postTag: string) => postTag.toLowerCase() === tag.toLowerCase()
+    )
+  );
+
+  if (hasMatchingTag) {
+    const relevanceScore = baseScore + 3;
+    if (!matchedFields.includes('tags')) {
+      matchedFields.push('tags');
+    }
+    return { relevanceScore, shouldInclude: true };
+  }
+
+  if (query.trim() === '') {
+    // If only filtering by tags and no text query, include posts with matching tags
+    matchedFields.push('tags');
+    return { relevanceScore: 1, shouldInclude: true };
+  }
+
+  return { relevanceScore: baseScore, shouldInclude: false };
+}
+
+export async function searchPosts(
+  options: SearchOptions
+): Promise<SearchResult[]> {
+  const { query, tags, limit, includeContent = false } = options;
+  const allPosts = getSortedPostsData();
+
+  if (!query.trim() && (!tags || tags.length === 0)) {
+    return [];
+  }
+
+  const searchTerms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((term) => term.length > 0);
+
+  // Process posts in parallel for better performance
+  const postResults = await Promise.all(
+    allPosts.map(async (post) => {
+      const { relevanceScore, matchedFields } = await calculatePostRelevance(
+        post,
+        searchTerms,
+        includeContent
+      );
+      return { post, relevanceScore, matchedFields };
+    })
+  );
+
+  // Filter and process results
+  const results: SearchResult[] = [];
+
+  for (const {
+    post,
+    relevanceScore: baseScore,
+    matchedFields
+  } of postResults) {
+    const { relevanceScore, shouldInclude } = applyTagFilter(
+      post,
+      tags,
+      query,
+      baseScore,
+      matchedFields
+    );
+
+    if (shouldInclude) {
+      results.push({
+        post,
+        relevanceScore,
+        matchedFields
+      });
+    }
+  }
+
+  // Sort by relevance score (descending)
+  results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+  // Apply limit if specified
+  if (limit && limit > 0) {
+    return results.slice(0, limit);
+  }
+
+  return results;
+}
+
+export function getSearchSuggestions(
+  query: string,
+  limit: number = 5
+): string[] {
+  if (!query.trim()) {
+    return [];
+  }
+
+  const allPosts = getSortedPostsData();
+  const suggestions = new Set<string>();
+  const queryLower = query.toLowerCase();
+
+  // Get title suggestions
+  for (const post of allPosts) {
+    if (post.title.toLowerCase().includes(queryLower)) {
+      suggestions.add(post.title);
+    }
+
+    // Get tag suggestions
+    for (const tag of post.tags) {
+      if (tag.toLowerCase().includes(queryLower)) {
+        suggestions.add(tag);
+      }
+    }
+
+    if (suggestions.size >= limit * 2) break;
+  }
+
+  return Array.from(suggestions).slice(0, limit);
 }
 
 // URL sanitization using battle-tested sanitize-html library

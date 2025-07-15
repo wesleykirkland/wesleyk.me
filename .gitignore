@@ -108,6 +108,7 @@ override.tf.json
 terraform.rc
 
 # Personal files
+.vscode/**
 To Do.txt
 TODO.txt
 todo.txt

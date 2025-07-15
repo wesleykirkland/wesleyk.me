@@ -1,17 +1,18 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   getPostByPermalink,
   getPostData,
   getSortedPostsData,
   getPostPermalink,
   getWordPressPermalink,
-  isWordPressPermalink
+  isWordPressPermalink,
+  parsePostDate
 } from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
 import PageTracker from '@/components/PageTracker';
+import ThemeAwareFeaturedImage from '@/components/ThemeAwareFeaturedImage';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -93,7 +94,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const post = await getPostData(postMeta.slug);
-  const formattedDate = format(new Date(post.date), 'MMMM d, yyyy');
+  const formattedDate = format(parsePostDate(post.date), 'MMMM d, yyyy');
 
   return (
     <>
@@ -161,17 +162,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             {/* Featured Image */}
-            {post.featuredImage && (
-              <div className="mb-8">
-                <Image
-                  src={post.featuredImage}
-                  alt={post.title}
-                  width={800}
-                  height={256}
-                  className="w-full h-64 object-cover rounded-lg shadow-lg"
-                />
-              </div>
-            )}
+            <ThemeAwareFeaturedImage post={post} />
           </header>
 
           {/* Content */}

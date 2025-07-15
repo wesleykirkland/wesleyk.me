@@ -109,6 +109,47 @@ The system will automatically convert `screenshot-1.png` to `/images/blog/2024/m
 - Group by year to avoid overcrowding
 - Use consistent naming conventions
 
+## 🌓 Theme-Aware Featured Images
+
+The blog system supports different hero images for light and dark themes, providing optimal visual experience across all viewing preferences.
+
+### How It Works
+
+The system automatically detects the current theme and displays the appropriate image:
+
+- **Light Mode**: Uses `featuredImageLight` if available, falls back to `featuredImage`
+- **Dark Mode**: Uses `featuredImageDark` if available, falls back to `featuredImage`
+- **Dynamic Switching**: Images change instantly when users toggle themes
+
+### Image Priority Order
+
+1. **Theme-specific image** (`featuredImageLight` or `featuredImageDark`)
+2. **Fallback image** (`featuredImage`)
+3. **No image** (if none specified)
+
+### Best Practices for Theme Images
+
+#### **Light Mode Images**
+
+- Use darker text/logos for contrast
+- Lighter backgrounds work well
+- Consider brand colors that work on white/light backgrounds
+
+#### **Dark Mode Images**
+
+- Use lighter text/logos for contrast
+- Darker backgrounds or transparent PNGs
+- Ensure sufficient contrast for accessibility
+
+#### **File Naming Convention**
+
+```
+/images/blog/YYYY/post-slug/
+├── hero-light.svg    # Light theme version
+├── hero-dark.svg     # Dark theme version
+└── hero.jpg          # Fallback (optional)
+```
+
 ## 🔧 Technical Implementation
 
 The blog system includes several utilities:
@@ -152,8 +193,25 @@ The system automatically processes markdown content to convert relative image pa
    ```
 
 4. **Add featured image to frontmatter** (optional):
+
+   **Option 1: Single image for all themes**
+
    ```yaml
    featuredImage: '/images/blog/2024/your-post-slug/hero.jpg'
+   ```
+
+   **Option 2: Theme-specific images (recommended)**
+
+   ```yaml
+   featuredImageLight: '/images/blog/2024/your-post-slug/hero-light.svg'
+   featuredImageDark: '/images/blog/2024/your-post-slug/hero-dark.svg'
+   ```
+
+   **Option 3: Fallback with theme-specific overrides**
+
+   ```yaml
+   featuredImage: '/images/blog/2024/your-post-slug/hero.jpg' # fallback
+   featuredImageDark: '/images/blog/2024/your-post-slug/hero-dark.svg' # dark mode only
    ```
 
 ## 🌐 CDN and Performance Considerations

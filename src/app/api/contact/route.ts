@@ -218,14 +218,13 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle unsupported methods
-export async function GET() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+function methodNotAllowed() {
+  return NextResponse.json(
+    { error: 'Method not allowed. Use POST to send contact messages.' },
+    { status: 405 }
+  );
 }
 
-export async function PUT() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
-}
-
-export async function DELETE() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
-}
+export const GET = methodNotAllowed;
+export const PUT = methodNotAllowed;
+export const DELETE = methodNotAllowed;

@@ -21,7 +21,8 @@ export default function Contact() {
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300">
               Let&apos;s connect! I&apos;m always interested in discussing
-              technology, security research, or PowerShell automation.
+              public speaking. technology, security research, automation, new
+              ideas, meetup groups, or anything I can help with!
             </p>
           </div>
 

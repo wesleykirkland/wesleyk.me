@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { getSortedPostsData, getSafePostUrl } from '@/lib/blog';
+import { getSortedPostsData, getSafePostUrl, parsePostDate } from '@/lib/blog';
 import { format } from 'date-fns';
 import TagList from '@/components/TagList';
 import PageTracker from '@/components/PageTracker';
+import SearchBox from '@/components/SearchBox';
 
 export default function Blog() {
   const allPostsData = getSortedPostsData();
@@ -23,10 +24,19 @@ export default function Blog() {
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Blog
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
             Thoughts on technology, security research, PowerShell automation,
             and various technical adventures.
           </p>
+
+          {/* Search Box */}
+          <div className="max-w-2xl mx-auto">
+            <SearchBox
+              placeholder="Search blog posts..."
+              size="md"
+              className="w-full"
+            />
+          </div>
         </div>
 
         {/* Blog Posts */}
@@ -58,7 +68,7 @@ export default function Blog() {
                   <span>By {post.author}</span>
                   <span className="mx-2">•</span>
                   <time dateTime={post.date}>
-                    {format(new Date(post.date), 'MMMM d, yyyy')}
+                    {format(parsePostDate(post.date), 'MMMM d, yyyy')}
                   </time>
                 </div>
 
