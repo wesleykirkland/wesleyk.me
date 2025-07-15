@@ -114,31 +114,6 @@ function SearchContent() {
     performSearch(query, newTags, includeContent);
   };
 
-  const toggleContentSearch = () => {
-    const newIncludeContent = !includeContent;
-    setIncludeContent(newIncludeContent);
-
-    const params = new URLSearchParams();
-    if (query.trim()) params.set('q', query.trim());
-    if (selectedTags.length > 0) params.set('tags', selectedTags.join(','));
-    if (newIncludeContent) params.set('content', 'true');
-
-    window.history.pushState({}, '', `/search?${params.toString()}`);
-    performSearch(query, selectedTags, newIncludeContent);
-  };
-
-  const clearFilters = () => {
-    setSelectedTags([]);
-    setIncludeContent(false);
-    const params = new URLSearchParams();
-    if (query.trim()) params.set('q', query.trim());
-
-    window.history.pushState({}, '', `/search?${params.toString()}`);
-    performSearch(query, [], false);
-  };
-
-  const hasActiveFilters = selectedTags.length > 0 || includeContent;
-
   return (
     <>
       <PageTracker

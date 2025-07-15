@@ -685,7 +685,9 @@ describe('/api/contact Route', () => {
       expect(response.status).toBe(405);
 
       const data = await response.json();
-      expect(data.error).toBe('Method not allowed');
+      expect(data.error).toBe(
+        'Method not allowed. Use POST to send contact messages.'
+      );
     });
 
     it('should return method not allowed for PUT requests', async () => {
@@ -693,7 +695,9 @@ describe('/api/contact Route', () => {
       expect(response.status).toBe(405);
 
       const data = await response.json();
-      expect(data.error).toBe('Method not allowed');
+      expect(data.error).toBe(
+        'Method not allowed. Use POST to send contact messages.'
+      );
     });
 
     it('should return method not allowed for DELETE requests', async () => {
@@ -701,7 +705,9 @@ describe('/api/contact Route', () => {
       expect(response.status).toBe(405);
 
       const data = await response.json();
-      expect(data.error).toBe('Method not allowed');
+      expect(data.error).toBe(
+        'Method not allowed. Use POST to send contact messages.'
+      );
     });
   });
 });

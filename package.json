@@ -20,6 +20,7 @@
     "test:components": "jest --testPathPattern='components/__tests__'",
     "test:api": "jest --testPathPattern='api/__tests__'",
     "test:lib": "jest --testPathPattern='lib/__tests__'",
+    "test:summary": "jest --coverage --watchAll=false --passWithNoTests --silent",
     "test:verbose": "jest --verbose",
     "test:debug": "jest --detectOpenHandles --forceExit",
     "format": "prettier --write .",

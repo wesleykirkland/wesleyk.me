@@ -413,7 +413,9 @@ export interface SearchResult {
   matchedFields: string[];
 }
 
-export function searchPosts(options: SearchOptions): SearchResult[] {
+export async function searchPosts(
+  options: SearchOptions
+): Promise<SearchResult[]> {
   const { query, tags, limit, includeContent = false } = options;
   const allPosts = getSortedPostsData();
 
@@ -461,7 +463,7 @@ export function searchPosts(options: SearchOptions): SearchResult[] {
     // Search in content if requested (lower weight)
     if (includeContent) {
       try {
-        const postData = getPostData(post.slug);
+        const postData = await getPostData(post.slug);
         const contentMatches = searchTerms.filter((term) =>
           postData.content.toLowerCase().includes(term)
         );
