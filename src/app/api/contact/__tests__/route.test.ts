@@ -211,9 +211,15 @@ describe('/api/contact Route', () => {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: expect.stringContaining('secret=test-secret-key')
+          body: expect.any(URLSearchParams)
         })
       );
+
+      // Verify the URLSearchParams contains the correct data
+      const fetchCall = (global.fetch as jest.Mock).mock.calls[0];
+      const body = fetchCall[1].body as URLSearchParams;
+      expect(body.get('secret')).toBe('test-secret-key');
+      expect(body.get('response')).toBe('valid-captcha-token');
     });
 
     it('returns error when captcha verification fails', async () => {
@@ -263,9 +269,16 @@ describe('/api/contact Route', () => {
     });
 
     it('detects and blocks suspicious content', async () => {
+      // Mock successful captcha verification for this test
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => mockCaptchaSuccessResponse
+      });
+
       const suspiciousData = {
         ...validFormData,
-        message: 'Check out this link: http://malicious-site.com'
+        message:
+          'This message contains <script>alert("xss")</script> malicious content'
       };
 
       const request = new NextRequest('http://localhost:3000/api/contact', {
@@ -369,6 +382,12 @@ describe('/api/contact Route', () => {
 
   describe('Security Features', () => {
     it('blocks common spam patterns', async () => {
+      // Mock successful captcha verification for this test
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => mockCaptchaSuccessResponse
+      });
+
       const spamPatterns = [
         'viagra',
         'casino',
@@ -402,6 +421,12 @@ describe('/api/contact Route', () => {
     });
 
     it('blocks messages with excessive URLs', async () => {
+      // Mock successful captcha verification for this test
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => mockCaptchaSuccessResponse
+      });
+
       const urlSpamData = {
         ...validFormData,
         message:
