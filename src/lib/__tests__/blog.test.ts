@@ -454,6 +454,10 @@ describe('Blog Utilities', () => {
     });
 
     describe('searchPosts', () => {
+      // Helper function to reduce nesting depth
+      const hasSecurityTag = (r: { post: { tags: string[] } }) =>
+        r.post.tags.includes('Security');
+
       it('should return empty results for empty query and no tags', async () => {
         const results = await searchPosts({ query: '' });
         expect(results).toEqual([]);
@@ -495,8 +499,6 @@ describe('Blog Utilities', () => {
           tags: ['Security']
         });
         // Should find posts that contain the Security tag
-        const hasSecurityTag = (r: { post: { tags: string[] } }) =>
-          r.post.tags.includes('Security');
         const securityPosts = results.filter(hasSecurityTag);
         expect(securityPosts).toHaveLength(1);
         expect(securityPosts[0].post.tags).toContain('Security');
