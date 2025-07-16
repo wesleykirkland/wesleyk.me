@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ContactForm from '../ContactForm';
 
@@ -45,26 +45,31 @@ const mockTrackingEvents =
   require('../../hooks/usePageTracking').trackingEvents;
 
 describe('ContactForm Component', () => {
+  let originalEnv: Record<string, string>;
+
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // Mock the environment variable
+    originalEnv = { ...process.env };
     process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY = 'test-site-key';
   });
 
   afterEach(() => {
-    delete process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
+    process.env = originalEnv;
   });
 
-  const fillForm = async (
-    user: any,
-    overrides: Partial<{
-      name: string;
-      email: string;
-      subject: string;
-      message: string;
-    }> = {}
-  ) => {
+  // Helper function to suppress console errors for tests that expect them
+  const withSuppressedConsoleError = async (testFn: () => Promise<void>) => {
+    const originalError = console.error;
+    console.error = jest.fn();
+    try {
+      await testFn();
+    } finally {
+      console.error = originalError;
+    }
+  };
+
+  // Helper function for form filling
+  const fillFormFields = async (user: any, overrides: any = {}) => {
     const formData = {
       name: 'John Doe',
       email: 'john@example.com',
@@ -74,7 +79,6 @@ describe('ContactForm Component', () => {
       ...overrides
     };
 
-    // Clear existing values first
     const nameInput = screen.getByLabelText(/name/i);
     const emailInput = screen.getByLabelText(/email/i);
     const subjectInput = screen.getByLabelText(/subject/i);
@@ -306,7 +310,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user, {
+      await fillFormFields(user, {
         name: 'A',
         subject: 'Hi',
         message: 'Short'
@@ -360,7 +364,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
 
       // Try to submit without captcha - button should be disabled
       const submitButton = screen.getByRole('button', {
@@ -379,7 +383,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
 
       // Verify captcha first
       await user.click(screen.getByTestId('captcha-verify'));
@@ -418,7 +422,7 @@ describe('ContactForm Component', () => {
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByTestId('captcha-expire'));
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
       // Wait a moment for any validation to occur
@@ -448,7 +452,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      const formData = await fillForm(user);
+      const formData = await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -470,7 +474,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -485,7 +489,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -507,7 +511,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -531,7 +535,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -548,23 +552,27 @@ describe('ContactForm Component', () => {
     });
 
     it('handles network errors', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+      await withSuppressedConsoleError(async () => {
+        (global.fetch as jest.Mock).mockRejectedValue(
+          new Error('Network error')
+        );
 
-      const user = userEvent.setup();
-      render(<ContactForm />);
+        const user = userEvent.setup();
+        render(<ContactForm />);
 
-      await fillForm(user);
-      await user.click(screen.getByTestId('captcha-verify'));
-      await user.click(screen.getByRole('button', { name: /send message/i }));
+        await fillFormFields(user);
+        await user.click(screen.getByTestId('captcha-verify'));
+        await user.click(screen.getByRole('button', { name: /send message/i }));
 
-      await waitFor(() => {
-        expect(screen.getByText(/network error/i)).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText(/network error/i)).toBeInTheDocument();
+        });
+
+        expect(mockTrackingEvents.contactFormSubmit).toHaveBeenCalledWith(
+          false,
+          'Network error'
+        );
       });
-
-      expect(mockTrackingEvents.contactFormSubmit).toHaveBeenCalledWith(
-        false,
-        'Network error'
-      );
     });
 
     it('handles generic server errors', async () => {
@@ -579,7 +587,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -589,31 +597,35 @@ describe('ContactForm Component', () => {
     });
 
     it('resets captcha on error', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+      await withSuppressedConsoleError(async () => {
+        (global.fetch as jest.Mock).mockRejectedValue(
+          new Error('Network error')
+        );
 
-      const user = userEvent.setup();
-      render(<ContactForm />);
+        const user = userEvent.setup();
+        render(<ContactForm />);
 
-      await fillForm(user);
-      await user.click(screen.getByTestId('captcha-verify'));
-      await user.click(screen.getByRole('button', { name: /send message/i }));
+        await fillFormFields(user);
+        await user.click(screen.getByTestId('captcha-verify'));
+        await user.click(screen.getByRole('button', { name: /send message/i }));
 
-      await waitFor(() => {
-        expect(screen.getByText(/network error/i)).toBeInTheDocument();
+        await waitFor(() => {
+          expect(screen.getByText(/network error/i)).toBeInTheDocument();
+        });
+
+        // Should require captcha verification again
+        await user.click(screen.getByRole('button', { name: /send message/i }));
+
+        // Wait a moment for any validation to occur
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Verify that the submit button remains disabled after error
+        // This is the correct behavior - captcha should be reset after errors
+        const submitButton = screen.getByRole('button', {
+          name: /send message/i
+        });
+        expect(submitButton).toBeDisabled();
       });
-
-      // Should require captcha verification again
-      await user.click(screen.getByRole('button', { name: /send message/i }));
-
-      // Wait a moment for any validation to occur
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Verify that the submit button remains disabled after error
-      // This is the correct behavior - captcha should be reset after errors
-      const submitButton = screen.getByRole('button', {
-        name: /send message/i
-      });
-      expect(submitButton).toBeDisabled();
     });
   });
 
@@ -626,7 +638,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -647,7 +659,7 @@ describe('ContactForm Component', () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
-      await fillForm(user);
+      await fillFormFields(user);
       await user.click(screen.getByTestId('captcha-verify'));
       await user.click(screen.getByRole('button', { name: /send message/i }));
 

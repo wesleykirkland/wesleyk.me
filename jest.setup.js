@@ -83,6 +83,14 @@ beforeAll(() => {
     ) {
       return;
     }
+    // Suppress expected form submission errors in tests
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('Form submission error:') &&
+      process.env.NODE_ENV === 'test'
+    ) {
+      return;
+    }
     originalError.call(console, ...args);
   };
 });
