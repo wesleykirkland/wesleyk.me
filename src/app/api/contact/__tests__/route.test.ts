@@ -29,9 +29,6 @@ jest.mock('next/server', () => ({
   }
 }));
 
-import { NextRequest } from 'next/server';
-import { POST, GET, PUT, DELETE } from '../route';
-
 // Mock the email sending module
 jest.mock('../../../../lib/server-only-email', () => ({
   sendContactEmail: jest.fn()
@@ -42,6 +39,9 @@ jest.mock('../../../../lib/validation', () => ({
   sanitizeInput: jest.fn((input: string) => input.trim()),
   validateContactForm: jest.fn()
 }));
+
+import { NextRequest } from 'next/server';
+import { POST, GET, PUT, DELETE } from '../route';
 
 const mockSendContactEmail =
   require('../../../../lib/server-only-email').sendContactEmail;
@@ -55,20 +55,6 @@ global.fetch = jest.fn();
 // Mock console methods
 const originalConsoleError = console.error;
 const originalConsoleLog = console.log;
-
-beforeEach(() => {
-  console.error = jest.fn();
-  console.log = jest.fn();
-  jest.clearAllMocks();
-
-  // Set up default environment variables
-  process.env.HCAPTCHA_SECRET_KEY = 'test-secret-key';
-});
-
-afterEach(() => {
-  console.error = originalConsoleError;
-  console.log = originalConsoleLog;
-});
 
 describe('/api/contact Route', () => {
   const validFormData = {
@@ -85,6 +71,20 @@ describe('/api/contact Route', () => {
     challenge_ts: '2024-03-15T10:00:00Z',
     hostname: 'localhost'
   };
+
+  beforeEach(() => {
+    console.error = jest.fn();
+    console.log = jest.fn();
+    jest.clearAllMocks();
+
+    // Set up default environment variables
+    process.env.HCAPTCHA_SECRET_KEY = 'test-secret-key';
+  });
+
+  afterEach(() => {
+    console.error = originalConsoleError;
+    console.log = originalConsoleLog;
+  });
 
   describe('POST Method', () => {
     beforeEach(() => {

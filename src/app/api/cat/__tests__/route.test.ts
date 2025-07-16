@@ -1,7 +1,24 @@
 // Mock fetch globally
 global.fetch = jest.fn();
 
-// Mock Next.js server components before importing
+// Mock fs module
+jest.mock('fs', () => ({
+  existsSync: jest.fn(),
+  readdirSync: jest.fn(),
+  readFileSync: jest.fn(),
+  statSync: jest.fn()
+}));
+
+// Mock path module
+jest.mock('path', () => ({
+  join: jest.fn((...args: string[]) => args.join('/')),
+  extname: jest.fn((file: string) => {
+    const parts = file.split('.');
+    return parts.length > 1 ? '.' + parts[parts.length - 1] : '';
+  })
+}));
+
+// Mock Next.js server components with cat-specific functionality
 jest.mock('next/server', () => ({
   NextRequest: jest.fn().mockImplementation((url, init) => {
     const request = new Request(url, init);
@@ -19,23 +36,19 @@ jest.mock('next/server', () => ({
       body instanceof Uint8Array ||
       Buffer.isBuffer(body)
     ) {
-      // Image response - use the headers from init if provided, otherwise defaults
-      const headers = {
-        ...init?.headers
-      };
+      // Image response - use the headers from init if provided
       return new Response(body, {
         status: init?.status || 200,
-        headers
+        headers: init?.headers || {}
       });
     } else {
       // JSON response
-      const headers = {
-        'content-type': 'application/json',
-        ...init?.headers
-      };
       return new Response(JSON.stringify(body), {
         status: init?.status || 200,
-        headers
+        headers: {
+          'content-type': 'application/json',
+          ...init?.headers
+        }
       });
     }
   })
@@ -68,25 +81,8 @@ NextResponseMock.redirect = jest.fn((url, status = 302) => {
   return response;
 });
 
-// Mock fs module
-jest.mock('fs', () => ({
-  existsSync: jest.fn(),
-  readdirSync: jest.fn(),
-  readFileSync: jest.fn(),
-  statSync: jest.fn()
-}));
-
-// Mock path module
-jest.mock('path', () => ({
-  join: jest.fn((...args: string[]) => args.join('/')),
-  extname: jest.fn((file: string) => {
-    const parts = file.split('.');
-    return parts.length > 1 ? '.' + parts[parts.length - 1] : '';
-  })
-}));
-
 import { NextRequest } from 'next/server';
-import { GET, clearCatImagesCache } from '../route';
+import { GET } from '../route';
 
 const fs = require('fs');
 const path = require('path');
@@ -101,10 +97,6 @@ describe('/api/cat Route', () => {
   beforeEach(() => {
     // Clear all mocks
     jest.clearAllMocks();
-
-    // Clear the cache by mocking Date.now to force cache invalidation
-    const mockDateNow = jest.spyOn(Date, 'now');
-    mockDateNow.mockReturnValue(Date.now() + 60000); // Force cache expiry
 
     // Mock path.join to return a predictable path
     mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -124,9 +116,6 @@ describe('/api/cat Route', () => {
 
     // Mock fs.readFileSync for image serving
     mockFs.readFileSync.mockReturnValue(Buffer.from('fake-image-data'));
-
-    // Restore Date.now after setup
-    mockDateNow.mockRestore();
   });
 
   describe('Basic Functionality', () => {
@@ -330,9 +319,8 @@ describe('/api/cat Route', () => {
     });
 
     it('returns 404 when no supported image formats found', async () => {
-      // Clear mocks and cache
+      // Clear mocks
       jest.clearAllMocks();
-      clearCatImagesCache();
 
       // Set up path.join to work
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -359,9 +347,8 @@ describe('/api/cat Route', () => {
 
   describe('MIME Type Detection', () => {
     it('sets correct MIME type for JPEG', async () => {
-      // Clear cache and set up specific file
+      // Clear mocks and set up specific file
       jest.clearAllMocks();
-      clearCatImagesCache();
       const originalMathRandom = Math.random;
       Math.random = jest.fn(() => 0); // Always select first file
 
@@ -496,9 +483,8 @@ describe('/api/cat Route', () => {
 
   describe('Error Handling', () => {
     it('handles cats directory not found', async () => {
-      // Clear mocks and cache
+      // Clear mocks
       jest.clearAllMocks();
-      clearCatImagesCache();
 
       // Set up path.join to work
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -519,7 +505,6 @@ describe('/api/cat Route', () => {
     it('handles file system errors gracefully', async () => {
       // Clear mocks and cache
       jest.clearAllMocks();
-      clearCatImagesCache();
 
       // Set up path.join to work
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -545,7 +530,6 @@ describe('/api/cat Route', () => {
     it('handles general API errors', async () => {
       // Clear mocks and cache
       jest.clearAllMocks();
-      clearCatImagesCache();
 
       // Make path.join throw an error to trigger the main catch block
       mockPath.join.mockImplementation(() => {
@@ -685,8 +669,7 @@ describe('/api/cat Route', () => {
     });
 
     it('includes filename in headers for image responses', async () => {
-      // Clear cache and control random selection
-      clearCatImagesCache();
+      // Control random selection
       const originalMathRandom = Math.random;
       Math.random = jest.fn(() => 0); // Always select first file
 
@@ -816,8 +799,6 @@ describe('/api/cat Route', () => {
 
     it('should return consistent response format', async () => {
       // Clear cache and set up cat files
-      clearCatImagesCache();
-
       mockPath.join.mockReturnValue('/mock/path/to/cats');
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['cat1.jpg'] as any);
@@ -838,9 +819,7 @@ describe('/api/cat Route', () => {
     });
 
     it('should handle timeout scenarios', async () => {
-      // Clear cache and set up cat files
-      clearCatImagesCache();
-
+      // Set up cat files
       // This API doesn't use external fetch, so timeout scenarios don't apply
       // This test documents that the local API doesn't have timeout issues
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -860,8 +839,6 @@ describe('/api/cat Route', () => {
 
     it('should use API key when provided', async () => {
       // Clear cache and set up cat files
-      clearCatImagesCache();
-
       // This API doesn't use external API keys since it serves local files
       // This test documents that API keys are not needed for local operation
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -884,8 +861,6 @@ describe('/api/cat Route', () => {
 
     it('should handle invalid response structure', async () => {
       // Clear cache and set up cat files
-      clearCatImagesCache();
-
       // This API doesn't use external fetch, so invalid response structure doesn't apply
       // This test documents that the local API has consistent structure
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -905,8 +880,6 @@ describe('/api/cat Route', () => {
 
     it('should handle fetch network errors', async () => {
       // Clear cache and set up cat files
-      clearCatImagesCache();
-
       // This API doesn't use external fetch, so network errors don't apply
       // This test documents that the local API doesn't have network dependencies
       mockPath.join.mockReturnValue('/mock/path/to/cats');
@@ -979,9 +952,8 @@ describe('/api/cat Route', () => {
     });
 
     it('caches cat images list for performance', async () => {
-      // Clear mocks and cache to get accurate count
+      // Clear mocks to get accurate count
       jest.clearAllMocks();
-      clearCatImagesCache();
 
       // Mock Date.now to ensure consistent behavior
       const originalDateNow = Date.now;
@@ -1034,9 +1006,7 @@ describe('/api/cat Route', () => {
     });
 
     it('handles empty cats directory', async () => {
-      // Clear cache and set up empty directory
-      clearCatImagesCache();
-
+      // Set up empty directory
       mockPath.join.mockReturnValue('/mock/path/to/cats');
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue([]);
@@ -1054,9 +1024,7 @@ describe('/api/cat Route', () => {
     });
 
     it('handles directory with only non-image files', async () => {
-      // Clear cache and set up directory with non-image files
-      clearCatImagesCache();
-
+      // Set up directory with non-image files
       mockPath.join.mockReturnValue('/mock/path/to/cats');
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue([

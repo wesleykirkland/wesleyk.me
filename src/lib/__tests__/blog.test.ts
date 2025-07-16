@@ -1,3 +1,36 @@
+// Mock the dependencies BEFORE importing the module under test
+jest.mock('fs', () => ({
+  readdirSync: jest.fn(),
+  readFileSync: jest.fn(),
+  existsSync: jest.fn()
+}));
+
+jest.mock('path', () => ({
+  join: jest.fn((...args: string[]) => args.join('/')),
+  resolve: jest.fn((...args: string[]) => args.join('/')),
+  extname: jest.fn((file: string) =>
+    file.includes('.') ? '.' + file.split('.').pop() : ''
+  )
+}));
+
+jest.mock('gray-matter', () => jest.fn());
+
+jest.mock('remark', () => ({
+  remark: jest.fn(() => ({
+    use: jest.fn().mockReturnThis(),
+    process: jest.fn().mockResolvedValue({
+      toString: jest.fn().mockReturnValue('<p>Test content</p>')
+    })
+  }))
+}));
+
+jest.mock('remark-html', () => jest.fn());
+jest.mock('remark-gfm', () => jest.fn());
+jest.mock('sanitize-html', () => jest.fn((html: string) => html));
+
+// Import test utilities
+import { createMockBlogPost } from '../../__tests__/test-utils';
+
 import {
   parsePostDate,
   getSortedPostsData,
@@ -28,58 +61,77 @@ import {
 } from '../blog';
 import { createMockPost, sharedTestSuites } from './test-utils.helper';
 
-// Mock the dependencies
-jest.mock('fs', () => ({
-  readdirSync: jest.fn(),
-  readFileSync: jest.fn(),
-  existsSync: jest.fn()
-}));
-
-jest.mock('path', () => ({
-  join: jest.fn((...args: string[]) => args.join('/')),
-  resolve: jest.fn((...args: string[]) => args.join('/')),
-  extname: jest.fn((file: string) =>
-    file.includes('.') ? '.' + file.split('.').pop() : ''
-  )
-}));
-
-jest.mock('gray-matter', () => jest.fn());
-
-jest.mock('remark', () => ({
-  remark: jest.fn(() => ({
-    use: jest.fn().mockReturnThis(),
-    process: jest.fn().mockResolvedValue({
-      toString: jest.fn().mockReturnValue('<p>Test content</p>')
-    })
-  }))
-}));
-
-jest.mock('remark-html', () => jest.fn());
-jest.mock('remark-gfm', () => jest.fn());
-jest.mock('sanitize-html', () => jest.fn((html: string) => html));
-
 const fs = require('fs');
 const matter = require('gray-matter');
+
+// Helper functions to setup blog test data
+const setupDefaultBlogMocks = () => {
+  const mockPost = createMockBlogPost();
+
+  fs.existsSync.mockReturnValue(true);
+  fs.readdirSync.mockReturnValue(['post1.md', 'post2.md']);
+  fs.readFileSync.mockReturnValue('# Test Post\n\nContent here');
+
+  matter.mockReturnValue({
+    data: mockPost,
+    content: '# Test Post\n\nContent here'
+  });
+};
+
+const setupBlogMocksWithTags = (tags: string[]) => {
+  const mockPost = createMockBlogPost({ tags });
+  fs.readdirSync.mockReturnValue(['post1.md', 'post2.md']);
+  matter.mockReturnValue({
+    data: mockPost,
+    content: 'Test content'
+  });
+};
+
+const setupBlogMocksWithFiles = (files: string[]) => {
+  fs.readdirSync.mockReturnValue(files);
+  const mockPost = createMockBlogPost();
+  matter.mockReturnValue({
+    data: mockPost,
+    content: 'Test content'
+  });
+};
+
+const setupBlogMocksWithPost = (postData: Partial<BlogPostMetadata>) => {
+  const mockPost = createMockBlogPost(postData);
+  matter.mockReturnValue({
+    data: mockPost,
+    content: 'Test content'
+  });
+};
+
+const setupBlogMocksWithSecurityResearch = () => {
+  const mockPost = createMockBlogPost({
+    title: 'Security Post',
+    tags: ['Security'],
+    securityResearch: { severity: 'High' }
+  });
+  matter.mockReturnValue({
+    data: mockPost,
+    content: 'Test content'
+  });
+};
+
+const setupBlogMocksWithCaseStudy = () => {
+  const mockPost = createMockBlogPost({
+    title: 'Case Study',
+    tags: ['Case Study'],
+    caseStudy: { type: 'Security Assessment' }
+  });
+  matter.mockReturnValue({
+    data: mockPost,
+    content: 'Test content'
+  });
+};
 
 describe('Blog Utilities', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // Setup default mocks
-    fs.existsSync.mockReturnValue(true);
-    fs.readdirSync.mockReturnValue(['post1.md', 'post2.md']);
-    fs.readFileSync.mockReturnValue('# Test Post\n\nContent here');
-
-    matter.mockReturnValue({
-      data: {
-        title: 'Test Post',
-        date: '2024-01-01',
-        tags: ['test', 'blog'],
-        excerpt: 'Test excerpt',
-        author: 'Test Author'
-      },
-      content: '# Test Post\n\nContent here'
-    });
+    setupDefaultBlogMocks();
   });
 
   // Use shared test suite for getTagSlug
@@ -87,33 +139,14 @@ describe('Blog Utilities', () => {
 
   describe('getTagFromSlug', () => {
     it('should return tag from slug', () => {
-      fs.readdirSync.mockReturnValue(['post1.md', 'post2.md']);
-      matter.mockReturnValue({
-        data: {
-          title: 'Test Post',
-          date: '2024-01-01',
-          tags: ['JavaScript', 'React', 'Next.js'],
-          author: 'Test Author'
-        },
-        content: 'Test content'
-      });
-
+      setupBlogMocksWithTags(['JavaScript', 'React', 'Next.js']);
       const tag = getTagFromSlug('javascript');
       expect(tag).toBe('JavaScript');
     });
 
     it('should return null for non-existent slug', () => {
-      fs.readdirSync.mockReturnValue(['post1.md']);
-      matter.mockReturnValue({
-        data: {
-          title: 'Test Post',
-          date: '2024-01-01',
-          tags: ['React'],
-          author: 'Test Author'
-        },
-        content: 'Test content'
-      });
-
+      setupBlogMocksWithFiles(['post1.md']);
+      setupBlogMocksWithTags(['React']);
       const tag = getTagFromSlug('nonexistent');
       expect(tag).toBeNull();
     });
@@ -196,13 +229,12 @@ describe('Blog Utilities', () => {
     });
 
     it('should handle posts with no content', async () => {
+      setupBlogMocksWithPost({
+        title: 'Empty Post',
+        tags: []
+      });
       matter.mockReturnValue({
-        data: {
-          title: 'Empty Post',
-          date: '2024-01-01',
-          tags: [],
-          author: 'Test Author'
-        },
+        data: createMockBlogPost({ title: 'Empty Post', tags: [] }),
         content: ''
       });
 
@@ -268,16 +300,7 @@ describe('Blog Utilities', () => {
 
   describe('getSecurityResearchPosts', () => {
     it('should return security research posts', () => {
-      matter.mockReturnValue({
-        data: {
-          title: 'Security Post',
-          date: '2024-01-01',
-          tags: ['Security'],
-          securityResearch: { severity: 'High' }
-        },
-        content: 'Security content'
-      });
-
+      setupBlogMocksWithSecurityResearch();
       const posts = getSecurityResearchPosts();
       expect(posts).toHaveLength(2);
     });
@@ -285,16 +308,7 @@ describe('Blog Utilities', () => {
 
   describe('getCaseStudyPosts', () => {
     it('should return case study posts', () => {
-      matter.mockReturnValue({
-        data: {
-          title: 'Case Study',
-          date: '2024-01-01',
-          tags: ['Case Study'],
-          caseStudy: { type: 'Security Assessment' }
-        },
-        content: 'Case study content'
-      });
-
+      setupBlogMocksWithCaseStudy();
       const posts = getCaseStudyPosts();
       expect(posts).toHaveLength(2);
     });

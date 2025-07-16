@@ -10,12 +10,6 @@ let catImagesCache: string[] | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-// Function to clear cache (for testing)
-export function clearCatImagesCache(): void {
-  catImagesCache = null;
-  cacheTimestamp = 0;
-}
-
 function getCatImages(): string[] {
   const now = Date.now();
 

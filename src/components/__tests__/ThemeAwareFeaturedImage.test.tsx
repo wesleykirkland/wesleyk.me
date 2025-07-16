@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import ThemeAwareFeaturedImage from '../ThemeAwareFeaturedImage';
-import type { BlogPostMetadata } from '@/lib/blog';
+import { createMockBlogPost } from '../../__tests__/test-utils';
 
-// Mock Next.js Image component
+// Mock Next.js Image component with specific testid for this test
 jest.mock('next/image', () => {
   return function MockImage({ src, alt, className, ...props }: any) {
     return (
@@ -19,42 +19,18 @@ jest.mock('next/image', () => {
 });
 
 describe('ThemeAwareFeaturedImage Component', () => {
-  const mockPost: BlogPostMetadata = {
-    title: 'Test Post',
-    slug: 'test-post',
-    date: '2024-01-01',
-    excerpt: 'Test excerpt',
+  // Create mock posts using test utilities
+  const mockPost = createMockBlogPost({
     featuredImage: '/images/default.jpg',
     featuredImageLight: '/images/light.jpg',
-    featuredImageDark: '/images/dark.jpg',
-    tags: ['test'],
-    author: 'Test Author',
-    readingTime: 5,
-    wordCount: 1000
-  };
+    featuredImageDark: '/images/dark.jpg'
+  });
 
-  const mockPostWithoutThemeImages: BlogPostMetadata = {
-    title: 'Test Post',
-    slug: 'test-post',
-    date: '2024-01-01',
-    excerpt: 'Test excerpt',
-    featuredImage: '/images/default.jpg',
-    tags: ['test'],
-    author: 'Test Author',
-    readingTime: 5,
-    wordCount: 1000
-  };
+  const mockPostWithoutThemeImages = createMockBlogPost({
+    featuredImage: '/images/default.jpg'
+  });
 
-  const mockPostWithoutImages: BlogPostMetadata = {
-    title: 'Test Post',
-    slug: 'test-post',
-    date: '2024-01-01',
-    excerpt: 'Test excerpt',
-    tags: ['test'],
-    author: 'Test Author',
-    readingTime: 5,
-    wordCount: 1000
-  };
+  const mockPostWithoutImages = createMockBlogPost();
 
   beforeEach(() => {
     jest.clearAllMocks();
