@@ -24,6 +24,11 @@ const config = {
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
+    '!src/**/__tests__/**', // Exclude all test directories
+    '!src/**/*.test.{js,jsx,ts,tsx}', // Exclude test files
+    '!src/**/*.spec.{js,jsx,ts,tsx}', // Exclude spec files
+    '!src/__tests__/**', // Exclude root test utilities
+    '!src/**/test-utils/**', // Exclude test utility directories
     '!src/app/**/layout.tsx',
     '!src/app/**/loading.tsx',
     '!src/app/**/not-found.tsx',

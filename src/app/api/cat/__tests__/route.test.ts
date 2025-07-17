@@ -955,6 +955,10 @@ describe('/api/cat Route', () => {
       // Clear mocks to get accurate count
       jest.clearAllMocks();
 
+      // Enable cache testing for this specific test
+      const originalCacheEnv = process.env.JEST_TESTING_CACHE;
+      process.env.JEST_TESTING_CACHE = 'true';
+
       // Mock Date.now to ensure consistent behavior
       const originalDateNow = Date.now;
       const baseTime = originalDateNow();
@@ -979,8 +983,13 @@ describe('/api/cat Route', () => {
       // readdirSync should only be called once due to caching
       expect(mockFs.readdirSync).toHaveBeenCalledTimes(1);
 
-      // Restore Date.now
+      // Restore Date.now and environment variable
       Date.now = originalDateNow;
+      if (originalCacheEnv !== undefined) {
+        process.env.JEST_TESTING_CACHE = originalCacheEnv;
+      } else {
+        delete process.env.JEST_TESTING_CACHE;
+      }
     });
 
     it('filters out non-image files', async () => {
