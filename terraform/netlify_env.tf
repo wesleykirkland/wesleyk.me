@@ -13,7 +13,12 @@ resource "netlify_environment_variable" "node_version" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "npm_version" {
@@ -27,7 +32,12 @@ resource "netlify_environment_variable" "npm_version" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 # Public environment variables
@@ -42,7 +52,12 @@ resource "netlify_environment_variable" "next_public_professional_title" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_full_title" {
@@ -56,7 +71,12 @@ resource "netlify_environment_variable" "next_public_full_title" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_name" {
@@ -70,7 +90,12 @@ resource "netlify_environment_variable" "next_public_name" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_tagline" {
@@ -84,7 +109,12 @@ resource "netlify_environment_variable" "next_public_tagline" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_site_description" {
@@ -98,7 +128,12 @@ resource "netlify_environment_variable" "next_public_site_description" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_github_url" {
@@ -112,7 +147,12 @@ resource "netlify_environment_variable" "next_public_github_url" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_linkedin_url" {
@@ -126,7 +166,12 @@ resource "netlify_environment_variable" "next_public_linkedin_url" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_youtube_playlist" {
@@ -140,7 +185,12 @@ resource "netlify_environment_variable" "next_public_youtube_playlist" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 # Secret-based environment variables
@@ -155,7 +205,12 @@ resource "netlify_environment_variable" "smtp_host" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "smtp_port" {
@@ -169,7 +224,12 @@ resource "netlify_environment_variable" "smtp_port" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "smtp_username" {
@@ -183,7 +243,12 @@ resource "netlify_environment_variable" "smtp_username" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "smtp_password" {
@@ -197,7 +262,12 @@ resource "netlify_environment_variable" "smtp_password" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "smtp_from" {
@@ -212,7 +282,12 @@ resource "netlify_environment_variable" "smtp_from" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "smtp_to" {
@@ -226,7 +301,12 @@ resource "netlify_environment_variable" "smtp_to" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "smtp_tls" {
@@ -240,7 +320,12 @@ resource "netlify_environment_variable" "smtp_tls" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_hcaptcha_site_key" {
@@ -254,7 +339,12 @@ resource "netlify_environment_variable" "next_public_hcaptcha_site_key" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "hcaptcha_secret_key" {
@@ -268,7 +358,12 @@ resource "netlify_environment_variable" "hcaptcha_secret_key" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 resource "netlify_environment_variable" "next_public_overtracking_site_id" {
@@ -282,7 +377,12 @@ resource "netlify_environment_variable" "next_public_overtracking_site_id" {
       context = context
     }
   ]
-  scopes = local.scopes
+
+  lifecycle {
+    ignore_changes = [
+      scopes
+    ]
+  }
 }
 
 
