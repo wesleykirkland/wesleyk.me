@@ -393,7 +393,7 @@ resource "netlify_environment_variable" "secrets_scan_omit_keys" {
   key = "SECRETS_SCAN_OMIT_KEYS"
   values = [
     {
-      value   = "NEXT_PUBLIC_OVERTRACKING_SITE_ID,NEXT_PUBLIC_HCAPTCHA_SITE_KEY,SMTP_USERNAME"
+      value   = "NEXT_PUBLIC_OVERTRACKING_SITE_ID,NEXT_PUBLIC_HCAPTCHA_SITE_KEY,SMTP_USERNAME,SMTP_HOST"
       context = "all"
     }
   ]
