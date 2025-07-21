@@ -157,7 +157,7 @@ export default function RandomCat({
               width={400}
               height={300}
               className="w-full h-64 object-cover rounded-lg"
-              unoptimized // Since we're serving random images
+              unoptimized={true} // Since we're serving random images
             />
             {loading && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">

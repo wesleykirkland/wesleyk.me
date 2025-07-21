@@ -47,7 +47,7 @@ export default function TagList({
     <div className={`flex flex-wrap gap-2 ${className}`}>
       {tags.map((tag, index) => (
         <Link
-          key={tag || `empty-tag-${index}`}
+          key={`${tag || 'empty-tag'}-${index}`}
           href={`/tag/${getTagSlug(tag)}`}
           className={`inline-flex items-center rounded-full font-medium transition-colors duration-200 ${
             sizeClasses[size]

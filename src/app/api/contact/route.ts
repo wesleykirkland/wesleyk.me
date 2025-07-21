@@ -108,8 +108,18 @@ export async function POST(request: NextRequest) {
       /vbscript:/i
     ];
 
+    // Check for common spam patterns
+    const spamPatterns = [
+      /viagra/i,
+      /casino/i,
+      /lottery/i,
+      /winner/i,
+      /congratulations/i
+    ];
+
     const allFields = [name, email, subject, message];
     for (const field of allFields) {
+      // Check for injection attempts
       for (const pattern of suspiciousPatterns) {
         if (pattern.test(field)) {
           console.log('Suspicious content detected in form submission');
@@ -122,6 +132,34 @@ export async function POST(request: NextRequest) {
           );
         }
       }
+
+      // Check for spam patterns
+      for (const pattern of spamPatterns) {
+        if (pattern.test(field)) {
+          console.log('Spam content detected in form submission');
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Invalid content detected'
+            },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
+    // Check for excessive URLs in message
+    const urlPattern = /https?:\/\/[^\s]+/gi;
+    const urlMatches = message.match(urlPattern);
+    if (urlMatches && urlMatches.length > 2) {
+      console.log('Excessive URLs detected in form submission');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid content detected'
+        },
+        { status: 400 }
+      );
     }
 
     // Verify captcha

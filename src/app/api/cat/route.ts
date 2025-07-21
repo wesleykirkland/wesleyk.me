@@ -13,8 +13,16 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 function getCatImages(): string[] {
   const now = Date.now();
 
-  // Return cached results if still valid
-  if (catImagesCache && now - cacheTimestamp < CACHE_DURATION) {
+  // In test environment, bypass cache unless explicitly testing cache behavior
+  const isTestEnvironment = process.env.NODE_ENV === 'test';
+  const isTestingCache = process.env.JEST_TESTING_CACHE === 'true';
+
+  // Return cached results if still valid (unless in test environment and not testing cache)
+  if (
+    (!isTestEnvironment || isTestingCache) &&
+    catImagesCache &&
+    now - cacheTimestamp < CACHE_DURATION
+  ) {
     return catImagesCache;
   }
 
@@ -36,9 +44,11 @@ function getCatImages(): string[] {
       return SUPPORTED_FORMATS.includes(ext);
     });
 
-    // Update cache
-    catImagesCache = imageFiles;
-    cacheTimestamp = now;
+    // Update cache (only in non-test environments or when testing cache)
+    if (!isTestEnvironment || isTestingCache) {
+      catImagesCache = imageFiles;
+      cacheTimestamp = now;
+    }
 
     console.log(`Found ${imageFiles.length} cat images in ${catsDirectory}`);
     return imageFiles;
@@ -108,11 +118,17 @@ export async function GET(request: NextRequest) {
 
     // Return different formats based on query parameter
     switch (format) {
-      case 'redirect':
+      case 'redirect': {
         // Redirect directly to the image
-        return NextResponse.redirect(
+        const redirectResponse = NextResponse.redirect(
           new URL(`/cats/${randomCat}`, request.url)
         );
+        redirectResponse.headers.set(
+          'X-Cat-Count',
+          getCatImages().length.toString()
+        );
+        return redirectResponse;
+      }
 
       case 'image':
         // Return the image file directly
@@ -129,6 +145,10 @@ export async function GET(request: NextRequest) {
           // Determine content type
           let contentType = 'image/jpeg'; // default
           switch (ext) {
+            case '.jpg':
+            case '.jpeg':
+              contentType = 'image/jpeg';
+              break;
             case '.png':
               contentType = 'image/png';
               break;

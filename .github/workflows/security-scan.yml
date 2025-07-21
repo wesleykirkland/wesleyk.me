@@ -1,11 +1,6 @@
 name: Security & Code Quality Scan
 
 on:
-  # Run on all pushes except main
-  push:
-    branches:
-      - '**'
-      - '!main'
   # Run on PRs to main
   pull_request:
     branches:

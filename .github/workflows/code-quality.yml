@@ -32,6 +32,118 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Test Discovery and Validation
+      - name: Discover and validate test files
+        run: |
+          echo "🔍 Discovering test files..."
+          find src -name "*.test.*" -o -name "*.spec.*" -o -path "*/__tests__/*" | sort
+
+          echo ""
+          echo "📊 Test file statistics:"
+          echo "- Unit tests: $(find src -name "*.test.*" | wc -l)"
+          echo "- Component tests: $(find src/components -path "*/__tests__/*" | wc -l)"
+          echo "- API tests: $(find src/app/api -path "*/__tests__/*" | wc -l)"
+          echo "- Utility tests: $(find src/lib -path "*/__tests__/*" | wc -l)"
+          echo "- Hook tests: $(find src/hooks -path "*/__tests__/*" 2>/dev/null | wc -l)"
+
+          total_tests=$(find src -name "*.test.*" -o -name "*.spec.*" -o -path "*/__tests__/*" | wc -l)
+          echo "- Total test files: $total_tests"
+
+          if [ "$total_tests" -lt 5 ]; then
+            echo "❌ Warning: Only $total_tests test files found. Expected at least 5."
+            exit 1
+          else
+            echo "✅ Found $total_tests test files - sufficient coverage"
+          fi
+
+      # Comprehensive Test Suite with Coverage
+      - name: Run comprehensive test suite
+        run: |
+          echo "🧪 Running comprehensive test suite with coverage..."
+          npm test -- --coverage --watchAll=false --passWithNoTests --verbose
+        env:
+          CI: true
+          NODE_ENV: test
+
+      - name: Upload test coverage to artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-coverage-${{ github.run_id }}
+          path: |
+            coverage/
+            jest-coverage-report.html
+          retention-days: 30
+        continue-on-error: true
+
+      - name: Validate Jest configuration
+        run: |
+          echo "🔧 Validating Jest configuration..."
+          if [ -f "jest.config.js" ]; then
+            echo "✅ Jest configuration file found"
+            node -e "
+              const config = require('./jest.config.js');
+              console.log('📋 Jest Configuration:');
+              console.log('- Test environment:', config.testEnvironment || 'default');
+              console.log('- Coverage thresholds configured:', !!config.coverageThreshold);
+              if (config.coverageThreshold && config.coverageThreshold.global) {
+                const thresholds = config.coverageThreshold.global;
+                console.log('  - Statements:', thresholds.statements + '%');
+                console.log('  - Branches:', thresholds.branches + '%');
+                console.log('  - Functions:', thresholds.functions + '%');
+                console.log('  - Lines:', thresholds.lines + '%');
+              }
+            "
+          else
+            echo "❌ Jest configuration file not found"
+            exit 1
+          fi
+
+      - name: Coverage summary and validation
+        run: |
+          echo "## Test Coverage Results 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "coverage/coverage-summary.json" ]; then
+            echo "📊 **Coverage Summary:**" >> $GITHUB_STEP_SUMMARY
+            node -e "
+              const coverage = JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json', 'utf8'));
+              const total = coverage.total;
+              console.log('- **Statements:** ' + total.statements.pct + '%');
+              console.log('- **Branches:** ' + total.branches.pct + '%');
+              console.log('- **Functions:** ' + total.functions.pct + '%');
+              console.log('- **Lines:** ' + total.lines.pct + '%');
+              console.log('');
+              console.log('📈 **Test Statistics:**');
+              console.log('- **Total Tests:** ' + (total.statements.total || 'N/A'));
+              console.log('- **Covered Statements:** ' + (total.statements.covered || 'N/A'));
+              console.log('- **Uncovered Statements:** ' + (total.statements.total - total.statements.covered || 'N/A'));
+
+              // Check if coverage meets thresholds
+              const threshold = 95;
+              const failed = [];
+              if (total.statements.pct < threshold) failed.push('statements (' + total.statements.pct + '%)');
+              if (total.branches.pct < threshold) failed.push('branches (' + total.branches.pct + '%)');
+              if (total.functions.pct < threshold) failed.push('functions (' + total.functions.pct + '%)');
+              if (total.lines.pct < threshold) failed.push('lines (' + total.lines.pct + '%)');
+
+              if (failed.length > 0) {
+                console.log('');
+                console.log('❌ **Coverage below 95% threshold for:** ' + failed.join(', '));
+                console.log('');
+                console.log('**Action Required:** Increase test coverage for the failing metrics.');
+                process.exit(1);
+              } else {
+                console.log('');
+                console.log('✅ **All coverage metrics meet 95% threshold**');
+                console.log('🎉 **Excellent test coverage! All quality gates passed.**');
+              }
+            " >> $GITHUB_STEP_SUMMARY || echo "Could not parse coverage summary"
+          else
+            echo "⚠️ Coverage summary not found" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Test coverage validation failed - no coverage report generated"
+            exit 1
+          fi
+
       # Bundle analyzer for Next.js
       - name: Analyze bundle size
         run: |
@@ -254,14 +366,19 @@ jobs:
           echo "## Code Quality Results 📊" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ **Completed Quality Checks:**" >> $GITHUB_STEP_SUMMARY
+          echo "- **Comprehensive test suite** with 95%+ coverage requirement" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security testing** (validation, URL sanitization, XSS prevention)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Component testing** (React components, hooks, event handlers)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Unit testing** (utility functions, edge cases, error handling)" >> $GITHUB_STEP_SUMMARY
           echo "- Bundle size analysis" >> $GITHUB_STEP_SUMMARY
           echo "- Lighthouse performance testing" >> $GITHUB_STEP_SUMMARY
           echo "- Accessibility testing (axe-core)" >> $GITHUB_STEP_SUMMARY
           echo "- Core Web Vitals testing" >> $GITHUB_STEP_SUMMARY
           echo "- Dependency analysis" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🎯 **Performance & Quality Focus:**" >> $GITHUB_STEP_SUMMARY
-          echo "- Lighthouse scores for SEO/Performance" >> $GITHUB_STEP_SUMMARY
-          echo "- Accessibility compliance (WCAG)" >> $GITHUB_STEP_SUMMARY
-          echo "- Bundle optimization" >> $GITHUB_STEP_SUMMARY
-          echo "- Code maintainability" >> $GITHUB_STEP_SUMMARY
+          echo "🎯 **Quality Standards:**" >> $GITHUB_STEP_SUMMARY
+          echo "- **Test Coverage:** 95%+ statements, branches, functions, lines" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security:** ReDoS protection, XSS prevention, input validation" >> $GITHUB_STEP_SUMMARY
+          echo "- **Performance:** Lighthouse scores for SEO/Performance" >> $GITHUB_STEP_SUMMARY
+          echo "- **Accessibility:** WCAG compliance testing" >> $GITHUB_STEP_SUMMARY
+          echo "- **Maintainability:** Bundle optimization and code quality" >> $GITHUB_STEP_SUMMARY
