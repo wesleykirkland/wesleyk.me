@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
   icons: {
     icon: '/images/icons/powershell-icon.svg'
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': '/rss.xml'
+    }
   }
 };
 

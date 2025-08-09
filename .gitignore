@@ -112,3 +112,9 @@ terraform.rc
 To Do.txt
 TODO.txt
 todo.txt
+
+# Local Netlify folder
+.netlify
+
+# Next.Js
+.swc/
