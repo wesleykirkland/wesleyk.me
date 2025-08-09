@@ -43,9 +43,13 @@ export default function TagList({
     return variantClasses[variant];
   };
 
+  const MAX_VISIBLE = 20;
+  const visibleTags = tags.slice(0, MAX_VISIBLE);
+  const remaining = Math.max(0, tags.length - MAX_VISIBLE);
+
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
-      {tags.map((tag, index) => (
+      {visibleTags.map((tag, index) => (
         <Link
           key={`${tag || 'empty-tag'}-${index}`}
           href={`/tag/${getTagSlug(tag)}`}
@@ -62,6 +66,16 @@ export default function TagList({
           )}
         </Link>
       ))}
+
+      {remaining > 0 && (
+        <Link
+          href="/tags"
+          className="inline-flex items-center rounded-full font-medium transition-colors duration-200 px-3 py-1 text-xs border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          title={`View ${remaining} more ${remaining === 1 ? 'tag' : 'tags'}`}
+        >
+          +{remaining} more
+        </Link>
+      )}
     </div>
   );
 }
