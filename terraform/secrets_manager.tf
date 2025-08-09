@@ -1,6 +1,6 @@
 module "secrets_manager" {
   source  = "terraform-aws-modules/secrets-manager/aws"
-  version = "~> 1.3"
+  version = "~> 2.0"
 
   # Secret
   name                    = "website-wesleyk-me"
