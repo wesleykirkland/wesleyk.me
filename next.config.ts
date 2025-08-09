@@ -10,6 +10,29 @@ const nextConfig: NextConfig = {
   // distDir: 'out', // Not needed without static export
   skipTrailingSlashRedirect: true,
 
+  // Exclude test files from build
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+
+  // Configure webpack to exclude test files
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.(test|spec)\.(js|jsx|ts|tsx)$/,
+      loader: 'ignore-loader'
+    });
+    return config;
+  },
+
+  // ESLint configuration for build
+  eslint: {
+    ignoreDuringBuilds: false,
+    dirs: ['src']
+  },
+
+  // TypeScript configuration for build
+  typescript: {
+    ignoreBuildErrors: false
+  },
+
   // Explicitly define environment variables for build time
   env: {
     NEXT_PUBLIC_PROFESSIONAL_TITLE: process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE,

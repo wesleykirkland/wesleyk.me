@@ -200,6 +200,7 @@ export default function SearchBox({
         <div
           ref={suggestionsRef}
           id="search-suggestions"
+          role="listbox"
           className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto"
         >
           {suggestions.map((suggestion, index) => {
@@ -219,8 +220,10 @@ export default function SearchBox({
                 key={suggestion}
                 id={`suggestion-${index}`}
                 type="button"
+                role="option"
                 onClick={() => handleSuggestionClick(suggestion)}
                 className={buttonClasses}
+                aria-selected={isSelected}
                 aria-current={isSelected ? 'true' : 'false'}
               >
                 <div className="flex items-center">
