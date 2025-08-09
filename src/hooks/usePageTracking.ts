@@ -46,12 +46,15 @@ export function usePageTracking(options: PageTrackingOptions = {}) {
         }
 
         // Track the page view
-        window.overtracking.page(pathname, properties);
-
-        console.log('Overtracking: Page view tracked', {
-          page: pathname,
-          properties
-        });
+        try {
+          window.overtracking.page(pathname, properties);
+          console.log('Overtracking: Page view tracked', {
+            page: pathname,
+            properties
+          });
+        } catch (error) {
+          console.error('Overtracking: Error tracking page view', error);
+        }
       } else if (enabled) {
         console.log('Overtracking: Page view would be tracked', {
           page: pathname,
@@ -81,9 +84,13 @@ export function useEventTracking() {
         ...properties
       };
 
-      window.overtracking.track(event, eventProperties);
-      // Avoid logging event details to prevent potential information exposure
-      console.log('Overtracking: Event tracked');
+      try {
+        window.overtracking.track(event, eventProperties);
+        // Avoid logging event details to prevent potential information exposure
+        console.log('Overtracking: Event tracked');
+      } catch (error) {
+        console.error('Overtracking: Error tracking event', error);
+      }
     } else {
       console.log('Overtracking: Event would be tracked in production');
     }

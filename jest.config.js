@@ -12,7 +12,7 @@ const config = {
   testEnvironment: 'jsdom',
   // Add more setup options before each test is run
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  moduleNameMapping: {
+  moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you based on your tsconfig.json paths)
     '^@/(.*)$': '<rootDir>/src/$1'
   },
@@ -24,19 +24,33 @@ const config = {
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
+    '!src/**/__tests__/**', // Exclude all test directories
+    '!src/**/*.test.{js,jsx,ts,tsx}', // Exclude test files
+    '!src/**/*.spec.{js,jsx,ts,tsx}', // Exclude spec files
+    '!src/__tests__/**', // Exclude root test utilities
+    '!src/**/test-utils/**', // Exclude test utility directories
     '!src/app/**/layout.tsx',
     '!src/app/**/loading.tsx',
     '!src/app/**/not-found.tsx',
-    '!src/app/**/error.tsx'
+    '!src/app/**/error.tsx',
+    '!src/app/**/page.tsx', // Page components are integration tested
+    '!src/middleware.ts' // Middleware requires special testing setup
   ],
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70
+      branches: 95,
+      functions: 95,
+      lines: 95,
+      statements: 95
     }
-  }
+  },
+  // Add coverage reporting
+  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+
+  // Transform node_modules that use ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(remark|remark-parse|remark-rehype|rehype-stringify|unified|bail|is-plain-obj|trough|vfile|unist-util-stringify-position|mdast-util-from-markdown|mdast-util-to-string|micromark|decode-named-character-reference|character-entities|property-information|hast-util-whitespace|space-separated-tokens|comma-separated-tokens|pretty-bytes|gray-matter)/)'
+  ]
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
