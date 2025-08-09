@@ -68,6 +68,10 @@ export default function About() {
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                    Solutions and Cloud Architecture
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
                     PowerShell Scripting & Automation
                   </li>
                   <li className="flex items-center">
@@ -80,15 +84,11 @@ export default function About() {
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                    Azure Cloud Services
+                    IAM (Identity and Access Management)
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
                     Active Directory Management
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
-                    System Center Products (SCCM, SCOM, SCVMM)
                   </li>
                 </ul>
               </div>
@@ -103,7 +103,7 @@ export default function About() {
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
-                    SAML (Security Assertion Markup Language)
+                    SSO & SAML (Security Assertion Markup Language)
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
@@ -147,27 +147,134 @@ export default function About() {
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
-                  <span>Automating complex IT processes with PowerShell</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
                   <span>
-                    Managing enterprise O365 and Exchange environments
+                    Managing complex AWS Infrastructure in a HIPPA and SOC II
+                    environment
                   </span>
                 </li>
                 <li className="flex items-start">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
                   <span>
-                    Researching security vulnerabilities in SaaS applications
+                    Increasing observability through distributed tracing,
+                    synthetic tests, and enhanced logging
                   </span>
                 </li>
                 <li className="flex items-start">
                   <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
                   <span>
-                    Integrating various SaaS applications with Azure services
+                    Create and optimize variablized CI/CD pipelines for
+                    deployment workflows
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2"></span>
+                  <span>
+                    Lead the team through humility, blameless actions, knowledge
+                    sharing sessions, while contributing as a primary individual
+                    contributor
                   </span>
                 </li>
               </ul>
+            </div>
+          </section>
+
+          {/* Career Highlights */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Career Highlights
+            </h2>
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-base">
+              <li className="flex items-start">
+                <span
+                  className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2 flex-shrink-0"
+                  style={{ width: '8px', height: '8px' }}
+                ></span>
+                <span className="text-base leading-relaxed">
+                  {/* <a
+                    href="https://www.linkedin.com/in/wesleykirkland/details/projects/"
+                    target="_blank"
+                    className="link-external"
+                  > */}
+                  Orchestrated consolidation of 150+ email domains and migration
+                  of 2,000+ mailboxes, enhancing email and calendar
+                  functionality for 700+ users across the enterprise using a
+                  combination of O365, Mimecast, and dmarcian technologies.
+                  {/* </a> */}
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span
+                  className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2 flex-shrink-0"
+                  style={{ width: '8px', height: '8px' }}
+                ></span>
+                <span className="text-base leading-relaxed">
+                  Collaborated with developers to reduce SQL connections from
+                  300K/min to approximately 1K/min
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span
+                  className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2 flex-shrink-0"
+                  style={{ width: '8px', height: '8px' }}
+                ></span>
+                <span className="text-base leading-relaxed">
+                  Increased system observability through distributed tracing and
+                  proactive incident management, reducing critical incidents by
+                  75%
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span
+                  className="w-2 h-2 bg-blue-600 rounded-full mr-3 mt-2 flex-shrink-0"
+                  style={{ width: '8px', height: '8px' }}
+                ></span>
+                <span className="text-base leading-relaxed">
+                  Security research, disclosures, and remediation collaboration
+                </span>
+              </li>
+            </ul>
+          </section>
+
+          {/* Certifications */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Certifications
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                    <a
+                      href="https://www.credly.com/earner/earned/badge/900c7be8-3f38-4014-adb5-cfeb9388446f"
+                      target="_blank"
+                      className="link-external"
+                    >
+                      AWS Certified Solutions Architect – Professional
+                    </a>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                    <a
+                      href="https://www.credly.com/earner/earned/badge/9f21e53a-9e26-42b4-9524-8d7f4f83c3d9"
+                      target="_blank"
+                      className="link-external"
+                    >
+                      AWS Certified Solutions Architect – Associate
+                    </a>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                    <a
+                      href="https://www.credly.com/earner/earned/badge/0f257ada-d309-4add-868e-9141a2288903"
+                      target="_blank"
+                      className="link-external"
+                    >
+                      AWS Certified Security – Specialty
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </section>
 

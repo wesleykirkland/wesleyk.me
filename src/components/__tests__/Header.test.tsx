@@ -264,7 +264,7 @@ describe('Header Component', () => {
         screen.getByText('Blog', { selector: '.block' })
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Get-AboutMe', { selector: '.block' })
+        screen.getByText('About Me', { selector: '.block' })
       ).toBeInTheDocument();
       expect(
         screen.getByText('Contact', { selector: '.block' })
