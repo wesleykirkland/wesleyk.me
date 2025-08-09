@@ -23,7 +23,7 @@ export default function Header() {
   const navLinks: NavLink[] = [
     { href: '/', label: 'Home' },
     { href: '/blog', label: 'Blog' },
-    { href: '/about', label: 'Get-AboutMe' },
+    { href: '/about', label: 'About Me' },
     { href: '/contact', label: 'Contact' },
     { href: '/security-research', label: 'Security Research/Case Studies' }
   ];

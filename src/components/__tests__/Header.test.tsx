@@ -84,7 +84,7 @@ describe('Header Component', () => {
         'href',
         '/blog'
       );
-      expect(screen.getByRole('link', { name: 'Get-AboutMe' })).toHaveAttribute(
+      expect(screen.getByRole('link', { name: 'About Me' })).toHaveAttribute(
         'href',
         '/about'
       );

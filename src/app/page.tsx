@@ -40,7 +40,7 @@ export default function Home() {
                   href="/about"
                   className="bg-blue-600 dark:bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
                 >
-                  Get-AboutMe
+                  About Me
                 </Link>
                 <Link
                   href="/security-research"
