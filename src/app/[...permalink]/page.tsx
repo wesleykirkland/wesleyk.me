@@ -66,12 +66,6 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       publishedTime: postMeta.date,
       authors: [postMeta.author],
       images: postMeta.featuredImage ? [postMeta.featuredImage] : []
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: postMeta.title,
-      description: postMeta.excerpt,
-      images: postMeta.featuredImage ? [postMeta.featuredImage] : []
     }
   };
 }

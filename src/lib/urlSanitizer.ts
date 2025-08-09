@@ -111,13 +111,7 @@ export function sanitizeExternalUrl(
   url: string,
   trustedDomains: string[] = []
 ): string {
-  const defaultTrustedDomains = [
-    'github.com',
-    'linkedin.com',
-    'youtube.com',
-    'twitter.com',
-    'x.com'
-  ];
+  const defaultTrustedDomains = ['github.com', 'linkedin.com', 'youtube.com'];
 
   return sanitizeUrl(url, undefined, [
     ...defaultTrustedDomains,
