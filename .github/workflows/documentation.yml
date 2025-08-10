@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Render terraform docs inside the README.md
-        uses: terraform-docs/gh-actions@v1
+        uses: terraform-docs/gh-actions@v1.4.1
         with:
           config-file: '.config/.terraform-docs.yml'
           working-dir: './terraform'
@@ -37,6 +37,7 @@ jobs:
           if [ -f "./terraform/README.md" ]; then
             # Move the file
             mv ./terraform/README.md README.md
+            rm -f terraform/README.md
 
             # Check if there are changes to commit
             if ! git diff --quiet README.md 2>/dev/null || ! git ls-files --error-unmatch README.md >/dev/null 2>&1; then
