@@ -35,19 +35,19 @@ variable "next_public_name" {
 variable "next_public_tagline" {
   description = "Public tagline for the site"
   type        = string
-  default     = "DevOps Engineer & Security Researcher"
+  default     = "Solutions Architect & Security Researcher"
 }
 
 variable "next_public_professional_title" {
   description = "Full Professional Title"
   type        = string
-  default     = "Sr. Cloud Development & DevOps Engineer ➡️ Designing and Deploying Cloud-Based Security Controls, Infrastructure, and Frameworks | Helping Organizations Safeguard Critical Assets against Cyber Threats ➡️ AWS/Azure/CI/CD"
+  default     = "Solutions Architect"
 }
 
 variable "next_public_site_description" {
   description = "Site description"
   type        = string
-  default     = "Personal website and blog of Wesley Kirkland - Sr. Systems Engineer specializing in PowerShell, O365, Azure, and Security Research"
+  default     = "Personal website and blog of Wesley - Solutions Architect specializing in AWS, O365, Web Presence, and Security Research"
 }
 
 variable "next_public_github_url" {
