@@ -57,7 +57,7 @@ jobs:
 
       - name: Move docs to root and commit
         run: |
-          mv terraform/README.md README.md
+          mv ./terraform/README.md README.md
           git add README.md
           git commit -m "terraform-docs: automated action"
           git push
