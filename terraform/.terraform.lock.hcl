@@ -2,19 +2,19 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.opentofu.org/hashicorp/aws" {
-  version     = "6.4.0"
-  constraints = ">= 5.0.0, ~> 6.0"
+  version     = "6.8.0"
+  constraints = ">= 5.0.0, >= 6.0.0"
   hashes = [
-    "h1:DAqZmD8b/zf9ThHMl1kGWqbwgL3MCR6urd/9LvGujdI=",
-    "zh:13a76e40785ab232b4cf06a7de64e4e7fe190a4035d3e0a5ed3afcd1b24111ea",
-    "zh:314b8284b73d51d1b1f35dbaabacae862ff3037170ac6a9004ff8feb466c5712",
-    "zh:59d62e7d0c00a4b0fd56c1baae0d255491c84193d9196dc593e3e6d76919c44f",
-    "zh:5ec30bc9d4c9e9cf2c87d800afc0dfdd4252d50f10b7f590a671dde63ca17a25",
-    "zh:6e37ad66926e0990513f701215a025e76f9391b2011b84b5841544afd051151a",
-    "zh:964d4ae48cb46ddcacafe37910962a6e449c618fb68f7d9568b47293ff2dbd66",
-    "zh:bba74b916f8212043c9f801004dac50413265dc80f443858ae930d8cbfc35089",
-    "zh:d14ed006a093f740c92b7429d458160fb706907dfd6789a5097b3f2df9077887",
-    "zh:e26e714843d328332be61ffdb730fe2405085608205b7ece08e5f06fd1261635",
+    "h1:auBk0eguO8TR/KqN3rDicgEmUq9elFpGicnZwn4NNiU=",
+    "zh:07fa4cf26b0e3899f8ecce29804653bda1d6cb691e2203a3edc9ebec72b53828",
+    "zh:1f40c1a2266d5d5a4fb6f61acd509a03bb33e13c1879b39d3bb1f57797d322cc",
+    "zh:3a00203345c3928248c50ff8b3942c943593681b94013cbfadff3123f6e6e721",
+    "zh:58572f37fb7062a4bdcaffdb0be868e6a2e7faa05fce3e62159301b617991183",
+    "zh:819bee89482e8c64ae296dde10c0eb8bee3306724f8e2c53d3bb9d121bfd6201",
+    "zh:82f0e218666a208d96eedbf9ac202826478d01c47d7e078900d6b3bb6464b329",
+    "zh:8da69ef1235251c7c52d1737589c1fe86dac171a422fc0f444d2033ffa727b1c",
+    "zh:99efd059592c78bdfd5753ba33afe1cc71cd49ed11be3b1b3cd5b29b810e2b66",
+    "zh:aa163e1eb0374b4388f4e67ad6acc248562959cd753a45d66e177cf9b5e4a5f6",
   ]
 }
 
@@ -38,7 +38,7 @@ provider "registry.opentofu.org/hashicorp/random" {
 
 provider "registry.terraform.io/netlify/netlify" {
   version     = "0.2.3"
-  constraints = "~> 0.2"
+  constraints = ">= 0.2.0"
   hashes = [
     "h1:4CvKeHOlObdFUjo6KXPhA7P+UR1sspyaZGtX8/vzlY0=",
     "h1:6CA9Bnb5IKr3bZZxkw7vrlOG6GsocvlKFciasoEfsTI=",

@@ -1,0 +1,52 @@
+name: Generate terraform docs
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+      - '.config/.terraform-docs.yml'
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Render terraform docs inside the README.md
+        uses: terraform-docs/gh-actions@v1.4.1
+        with:
+          config-file: '.config/.terraform-docs.yml'
+          working-dir: './terraform'
+          git-push: 'false'
+          output-file: README.md
+
+      - name: Move docs to root and commit
+        run: |
+          # Configure git
+          sudo chmod -R ugo+rwx .git # This allows us to commit as the .git folder is restricted
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Check if terraform README was created
+          if [ -f "./terraform/README.md" ]; then
+            # Move the file
+            mv ./terraform/README.md README.md
+            rm -f terraform/README.md
+
+            # Check if there are changes to commit
+            if ! git diff --quiet README.md 2>/dev/null || ! git ls-files --error-unmatch README.md >/dev/null 2>&1; then
+              git add README.md
+              git commit -m "terraform-docs: automated action"
+              git push
+            else
+              echo "No changes to commit"
+            fi
+          else
+            echo "No terraform README.md found to move"
+          fi

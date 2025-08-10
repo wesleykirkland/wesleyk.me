@@ -76,7 +76,7 @@ export async function sendContactEmail(
   }
 
   if (!isValidSubject(formData.subject)) {
-    throw new Error('Subject must be between 3 and 200 characters long');
+    throw new Error('Subject must be between 5 and 200 characters long');
   }
 
   if (!isValidMessage(formData.message)) {

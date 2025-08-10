@@ -95,7 +95,7 @@ export default function SecurityResearch() {
       {/* Research Philosophy */}
       <section className="mb-12">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
             Research Philosophy
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -179,7 +179,7 @@ export default function SecurityResearch() {
 
       {/* Research Areas */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
           Research Areas
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -238,7 +238,7 @@ export default function SecurityResearch() {
                 Published Research
               </h2>
               <Link
-                href="/blog"
+                href="/tag/Security"
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
               >
                 View all →
@@ -247,7 +247,7 @@ export default function SecurityResearch() {
 
             {securityResearchPosts.length > 0 ? (
               <div className="space-y-4">
-                {securityResearchPosts.map((post) => {
+                {securityResearchPosts.slice(0, 2).map((post) => {
                   const formattedDate = format(
                     parsePostDate(post.date),
                     'MMMM d, yyyy'
@@ -336,7 +336,7 @@ export default function SecurityResearch() {
                 Case Studies
               </h2>
               <Link
-                href="/blog"
+                href="/tag/Case%20Study"
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
               >
                 View all →
@@ -345,7 +345,7 @@ export default function SecurityResearch() {
 
             {caseStudyPosts.length > 0 ? (
               <div className="space-y-4">
-                {caseStudyPosts.map((post) => {
+                {caseStudyPosts.slice(0, 2).map((post) => {
                   const formattedDate = format(
                     parsePostDate(post.date),
                     'MMMM d, yyyy'

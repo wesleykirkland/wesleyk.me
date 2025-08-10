@@ -84,7 +84,7 @@ describe('Header Component', () => {
         'href',
         '/blog'
       );
-      expect(screen.getByRole('link', { name: 'Get-AboutMe' })).toHaveAttribute(
+      expect(screen.getByRole('link', { name: 'About Me' })).toHaveAttribute(
         'href',
         '/about'
       );
@@ -95,6 +95,10 @@ describe('Header Component', () => {
       expect(
         screen.getByRole('link', { name: 'Security Research/Case Studies' })
       ).toHaveAttribute('href', '/security-research');
+      expect(screen.getByRole('link', { name: 'RSS' })).toHaveAttribute(
+        'href',
+        '/rss.xml'
+      );
     });
 
     it('applies proper styling to navigation links', () => {
@@ -177,6 +181,8 @@ describe('Header Component', () => {
       // Should have both desktop and mobile dark mode toggles
       const darkModeToggles = screen.getAllByTestId('dark-mode-toggle');
       expect(darkModeToggles.length).toBe(2); // Desktop and mobile
+      // Ensure RSS link present in desktop nav (hidden on mobile)
+      expect(screen.getByRole('link', { name: 'RSS' })).toBeInTheDocument();
     });
   });
 
@@ -258,7 +264,7 @@ describe('Header Component', () => {
         screen.getByText('Blog', { selector: '.block' })
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Get-AboutMe', { selector: '.block' })
+        screen.getByText('About Me', { selector: '.block' })
       ).toBeInTheDocument();
       expect(
         screen.getByText('Contact', { selector: '.block' })
