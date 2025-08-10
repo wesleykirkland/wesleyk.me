@@ -28,10 +28,24 @@ jobs:
 
       - name: Move docs to root and commit
         run: |
-          sudo chmod -R ugo+rwx .git
+          # Configure git
+          sudo chmod -R ugo+rwx .git # This allows us to commit as the .git folder is restricted
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          mv ./terraform/README.md README.md
-          git add README.md
-          git commit -m "terraform-docs: automated action"
-          git push
+
+          # Check if terraform README was created
+          if [ -f "./terraform/README.md" ]; then
+            # Move the file
+            mv ./terraform/README.md README.md
+
+            # Check if there are changes to commit
+            if ! git diff --quiet README.md 2>/dev/null || ! git ls-files --error-unmatch README.md >/dev/null 2>&1; then
+              git add README.md
+              git commit -m "terraform-docs: automated action"
+              git push
+            else
+              echo "No changes to commit"
+            fi
+          else
+            echo "No terraform README.md found to move"
+          fi
