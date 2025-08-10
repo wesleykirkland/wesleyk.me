@@ -22,10 +22,10 @@ export default function Home() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Welcome to my corner of the internet
+                Architect, Problem solver, Team cheerleader
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-6 max-w-3xl mx-auto">
-                I&apos;m {process.env.NEXT_PUBLIC_NAME}, a{' '}
+                Hello I&apos;m {process.env.NEXT_PUBLIC_NAME}, a{' '}
                 {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} specializing in
                 Cloud Technologies. With a focus on AWS, CI/CD,
                 Containerization, Networking, Observability, and PowerShell.
@@ -33,7 +33,8 @@ export default function Home() {
                 systems. Here you&apos;ll find my thoughts on technology,
                 security vulnerabilities I&apos;ve discovered, and various
                 technical adventures and some of my thoughts on Home Automation
-                and standards.
+                and standards. You may even learn something about cooking and
+                home improvement as well.
               </p>
               <div className="flex justify-center space-x-4">
                 <Link
@@ -147,7 +148,7 @@ export default function Home() {
                 'SQL',
                 'DNS/Domains',
                 'CI/CD',
-                'SSO'
+                'SSO/SAML'
               ].map((skill) => (
                 <div
                   key={skill}

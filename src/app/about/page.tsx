@@ -48,10 +48,23 @@ export default function About() {
               Wesley Kirkland started his career back in 2013 working as a
               lonely intern racking and stacking servers. Throughout the years
               he quickly advanced through his company and eventually found an
-              all-star team to work with. Currently he is a{' '}
-              {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} working with
-              PowerShell, O365, Exchange, Azure, and various SaaS applications.
-              All while binding everything together with PowerShell.
+              all-star team to work with. Today he is a{' '}
+              {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} working with AWS,
+              Next.js, and Python with various other technologies blending
+              hands-on problem-solving with big-picture architecture. I'm a
+              hands on problem solver both are work and around the house. When
+              I'm not at my day job I'm running{' '}
+              <a
+                href="https://etsa.tech"
+                target="_blank"
+                className="link-external"
+              >
+                ETSA
+              </a>{' '}
+              for my local community. Or I'm deep into a personal project or
+              tackling endless house upgrades.. At the end of the day I get to
+              see myy crew of my beautiful wife, and our 4 beautiful fur babies
+              kitties each with a name as whimsical as their personalities.
             </p>
           </section>
 
@@ -77,6 +90,18 @@ export default function About() {
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
                     Microsoft O365 & Exchange Administration
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                    Observability and Monitoring
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                    Relational Database Management
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                    CI/CD (Continuous Integration and Continuous Delivery)
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
@@ -190,16 +215,10 @@ export default function About() {
                   style={{ width: '8px', height: '8px' }}
                 ></span>
                 <span className="text-base leading-relaxed">
-                  {/* <a
-                    href="https://www.linkedin.com/in/wesleykirkland/details/projects/"
-                    target="_blank"
-                    className="link-external"
-                  > */}
                   Orchestrated consolidation of 150+ email domains and migration
                   of 2,000+ mailboxes, enhancing email and calendar
                   functionality for 700+ users across the enterprise using a
                   combination of O365, Mimecast, and dmarcian technologies.
-                  {/* </a> */}
                 </span>
               </li>
               <li className="flex items-start">
@@ -306,6 +325,11 @@ export default function About() {
                   >
                     published Author
                   </a>
+                </li>
+                <li>
+                  I bought this domain before I knew anything about ccTLDs and
+                  domains. To this day I find websites with invalid regex
+                  patterns refusing my email address.
                 </li>
               </ul>
             </div>
