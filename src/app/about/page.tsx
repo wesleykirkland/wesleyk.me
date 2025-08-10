@@ -51,9 +51,9 @@ export default function About() {
               all-star team to work with. Today he is a{' '}
               {process.env.NEXT_PUBLIC_PROFESSIONAL_TITLE} working with AWS,
               Next.js, and Python with various other technologies blending
-              hands-on problem-solving with big-picture architecture. I'm a
+              hands-on problem-solving with big-picture architecture. I&apos;m a
               hands on problem solver both are work and around the house. When
-              I'm not at my day job I'm running{' '}
+              I&apos;m not at my day job I&apos;m running{' '}
               <a
                 href="https://etsa.tech"
                 target="_blank"
@@ -61,10 +61,11 @@ export default function About() {
               >
                 ETSA
               </a>{' '}
-              for my local community. Or I'm deep into a personal project or
-              tackling endless house upgrades.. At the end of the day I get to
-              see myy crew of my beautiful wife, and our 4 beautiful fur babies
-              kitties each with a name as whimsical as their personalities.
+              for my local community. Or I&apos;m deep into a personal project
+              or tackling endless house upgrades.. At the end of the day I get
+              to see myy crew of my beautiful wife, and our 4 beautiful fur
+              babies kitties each with a name as whimsical as their
+              personalities.
             </p>
           </section>
 
