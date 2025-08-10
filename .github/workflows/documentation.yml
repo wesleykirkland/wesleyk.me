@@ -53,4 +53,4 @@ jobs:
           config-file: '.config/.terraform-docs.yml'
           working-dir: './terraform'
           git-push: 'true'
-          output-file: README.md
+          output-file: ../README.md
