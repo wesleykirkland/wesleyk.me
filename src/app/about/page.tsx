@@ -204,10 +204,10 @@ export default function About() {
             </div>
           </section>
 
-          {/* Career Highlights */}
+          {/* Experience Highlights */}
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Career Highlights
+              Experience Highlights
             </h2>
             <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-base">
               <li className="flex items-start">

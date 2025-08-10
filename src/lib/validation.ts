@@ -71,7 +71,7 @@ export function isValidName(name: string): boolean {
 export function isValidSubject(subject: string): boolean {
   if (!subject) return false;
   const trimmed = subject.trim();
-  return trimmed.length >= 3 && trimmed.length <= 200;
+  return trimmed.length >= 5 && trimmed.length <= 200;
 }
 
 // Validate message field
@@ -84,6 +84,39 @@ export function isValidMessage(message: string): boolean {
 // Sanitize input to prevent XSS
 export function sanitizeInput(input: string): string {
   return input.trim().replace(/[<>]/g, '');
+}
+
+// Validation functions that return error messages (for real-time validation)
+export function validateName(name: string): string | null {
+  if (!name) return 'Name is required';
+  const trimmed = name.trim();
+  if (trimmed.length < 2) return 'Name must be at least 2 characters long';
+  if (trimmed.length > 100) return 'Name must be less than 100 characters';
+  return null;
+}
+
+export function validateEmail(email: string): string | null {
+  if (!email) return 'Email is required';
+  const trimmed = email.trim();
+  if (!isValidEmail(trimmed)) return 'Please enter a valid email address';
+  return null;
+}
+
+export function validateSubject(subject: string): string | null {
+  if (!subject) return 'Subject is required';
+  const trimmed = subject.trim();
+  if (trimmed.length < 5) return 'Subject must be at least 5 characters long';
+  if (trimmed.length > 200) return 'Subject must be less than 200 characters';
+  return null;
+}
+
+export function validateMessage(message: string): string | null {
+  if (!message) return 'Message is required';
+  const trimmed = message.trim();
+  if (trimmed.length < 100)
+    return 'Message must be at least 100 characters long';
+  if (trimmed.length > 5000) return 'Message must be less than 5000 characters';
+  return null;
 }
 
 // Comprehensive form validation
@@ -113,7 +146,7 @@ export function validateContactForm(data: {
   }
 
   if (!isValidSubject(data.subject)) {
-    errors.subject = 'Subject must be between 3 and 200 characters';
+    errors.subject = 'Subject must be between 5 and 200 characters';
   }
 
   if (!isValidMessage(data.message)) {

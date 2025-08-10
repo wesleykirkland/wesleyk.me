@@ -22,7 +22,7 @@ export default function Home() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Architect, Problem solver, Team cheerleader
+                Architect, Problem solver, and Team cheerleader
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-6 max-w-3xl mx-auto">
                 Hello I&apos;m {process.env.NEXT_PUBLIC_NAME}, a{' '}

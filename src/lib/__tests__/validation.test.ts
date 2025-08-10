@@ -178,7 +178,7 @@ describe('Validation Utilities', () => {
       });
       expect(result.isValid).toBe(false);
       expect(result.errors.subject).toBe(
-        'Subject must be between 3 and 200 characters'
+        'Subject must be between 5 and 200 characters'
       );
     });
 

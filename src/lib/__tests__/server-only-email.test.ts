@@ -141,7 +141,7 @@ describe('Server-Only Email', () => {
       const invalidData = { ...validFormData, subject: 'Hi' };
 
       await expect(sendContactEmail(invalidData)).rejects.toThrow(
-        'Subject must be between 3 and 200 characters long'
+        'Subject must be between 5 and 200 characters long'
       );
     });
 
