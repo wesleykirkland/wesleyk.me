@@ -32,10 +32,16 @@
 name: Generate terraform docs
 on:
   pull_request:
+    paths:
+      - 'terraform/**'
+      - '.config/.terraform-docs.yml'
 
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
