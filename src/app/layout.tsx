@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://wesleyk.me'
+  ),
   title: `${process.env.NEXT_PUBLIC_NAME} - ${process.env.NEXT_PUBLIC_TAGLINE}`,
   description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
   icons: {
