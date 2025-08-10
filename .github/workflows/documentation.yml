@@ -48,9 +48,16 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Render terraform docs inside the README.md
-        uses: terraform-docs/gh-actions@v1.1.0
+        uses: terraform-docs/gh-actions@v1
         with:
           config-file: '.config/.terraform-docs.yml'
           working-dir: './terraform'
-          git-push: 'true'
-          output-file: ../README.md
+          git-push: 'false'
+          output-file: README.md
+
+      - name: Move docs to root and commit
+        run: |
+          mv terraform/README.md README.md
+          git add README.md
+          git commit -m "terraform-docs: automated action"
+          git push
