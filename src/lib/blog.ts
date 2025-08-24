@@ -196,12 +196,13 @@ function filterPostsByType(
 
 export function getSecurityResearchPosts(): BlogPostMetadata[] {
   const allPosts = getSortedPostsData();
-  return filterPostsByType(allPosts, (post) => !!post.securityResearch, [
-    'Security',
-    'Vulnerability',
-    'CVE',
-    'Research'
-  ]);
+  // Exclude posts that are explicitly case studies
+  const nonCaseStudyPosts = allPosts.filter((post) => !post.caseStudy);
+  return filterPostsByType(
+    nonCaseStudyPosts,
+    (post) => !!post.securityResearch,
+    ['Security', 'Vulnerability', 'CVE', 'Research']
+  );
 }
 
 export function getCaseStudyPosts(): BlogPostMetadata[] {

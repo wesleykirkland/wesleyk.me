@@ -28,7 +28,30 @@ jest.mock('@hcaptcha/react-hcaptcha', () => {
 
 // Mock the validation module
 jest.mock('../../lib/validation', () => ({
-  isValidEmail: jest.fn((email: string) => email.includes('@'))
+  isValidEmail: jest.fn((email: string) => email.includes('@')),
+  validateName: jest.fn((name: string) => {
+    if (!name) return 'Name is required';
+    if (name.trim().length < 2)
+      return 'Name must be at least 2 characters long';
+    return null;
+  }),
+  validateEmail: jest.fn((email: string) => {
+    if (!email) return 'Email is required';
+    if (!email.includes('@')) return 'Please enter a valid email address';
+    return null;
+  }),
+  validateSubject: jest.fn((subject: string) => {
+    if (!subject) return 'Subject is required';
+    if (subject.trim().length < 5)
+      return 'Subject must be at least 5 characters long';
+    return null;
+  }),
+  validateMessage: jest.fn((message: string) => {
+    if (!message) return 'Message is required';
+    if (message.trim().length < 100)
+      return 'Message must be at least 100 characters long';
+    return null;
+  })
 }));
 
 // Mock the tracking hooks
@@ -111,9 +134,9 @@ describe('ContactForm Component', () => {
       ).toBeInTheDocument();
     });
 
-    it('renders form title', () => {
+    it('renders form without title (title handled by parent component)', () => {
       render(<ContactForm />);
-      expect(screen.getByText('Send a Message')).toBeInTheDocument();
+      expect(screen.queryByText('Send a Message')).not.toBeInTheDocument();
     });
 
     it('renders required field indicators', () => {
@@ -250,16 +273,10 @@ describe('ContactForm Component', () => {
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
       await waitFor(() => {
-        expect(
-          screen.getByText('Name must be at least 2 characters long')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Name is required')).toBeInTheDocument();
         expect(screen.getByText('Email is required')).toBeInTheDocument();
-        expect(
-          screen.getByText('Subject must be at least 3 characters long')
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText('Message must be at least 100 characters long')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Subject is required')).toBeInTheDocument();
+        expect(screen.getByText('Message is required')).toBeInTheDocument();
         // Note: Captcha error is not shown because captcha was verified
       });
     });
@@ -326,7 +343,7 @@ describe('ContactForm Component', () => {
           screen.getByText('Name must be at least 2 characters long')
         ).toBeInTheDocument();
         expect(
-          screen.getByText('Subject must be at least 3 characters long')
+          screen.getByText('Subject must be at least 5 characters long')
         ).toBeInTheDocument();
         expect(
           screen.getByText('Message must be at least 100 characters long')
@@ -366,17 +383,26 @@ describe('ContactForm Component', () => {
 
       await fillFormFields(user);
 
-      // Try to submit without captcha - button should be disabled
+      // Try to submit without captcha - should show validation error
       const submitButton = screen.getByRole('button', {
         name: /send message/i
       });
-      expect(submitButton).toBeDisabled();
+
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Please complete the captcha verification')
+        ).toBeInTheDocument();
+      });
 
       // Verify captcha
       await user.click(screen.getByTestId('captcha-verify'));
 
-      // Now button should be enabled
-      expect(submitButton).not.toBeDisabled();
+      // Error should be cleared
+      expect(
+        screen.queryByText('Please complete the captcha verification')
+      ).not.toBeInTheDocument();
     });
 
     it('clears captcha error when captcha is verified', async () => {
@@ -385,31 +411,24 @@ describe('ContactForm Component', () => {
 
       await fillFormFields(user);
 
-      // Verify captcha first
-      await user.click(screen.getByTestId('captcha-verify'));
-
       // Expire captcha to trigger error state
       await user.click(screen.getByTestId('captcha-expire'));
 
       // Try to submit - should trigger validation including captcha error
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
-      // Wait a moment for any validation to occur
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Verify that the submit button remains disabled when captcha is not verified
-      // This is the correct behavior - form should not submit without captcha
-      const submitButton = screen.getByRole('button', {
-        name: /send message/i
+      await waitFor(() => {
+        expect(
+          screen.getByText('Please complete the captcha verification')
+        ).toBeInTheDocument();
       });
-      expect(submitButton).toBeDisabled();
 
       // Verify captcha again
       await user.click(screen.getByTestId('captcha-verify'));
 
       await waitFor(() => {
         expect(
-          screen.queryByText(/please complete the captcha/i)
+          screen.queryByText('Please complete the captcha verification')
         ).not.toBeInTheDocument();
       });
     });
@@ -425,15 +444,11 @@ describe('ContactForm Component', () => {
       await fillFormFields(user);
       await user.click(screen.getByRole('button', { name: /send message/i }));
 
-      // Wait a moment for any validation to occur
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Verify that the submit button remains disabled when captcha has expired
-      // This is the correct behavior - form should not submit with expired captcha
-      const submitButton = screen.getByRole('button', {
-        name: /send message/i
+      await waitFor(() => {
+        expect(
+          screen.getByText('Please complete the captcha verification')
+        ).toBeInTheDocument();
       });
-      expect(submitButton).toBeDisabled();
     });
   });
 
@@ -499,12 +514,6 @@ describe('ContactForm Component', () => {
         expect(screen.getByLabelText(/subject/i)).toHaveValue('');
         expect(screen.getByLabelText(/message/i)).toHaveValue('');
       });
-
-      // Check that all fields are cleared
-      expect(screen.getByLabelText(/name/i)).toHaveValue('');
-      expect(screen.getByLabelText(/email/i)).toHaveValue('');
-      expect(screen.getByLabelText(/subject/i)).toHaveValue('');
-      expect(screen.getByLabelText(/message/i)).toHaveValue('');
     });
 
     it('tracks successful form submission', async () => {
@@ -616,15 +625,11 @@ describe('ContactForm Component', () => {
         // Should require captcha verification again
         await user.click(screen.getByRole('button', { name: /send message/i }));
 
-        // Wait a moment for any validation to occur
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Verify that the submit button remains disabled after error
-        // This is the correct behavior - captcha should be reset after errors
-        const submitButton = screen.getByRole('button', {
-          name: /send message/i
+        await waitFor(() => {
+          expect(
+            screen.getByText('Please complete the captcha verification')
+          ).toBeInTheDocument();
         });
-        expect(submitButton).toBeDisabled();
       });
     });
   });

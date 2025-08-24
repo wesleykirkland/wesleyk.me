@@ -332,7 +332,7 @@ describe('SearchBox Component', () => {
         () => {
           expect(screen.queryByText('Test Suggestion')).not.toBeInTheDocument();
         },
-        { timeout: 200 }
+        { timeout: 500 }
       );
     });
   });

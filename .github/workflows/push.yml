@@ -13,11 +13,11 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/fortellar/docker-terraform:latest
+      image: ghcr.io/wesleykirkland/docker-terraform:latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set Git safe directory
         run: |

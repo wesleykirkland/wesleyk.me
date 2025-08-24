@@ -1,0 +1,202 @@
+version: ''
+
+formatter: markdown table
+
+name: wesleyk.me
+content: |-
+  # Wesleyk.me
+
+  GitHub: [wesleykirkland/wesleyk.me](https://github.com/wesleykirkland/wesleyk.me)
+
+  A modern, responsive personal website and blog built with Next.js, featuring security research, PowerShell automation content, technical and personal articles.
+
+  [![Netlify Status](https://api.netlify.com/api/v1/badges/43fce32b-eca4-44e6-9af7-97d19a143a5d/deploy-status)](https://app.netlify.com/projects/wesleykme/deploys)
+
+  ## 🚀 Features
+
+  - **Modern Tech Stack**: Built with Next.js 15+, TypeScript, React, and Tailwind CSS
+  - **Blog System**: Markdown-based blog with frontmatter support
+  - **Responsive Design**: Mobile-first design that works on all devices
+  - **SEO Optimized**: Meta tags, structured data, and performance optimized
+  - **Static Export**: Optimized for Netlify deployment
+  - **Dark Mode Support**: Automatic system preference detection with manual toggle
+  - **Security Research**: Dedicated section for vulnerability research and case studies
+  - **Environment Variables**: Easy configuration for personal information
+
+  ## 🛠️ Tech Stack
+
+  - **Framework**: Next.js 15+ with App Router
+  - **Language**: TypeScript
+  - **Styling**: Tailwind CSS
+  - **Content**: Markdown with gray-matter for frontmatter
+  - **Deployment**: Netlify (with Next.js runtime for API routes)
+  - **Icons**: Custom SVG icons
+
+  ## 🚀 Getting Started
+
+  ### Prerequisites
+
+  - Node.js 24+
+  - npm or yarn
+
+  ### Installation
+
+  1. Install dependencies:
+
+  ```bash
+  npm install
+  ```
+
+  2. Run the development server (Netlify):
+
+  ```bash
+  brew install netlify-cli
+  netlify login
+  netlify dev
+  ```
+
+  Open [http://localhost:8888](http://localhost:8888) in your browser. This injects the ENV vars from Netlify into .env.local and runs it on port 3000 and proxies your 8888 traffic.
+
+  3. Run the development server (local):
+
+  ```bash
+  npm run dev
+  ```
+
+  Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+
+  ## 🐳 Container Deployment
+
+  ### Using Docker
+
+  1. Build and run with the provided script:
+
+  ```bash
+  ./docker-run.sh
+  ```
+
+  2. Or manually:
+
+  ```bash
+  # Build the image
+  docker build -f Containerfile -t wesleyk-website .
+
+  # Run the container
+  docker run -d --name wesleyk-website-container -p 3000:3000 wesleyk-website
+  ```
+
+  ### Using Podman
+
+  1. Build and run with the provided script:
+
+  ```bash
+  ./podman-run.sh
+  ```
+
+  2. Or manually:
+
+  ```bash
+  # Build the image
+  podman build -f Containerfile -t wesleyk-website .
+
+  # Run the container
+  podman run -d --name wesleyk-website-container -p 3000:3000 wesleyk-website
+  ```
+
+  The containerized website will be available at [http://localhost:3000](http://localhost:3000)
+
+  ## ⚙️ Configuration
+
+  ### Environment Variables
+
+  Your professional title and personal information are configured using environment variables. This makes it easy to update your title without touching the code!
+
+  **Environment Variables:**
+  See `.env.example``
+
+  **Required Setup:**
+  1. **HCaptcha Configuration:**
+
+    - Sign up at [hCaptcha](https://www.hcaptcha.com/)
+    - Get your site key and secret key
+    - The form will display an error message if the captcha site key is not configured.
+
+  2. **SMTP Configuration:**
+    - Configure your email provider's SMTP settings
+
+  **Important:** The contact form requires server-side functionality (API routes). This means:
+
+  - The site is no longer a static export
+  - Deployment requires a platform that supports Next.js API routes (like Netlify with Next.js runtime, Vercel, etc.)
+  - For static hosting, you would need to implement the contact form using a third-party service
+
+  ### Dark Mode
+
+  The website includes a built-in dark mode toggle that:
+
+  - **Automatically detects** your system's color scheme preference on first visit
+  - **Remembers your choice** using localStorage across sessions
+  - **Provides a toggle button** in the header for manual switching
+  - **Works reliably** regardless of your system's current preference
+  - **Supports all pages** with consistent dark/light themes
+  - **Prevents flash** of unstyled content with inline script
+
+  The dark mode toggle appears as a sun/moon icon in the header next to the social media links. Click it to instantly switch between light and dark modes.
+
+  ## 📝 Adding Blog Posts
+
+  Create a new markdown file in the `posts/` directory with frontmatter:
+
+  ```markdown
+  ---
+  title: "Your Post Title"
+  date: "2024-01-01"
+  excerpt: "A brief description of your post"
+  tags: ["tag1", "tag2", "tag3"]
+  author: "Wesley Kirkland"
+  ---
+
+  Your post content here...
+  ```
+
+  Built with ❤️ by Wesley Kirkland in Knoxville, TN - Meme Master of Disaster and with the help of Agentic AI as I'm not a Software Engineer by Trade
+
+  ---
+
+  {{ .Requirements }}
+
+  {{ .Resources }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
+
+  ---
+
+  ### Before this is applied, you need to configure the git hook on your local machine
+  ```bash
+  # Test your pre-commit hooks - This will force them to run on all files
+  pre-commit run --all-files
+
+  # Add your pre-commit hooks forever
+  pre-commit install
+  ```
+
+  Note, manual changes to the README will be overwritten when the documentation is updated. To update the documentation, run `terraform-docs -c .config/.terraform-docs.yml .`
+
+sections:
+  show:
+    - header
+    - requirements
+    - resources
+    - inputs
+    - outputs
+
+sort:
+  enabled: true
+  by: name
+
+output:
+  file: README.md
+  mode: replace

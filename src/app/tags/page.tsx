@@ -93,7 +93,10 @@ export default function TagsPage() {
                 className="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 <span className="font-medium">{tag}</span>
-                <span className="ml-2 text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                <span
+                  className="ml-2 text-xs bg-white/20 text-white px-2 py-1 rounded-full min-w-6 inline-flex items-center justify-center leading-none"
+                  aria-label={`${count} ${count === 1 ? 'post' : 'posts'}`}
+                >
                   {count}
                 </span>
               </Link>

@@ -1,24 +1,26 @@
-# Wesley Kirkland's Personal Website
+<!-- BEGIN_TF_DOCS -->
+# Wesleyk.me
 
-A modern, responsive personal website and blog built with Next.js, featuring security research, PowerShell automation content, and technical articles.
+GitHub: [wesleykirkland/wesleyk.me](https://github.com/wesleykirkland/wesleyk.me)
+
+A modern, responsive personal website and blog built with Next.js, featuring security research, PowerShell automation content, technical and personal articles.
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/43fce32b-eca4-44e6-9af7-97d19a143a5d/deploy-status)](https://app.netlify.com/projects/wesleykme/deploys)
 
 ## 🚀 Features
 
-- **Modern Tech Stack**: Built with Next.js 14+, TypeScript, and Tailwind CSS
+- **Modern Tech Stack**: Built with Next.js 15+, TypeScript, React, and Tailwind CSS
 - **Blog System**: Markdown-based blog with frontmatter support
 - **Responsive Design**: Mobile-first design that works on all devices
 - **SEO Optimized**: Meta tags, structured data, and performance optimized
 - **Static Export**: Optimized for Netlify deployment
 - **Dark Mode Support**: Automatic system preference detection with manual toggle
 - **Security Research**: Dedicated section for vulnerability research and case studies
-- **PowerShell Branding**: Custom branding reflecting expertise in PowerShell automation
 - **Environment Variables**: Easy configuration for personal information
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 14+ with App Router
+- **Framework**: Next.js 15+ with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Content**: Markdown with gray-matter for frontmatter
@@ -29,7 +31,7 @@ A modern, responsive personal website and blog built with Next.js, featuring sec
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 24+
 - npm or yarn
 
 ### Installation
@@ -40,13 +42,24 @@ A modern, responsive personal website and blog built with Next.js, featuring sec
 npm install
 ```
 
-2. Run the development server:
+2. Run the development server (Netlify):
+
+```bash
+brew install netlify-cli
+netlify login
+netlify dev
+```
+
+Open [http://localhost:8888](http://localhost:8888) in your browser. This injects the ENV vars from Netlify into .env.local and runs it on port 3000 and proxies your 8888 traffic.
+
+3. Run the development server (local):
 
 ```bash
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
 
 ## 🐳 Container Deployment
 
@@ -95,74 +108,17 @@ The containerized website will be available at [http://localhost:3000](http://lo
 Your professional title and personal information are configured using environment variables. This makes it easy to update your title without touching the code!
 
 **Environment Variables:**
-
-```bash
-# Professional Information
-NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer"
-NEXT_PUBLIC_FULL_TITLE="Sr. Cloud Engineer | PowerShell Enthusiast | Security Researcher"
-NEXT_PUBLIC_NAME="Wesley Kirkland"
-NEXT_PUBLIC_TAGLINE="Meme Master of Disaster"
-
-# Contact Information
-NEXT_PUBLIC_GITHUB_URL="https://github.com/wesleykirkland"
-NEXT_PUBLIC_LINKEDIN_URL="https://www.linkedin.com/in/wesleykirkland/"
-NEXT_PUBLIC_YOUTUBE_PLAYLIST="https://www.youtube.com/playlist?list=PL6e0QoXQoTzW_YGyfOmcqGP_wHbiAFmhW"
-
-# Site Metadata
-NEXT_PUBLIC_SITE_DESCRIPTION="Personal website and blog of Wesley Kirkland - Sr. Cloud Engineer specializing in PowerShell, O365, Azure, and Security Research"
-
-# Contact Form Configuration
-NEXT_PUBLIC_HCAPTCHA_SITE_KEY="your-hcaptcha-site-key"
-HCAPTCHA_SECRET_KEY="your-hcaptcha-secret-key"
-
-# SMTP Configuration
-SMTP_HOST=""
-SMTP_PORT="587"
-SMTP_USERNAME=""
-SMTP_PASSWORD=""
-SMTP_FROM=""
-SMTP_TO=""
-SMTP_TLS="true"
-```
-
-### Updating Your Title
-
-**Local Development:**
-Edit `.env.local` and change the `NEXT_PUBLIC_PROFESSIONAL_TITLE` variable:
-
-```bash
-NEXT_PUBLIC_PROFESSIONAL_TITLE="Sr. Cloud Engineer"
-```
-
-**Production Deployment:**
-Set the environment variable in your deployment platform (Netlify, Vercel, etc.):
-
-- Netlify: Site settings → Environment variables
-- Vercel: Project settings → Environment Variables
-- Docker: Use `-e` flag or environment file
-
-### Contact Form Setup
-
-The website includes a functional contact form with the following features:
-
-- SMTP email sending
-- HCaptcha spam protection
-- Form validation
-- Responsive design with dark mode support
+See `.env.example``
 
 **Required Setup:**
-
 1. **HCaptcha Configuration:**
 
-   - Sign up at [hCaptcha](https://www.hcaptcha.com/)
-   - Get your site key and secret key
-   - Add them to your `.env.local` file
+  - Sign up at [hCaptcha](https://www.hcaptcha.com/)
+  - Get your site key and secret key
+  - The form will display an error message if the captcha site key is not configured.
 
 2. **SMTP Configuration:**
-   - Configure your email provider's SMTP settings
-   - Add SMTP settings to your `.env.local` file
-
-**Note:** You'll need to obtain an HCaptcha API key to enable the contact form. The form will display an error message if the captcha site key is not configured.
+  - Configure your email provider's SMTP settings
 
 **Important:** The contact form requires server-side functionality (API routes). This means:
 
@@ -199,13 +155,76 @@ author: "Wesley Kirkland"
 Your post content here...
 ```
 
-## 🌐 Deployment to Netlify
+Built with ❤️ by Wesley Kirkland in Knoxville, TN - Meme Master of Disaster and with the help of Agentic AI as I'm not a Software Engineer by Trade
 
-1. **Connect Repository**: Connect your GitHub repository to Netlify
-2. **Build Settings**:
-   - Build command: `npm run build`
-   - Publish directory: `out`
-3. **Environment Variables**: Set `NODE_VERSION=18`
-4. **Deploy**: Netlify will automatically build and deploy your site
+---
 
-Built with ❤️ by Wesley Kirkland - Meme Master of Disaster and with the help of Agentic AI as I'm not a Software Engineer by Trade
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.10.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
+| <a name="requirement_netlify"></a> [netlify](#requirement\_netlify) | >= 0.2 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| netlify_environment_variable.hcaptcha_secret_key | resource |
+| netlify_environment_variable.next_public_full_title | resource |
+| netlify_environment_variable.next_public_github_url | resource |
+| netlify_environment_variable.next_public_hcaptcha_site_key | resource |
+| netlify_environment_variable.next_public_linkedin_url | resource |
+| netlify_environment_variable.next_public_name | resource |
+| netlify_environment_variable.next_public_overtracking_site_id | resource |
+| netlify_environment_variable.next_public_professional_title | resource |
+| netlify_environment_variable.next_public_site_description | resource |
+| netlify_environment_variable.next_public_tagline | resource |
+| netlify_environment_variable.next_public_youtube_playlist | resource |
+| netlify_environment_variable.node_version | resource |
+| netlify_environment_variable.npm_version | resource |
+| netlify_environment_variable.secrets_scan_omit_keys | resource |
+| netlify_environment_variable.smtp_from | resource |
+| netlify_environment_variable.smtp_host | resource |
+| netlify_environment_variable.smtp_password | resource |
+| netlify_environment_variable.smtp_port | resource |
+| netlify_environment_variable.smtp_tls | resource |
+| netlify_environment_variable.smtp_to | resource |
+| netlify_environment_variable.smtp_username | resource |
+| netlify_site_build_settings.blog_prd | resource |
+| netlify_site_domain_settings.blog | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_env"></a> [env](#input\_env) | Environment | `string` | `"prd"` | no |
+| <a name="input_next_public_github_url"></a> [next\_public\_github\_url](#input\_next\_public\_github\_url) | GitHub URL | `string` | `"https://github.com/wesleykirkland"` | no |
+| <a name="input_next_public_linkedin_url"></a> [next\_public\_linkedin\_url](#input\_next\_public\_linkedin\_url) | LinkedIn URL | `string` | `"https://www.linkedin.com/in/wesleykirkland/"` | no |
+| <a name="input_next_public_name"></a> [next\_public\_name](#input\_next\_public\_name) | Public name for the site | `string` | `"Wesley Kirkland"` | no |
+| <a name="input_next_public_professional_title"></a> [next\_public\_professional\_title](#input\_next\_public\_professional\_title) | Full Professional Title | `string` | `"Solutions Architect"` | no |
+| <a name="input_next_public_site_description"></a> [next\_public\_site\_description](#input\_next\_public\_site\_description) | Site description | `string` | `"Personal website and blog of Wesley - Solutions Architect specializing in AWS, O365, Web Presence, and Security Research"` | no |
+| <a name="input_next_public_tagline"></a> [next\_public\_tagline](#input\_next\_public\_tagline) | Public tagline for the site | `string` | `"Solutions Architect & Security Researcher"` | no |
+| <a name="input_next_public_youtube_playlist_url"></a> [next\_public\_youtube\_playlist\_url](#input\_next\_public\_youtube\_playlist\_url) | Youtube Playlist URL | `string` | `"https://www.youtube.com/playlist?list=PL6e0QoXQoTzW_YGyfOmcqGP_wHbiAFmhW"` | no |
+| <a name="input_node_version"></a> [node\_version](#input\_node\_version) | Node.js version for builds | `string` | `"22"` | no |
+| <a name="input_npm_version"></a> [npm\_version](#input\_npm\_version) | NPM version for builds | `string` | `"latest"` | no |
+| <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | `"us-east-2"` | no |
+
+## Outputs
+
+No outputs.
+
+---
+
+### Before this is applied, you need to configure the git hook on your local machine
+```bash
+# Test your pre-commit hooks - This will force them to run on all files
+pre-commit run --all-files
+
+# Add your pre-commit hooks forever
+pre-commit install
+```
+
+Note, manual changes to the README will be overwritten when the documentation is updated. To update the documentation, run `terraform-docs -c .config/.terraform-docs.yml .`
+<!-- END_TF_DOCS -->

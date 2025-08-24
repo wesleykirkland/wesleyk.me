@@ -34,7 +34,7 @@ Our partnership with Markmonitor transformed our approach to domain portfolio ma
 
 As Ministry Brands continued to acquire companies and expand our white-label offerings, our domain portfolio grew exponentially. We had domains in every register out there, from GoDaddy, AWS, NameCheap, Google Domains, OpenSRS, Register.com, and so many more. Even a single business unit would have multiple domain registrars. This provided no central oversight and more importantly for a large enterprise we had no accountability or proper invoicing.
 
-### Key Pain Points:
+### Key Pain Points
 
 - **Scattered Domain Portfolio**: Domains registered across multiple providers with varying security standards
 - **Brand Protection Gaps**: No systematic monitoring for domain squatting or brand abuse

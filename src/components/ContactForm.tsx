@@ -2,8 +2,17 @@
 
 import { useState, useRef } from 'react';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import { isValidEmail } from '@/lib/validation';
+import {
+  validateName,
+  validateEmail,
+  validateSubject,
+  validateMessage
+} from '@/lib/validation';
 import { trackingEvents } from '@/hooks/usePageTracking';
+
+interface ContactFormProps {
+  className?: string;
+}
 
 interface FormData {
   name: string;
@@ -21,7 +30,9 @@ interface FormErrors {
   general?: string;
 }
 
-export default function ContactForm() {
+export default function ContactForm({
+  className = ''
+}: Readonly<ContactFormProps>) {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -35,10 +46,59 @@ export default function ContactForm() {
     'idle' | 'success' | 'error'
   >('idle');
   const [submitMessage, setSubmitMessage] = useState('');
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
+  // Use React ref for the official hCaptcha component
   const captchaRef = useRef<HCaptcha>(null);
-  const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
+  const [captchaToken, setCaptchaToken] = useState<string>('');
+
+  // Handle captcha verification
+  const handleCaptchaVerify = (token: string) => {
+    setCaptchaToken(token);
+    setErrors((prev) => ({ ...prev, captcha: undefined }));
+  };
+
+  // Handle captcha expiration
+  const handleCaptchaExpire = () => {
+    setCaptchaToken('');
+    setErrors((prev) => ({
+      ...prev,
+      captcha: 'Captcha expired. Please try again.'
+    }));
+  };
+
+  // Handle captcha error
+  const handleCaptchaError = () => {
+    setCaptchaToken('');
+    setErrors((prev) => ({
+      ...prev,
+      captcha: 'Captcha error. Please try again.'
+    }));
+  };
+
+  // Real-time validation
+  const validateField = (name: string, value: string) => {
+    let error: string | null = null;
+
+    switch (name) {
+      case 'name':
+        error = validateName(value);
+        break;
+      case 'email':
+        error = validateEmail(value);
+        break;
+      case 'subject':
+        error = validateSubject(value);
+        break;
+      case 'message':
+        error = validateMessage(value);
+        break;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error || undefined
+    }));
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -46,53 +106,54 @@ export default function ContactForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error for this field when user starts typing
-    if (errors[name as keyof FormErrors]) {
+    // Clear submit status when user starts typing
+    if (submitStatus !== 'idle') {
+      setSubmitStatus('idle');
+      setSubmitMessage('');
+    }
+
+    // Real-time validation (only show errors after user has started typing)
+    if (value.length > 0) {
+      validateField(name, value);
+    } else {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.name.trim() || formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters long';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!isValidEmail(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.subject.trim() || formData.subject.trim().length < 3) {
-      newErrors.subject = 'Subject must be at least 3 characters long';
-    }
-
-    if (!formData.message.trim() || formData.message.trim().length < 100) {
-      newErrors.message = 'Message must be at least 100 characters long';
-    }
-
-    if (!captchaToken) {
-      newErrors.captcha = 'Please complete the captcha verification';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
     setIsSubmitting(true);
+    setErrors({});
     setSubmitStatus('idle');
-    setSubmitMessage('');
 
     try {
+      // Validate all fields
+      const fieldErrors: FormErrors = {};
+
+      const nameError = validateName(formData.name);
+      if (nameError) fieldErrors.name = nameError;
+
+      const emailError = validateEmail(formData.email);
+      if (emailError) fieldErrors.email = emailError;
+
+      const subjectError = validateSubject(formData.subject);
+      if (subjectError) fieldErrors.subject = subjectError;
+
+      const messageError = validateMessage(formData.message);
+      if (messageError) fieldErrors.message = messageError;
+
+      // Validate captcha token
+      if (!captchaToken) {
+        fieldErrors.captcha = 'Please complete the captcha verification';
+      }
+
+      if (Object.keys(fieldErrors).length > 0) {
+        setErrors(fieldErrors);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Submit contact form data to API
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -104,24 +165,28 @@ export default function ContactForm() {
         })
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to send message');
+      }
+
       const data = await response.json();
 
       if (data.success) {
         setSubmitStatus('success');
-        setSubmitMessage(data.message);
+        setSubmitMessage(
+          data.message ||
+            'Thank you for your message! We have received it and will get back to you as soon as we can.'
+        );
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setErrors({});
+        setCaptchaToken('');
+        if (captchaRef.current) {
+          captchaRef.current.resetCaptcha();
+        }
 
         // Track successful form submission
         trackingEvents.contactFormSubmit(true);
-
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: ''
-        });
-        setCaptchaToken(null);
-        captchaRef.current?.resetCaptcha();
       } else {
         setSubmitStatus('error');
         setSubmitMessage(
@@ -136,8 +201,10 @@ export default function ContactForm() {
         trackingEvents.contactFormSubmit(false, data.error ?? 'Unknown error');
 
         // Reset captcha on error to allow retry
-        setCaptchaToken(null);
-        captchaRef.current?.resetCaptcha();
+        setCaptchaToken('');
+        if (captchaRef.current) {
+          captchaRef.current.resetCaptcha();
+        }
       }
     } catch (error) {
       console.error('Form submission error:', error);
@@ -145,28 +212,19 @@ export default function ContactForm() {
       setSubmitMessage(
         'Network error. Please check your connection and try again.'
       );
+      setCaptchaToken('');
+      if (captchaRef.current) {
+        captchaRef.current.resetCaptcha();
+      }
 
       // Track network error
       trackingEvents.contactFormSubmit(false, 'Network error');
-
-      // Reset captcha on network error to allow retry
-      setCaptchaToken(null);
-      captchaRef.current?.resetCaptcha();
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleCaptchaVerify = (token: string) => {
-    setCaptchaToken(token);
-    if (errors.captcha) {
-      setErrors((prev) => ({ ...prev, captcha: undefined }));
-    }
-  };
-
-  const handleCaptchaExpire = () => {
-    setCaptchaToken(null);
-  };
+  const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
 
   if (!siteKey) {
     return (
@@ -180,86 +238,71 @@ export default function ContactForm() {
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Send a Message
-      </h2>
-
-      {submitStatus === 'success' && (
-        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <p className="text-green-700 dark:text-green-300">{submitMessage}</p>
-        </div>
-      )}
-
-      {submitStatus === 'error' && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-red-700 dark:text-red-300">{submitMessage}</p>
-        </div>
-      )}
-
+    <div className={className}>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Name *
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.name
-                  ? 'border-red-300 dark:border-red-600'
-                  : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="Your full name"
-              disabled={isSubmitting}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.name}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Email *
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.email
-                  ? 'border-red-300 dark:border-red-600'
-                  : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="your.email@example.com"
-              disabled={isSubmitting}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.email}
-              </p>
-            )}
-          </div>
+        {/* Name Field */}
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2"
+          >
+            Name *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.name
+                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+            } text-gray-900 dark:text-gray-100`}
+            placeholder="Your full name"
+            disabled={isSubmitting}
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.name}
+            </p>
+          )}
         </div>
 
+        {/* Email Field */}
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2"
+          >
+            Email *
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+              errors.email
+                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+            } text-gray-900 dark:text-gray-100`}
+            placeholder="your.email@example.com"
+            disabled={isSubmitting}
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.email}
+            </p>
+          )}
+        </div>
+
+        {/* Subject Field */}
         <div>
           <label
             htmlFor="subject"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2"
           >
             Subject *
           </label>
@@ -269,12 +312,12 @@ export default function ContactForm() {
             name="subject"
             value={formData.subject}
             onChange={handleInputChange}
-            className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
               errors.subject
-                ? 'border-red-300 dark:border-red-600'
-                : 'border-gray-300 dark:border-gray-600'
-            }`}
-            placeholder="What would you like to discuss?"
+                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+            } text-gray-900 dark:text-gray-100`}
+            placeholder="What's this about?"
             disabled={isSubmitting}
           />
           {errors.subject && (
@@ -284,10 +327,11 @@ export default function ContactForm() {
           )}
         </div>
 
+        {/* Message Field */}
         <div>
           <label
             htmlFor="message"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2"
           >
             Message *
           </label>
@@ -297,12 +341,12 @@ export default function ContactForm() {
             rows={6}
             value={formData.message}
             onChange={handleInputChange}
-            className={`w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical ${
               errors.message
-                ? 'border-red-300 dark:border-red-600'
-                : 'border-gray-300 dark:border-gray-600'
-            }`}
-            placeholder="Tell me about your project, question, or just say hello!"
+                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+            } text-gray-900 dark:text-gray-100`}
+            placeholder="Tell us what's on your mind..."
             disabled={isSubmitting}
           />
           {errors.message && (
@@ -312,54 +356,57 @@ export default function ContactForm() {
           )}
         </div>
 
+        {/* HCaptcha - Secure React Component */}
         <div>
-          <HCaptcha
-            ref={captchaRef}
-            sitekey={siteKey}
-            onVerify={handleCaptchaVerify}
-            onExpire={handleCaptchaExpire}
-            theme="auto"
-          />
+          <div className="flex justify-center min-h-[78px]">
+            <HCaptcha
+              ref={captchaRef}
+              sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || ''}
+              onVerify={handleCaptchaVerify}
+              onExpire={handleCaptchaExpire}
+              onError={handleCaptchaError}
+              theme="light"
+              size="normal"
+            />
+          </div>
           {errors.captcha && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">
               {errors.captcha}
             </p>
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting || !captchaToken}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
-        >
-          {isSubmitting ? (
-            <>
-              <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Sending...
-            </>
-          ) : (
-            'Send Message'
-          )}
-        </button>
+        {/* Submit Button */}
+        <div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full px-6 py-3 rounded-lg font-medium transition-colors ${
+              isSubmitting
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            }`}
+          >
+            {isSubmitting ? 'Sending...' : 'Send Message'}
+          </button>
+        </div>
+
+        {/* Status Messages */}
+        {submitStatus === 'success' && (
+          <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <p className="text-green-800 dark:text-green-200 text-center">
+              {submitMessage}
+            </p>
+          </div>
+        )}
+
+        {submitStatus === 'error' && submitMessage && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-red-800 dark:text-red-200 text-center">
+              {submitMessage}
+            </p>
+          </div>
+        )}
       </form>
     </div>
   );
