@@ -29,7 +29,7 @@ Note: This guide assumes you have a working knowledge of Home Assistant, Cert Wa
 Notes: Some knowledge before we get started, in this implementation, we do have API keys stored on disk. This is not ideal, utilizing a secrets manager of sorts would be more ideal. The only other method Home Assistant natively offers is secrets.yaml, in which we could build an integration for our script. The other option is to pass our API keys as ENVs vars from Cert Warden through the chain. In either case it's out of scope for this article, though I may investigate this in the future. The additional security isn't much better as Cert Warden APIs are limited to the certificate and private key download and not full system access. Additionally Cert Warden is not an HSM and these keys are stored in a SQLLite database. I do not consider this an enterprise worthy solution.
 
 1. We can NOT run this as a normal automation as `/ssl` is locked out to us. I tried running it with elevated access to supervisor however privilege escalation is not available to us in this method either, nor can we reload docker containers in this method.
-1. Install the [SSH addon](https://community.home-assistant.io/t/home-assistant-community-add-on-ssh-web-terminal/33820)
+1. Install the [SSH addon](https://community.home-assistant.io/t/home-assistant-community-add-on-ssh-web-terminal/33820).
 1. Disable protection mode in the addon configuration `protection_mode: false   # Needed to write to /ssl and run HA CLI`, and restart the addon.
 1. Using SSH or the VS Code addon add the following script to `/config/scripts/update_cert.sh`.
    1. For `API_KEY_CERT` this is the API key from the certificate in Cert Warden.
@@ -126,7 +126,7 @@ fi
 exit $SSH_EXIT
 ```
 
-6. From within Cert Warden on the Certificate add a post processing action with the following path `./data/scripts/cert_homeassistant.sh`
+6. From within Cert Warden on the Certificate add a post processing action with the following path `./data/scripts/cert_homeassistant.sh`.
    1. If you use an NFS mount you may need to login to your NFS file system and manually `chmod +x` the script on the NFS mount and `chmod 600` the ssh key.
 1. From the Certificate in Cert Warden click on post processing and check the logs for errors.
 
