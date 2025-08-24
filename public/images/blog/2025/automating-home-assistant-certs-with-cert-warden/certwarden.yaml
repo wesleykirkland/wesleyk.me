@@ -1,0 +1,34 @@
+---
+volumes:
+  certwarden_data:
+    name: certwarden_data
+    driver_opts:
+      type: 'nfs'
+      o: 'addr=x.x.x.x,nolock,soft'
+      device: ':/volume1/docker/certwarden/data'
+networks:
+  proxy:
+    external: true
+services:
+  certwarden:
+    container_name: certwarden
+    image: ghcr.io/gregtwallace/certwarden:latest
+    restart: unless-stopped
+    volumes:
+      - certwarden_data:/app/data
+    networks:
+      proxy:
+    environment:
+      - TZ=America/New_York
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.certwarden.rule=Host(`certwarden.example.com`)'
+      - 'traefik.http.routers.certwarden.entrypoints=websecure'
+      - 'traefik.http.routers.certwarden.tls.certresolver=cloudflare'
+      - 'traefik.docker.network=proxy'
+      - 'traefik.http.services.certwarden.loadbalancer.server.port=4050'

@@ -1,9 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
 import sanitizeHtml from 'sanitize-html';
 
 // Utility function to parse dates correctly without timezone issues
@@ -161,10 +163,12 @@ export async function getPostData(slug: string): Promise<BlogPost> {
   // Process image paths in markdown content
   const processedMarkdown = processImagePaths(matterResult.content, slug);
 
-  // Use remark to convert markdown into HTML string
-  const processedContent = await remark()
-    .use(remarkGfm) // GitHub Flavored Markdown support
-    .use(html) // Convert to HTML first
+  // Use unified with proper remark/rehype pipeline for GitHub Flavored Markdown
+  const processedContent = await unified()
+    .use(remarkParse) // Parse markdown
+    .use(remarkGfm) // GitHub Flavored Markdown support (includes inline code)
+    .use(remarkRehype) // Convert to HTML AST
+    .use(rehypeStringify) // Convert to HTML string
     .process(processedMarkdown);
   const contentHtml = processedContent.toString();
 

@@ -130,17 +130,73 @@
   font-style: italic;
 }
 
-.prose pre {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-}
-
 .prose code {
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
+  background-color: #f3f4f6; /* gray-100 */
+  color: #1f2937; /* gray-800 */
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas,
+    'Liberation Mono', Menlo, monospace;
+  font-weight: 500;
+}
+
+/* Remove backticks from ::before and ::after pseudo-elements */
+.prose code::before,
+.prose code::after {
+  content: none !important;
+}
+
+/* Ensure code blocks don't show language indicators or backticks */
+.prose pre::before,
+.prose pre::after {
+  content: none !important;
+}
+
+/* Better styling for code blocks */
+.prose pre {
+  position: relative;
+  margin: 1.5rem 0;
+  background-color: #f8fafc !important; /* slate-50 */
+  color: #334155 !important; /* slate-700 */
+  border: 1px solid #e2e8f0 !important; /* slate-200 */
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas,
+    'Liberation Mono', Menlo, monospace;
+}
+
+.dark .prose pre {
+  background-color: #1e293b !important; /* slate-800 */
+  color: #e2e8f0 !important; /* slate-200 */
+  border-color: #475569 !important; /* slate-600 */
+}
+
+/* Better code styling within pre blocks */
+.prose pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-size: inherit !important;
+}
+
+/* Dark mode inline code styling */
+.dark .prose code {
+  background-color: #374151; /* gray-700 */
+  color: #f9fafb; /* gray-50 */
+}
+
+/* Ensure inline code doesn't inherit link colors */
+.prose a code {
+  color: inherit;
+}
+
+.dark .prose a code {
+  color: inherit;
 }
 
 /* Global link styles for consistent theming */
