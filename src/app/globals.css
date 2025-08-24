@@ -130,13 +130,6 @@
   font-style: italic;
 }
 
-.prose pre {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-}
-
 .prose code {
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
@@ -163,6 +156,7 @@
 /* Better styling for code blocks */
 .prose pre {
   position: relative;
+  margin: 1.5rem 0;
   background-color: #f8fafc !important; /* slate-50 */
   color: #334155 !important; /* slate-700 */
   border: 1px solid #e2e8f0 !important; /* slate-200 */
