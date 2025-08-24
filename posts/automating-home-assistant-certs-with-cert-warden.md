@@ -8,7 +8,7 @@ author: 'Wesley Kirkland'
 
 # The Why
 
-The CA/B Forum this year has announced by 2029-05-15 SSL Certs will only be valid for a maximum validity of 47 days. You can see this [here](https://cabforum.org/working-groups/server/baseline-requirements/requirements/#122-relevant-dates) under [6.3.2](https://cabforum.org/working-groups/server/baseline-requirements/requirements/#632-certificate-operational-periods-and-key-pair-usage-periods) I've given multiple presentations locally and with [Urllo](https://urllo.com/) about the importance of this. We're currently in the process of publishing a blog post about this issuefrom my webinar.
+The CA/B Forum this year has announced by 2029-05-15 SSL Certs will only be valid for a maximum validity of 47 days. You can see this [here](https://cabforum.org/working-groups/server/baseline-requirements/requirements/#122-relevant-dates) under [6.3.2](https://cabforum.org/working-groups/server/baseline-requirements/requirements/#632-certificate-operational-periods-and-key-pair-usage-periods) I've given multiple presentations locally and with [Urllo](https://urllo.com/) about the importance of this. We're currently in the process of publishing a blog post about this issue from my webinar.
 
 # The Reason
 
