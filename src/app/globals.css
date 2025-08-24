@@ -141,6 +141,32 @@
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
+  background-color: #f3f4f6; /* gray-100 */
+  color: #1f2937; /* gray-800 */
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas,
+    'Liberation Mono', Menlo, monospace;
+  font-weight: 500;
+}
+
+/* Remove backticks from ::before and ::after pseudo-elements */
+.prose code::before,
+.prose code::after {
+  content: none !important;
+}
+
+/* Dark mode inline code styling */
+.dark .prose code {
+  background-color: #374151; /* gray-700 */
+  color: #f9fafb; /* gray-50 */
+}
+
+/* Ensure inline code doesn't inherit link colors */
+.prose a code {
+  color: inherit;
+}
+
+.dark .prose a code {
+  color: inherit;
 }
 
 /* Global link styles for consistent theming */
