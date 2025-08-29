@@ -38,7 +38,7 @@ export default function Overtracking({
         defer
         onLoad={() => {
           // Avoid logging site ID to prevent exposure in build logs
-          console.log('Overtracking: Script loaded successfully');
+          // console.log('Overtracking: Script loaded successfully');
         }}
         onError={(e) => {
           console.error('Overtracking: Failed to load script', e);
