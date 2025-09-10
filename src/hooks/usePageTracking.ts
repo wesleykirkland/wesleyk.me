@@ -56,10 +56,10 @@ export function usePageTracking(options: PageTrackingOptions = {}) {
           console.error('Overtracking: Error tracking page view', error);
         }
       } else if (enabled) {
-        console.log('Overtracking: Page view would be tracked', {
-          page: pathname,
-          enabled
-        });
+        // console.log('Overtracking: Page view would be tracked', {
+        //   page: pathname,
+        //   enabled
+        // });
       }
     };
 
