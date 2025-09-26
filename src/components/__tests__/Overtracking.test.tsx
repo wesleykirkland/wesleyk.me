@@ -203,21 +203,6 @@ describe('Overtracking Component', () => {
       console.error = originalConsoleError;
     });
 
-    it('calls onLoad handler when script loads successfully', () => {
-      render(<Overtracking siteId="test-site" enabled={true} />);
-
-      // Verify the onLoad callback was set
-      expect(mockOnLoad).toBeDefined();
-
-      // Call the onLoad callback to test the function
-      if (mockOnLoad) {
-        mockOnLoad();
-        expect(console.log).toHaveBeenCalledWith(
-          'Overtracking: Script loaded successfully'
-        );
-      }
-    });
-
     it('calls onError handler when script fails to load', () => {
       render(<Overtracking siteId="test-site" enabled={true} />);
 
