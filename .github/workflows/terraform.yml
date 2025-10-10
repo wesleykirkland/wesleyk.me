@@ -84,7 +84,7 @@ jobs:
 
       - name: Upload Checkov results
         if: (github.event_name != 'pull_request' || github.event.action != 'labeled') && always() && hashFiles('terraform-checkov.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: terraform-checkov.sarif
         continue-on-error: true
