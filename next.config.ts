@@ -13,20 +13,8 @@ const nextConfig: NextConfig = {
   // Exclude test files from build
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
 
-  // Configure webpack to exclude test files
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.(test|spec)\.(js|jsx|ts|tsx)$/,
-      loader: 'ignore-loader'
-    });
-    return config;
-  },
-
-  // ESLint configuration for build
-  eslint: {
-    ignoreDuringBuilds: false,
-    dirs: ['src']
-  },
+  // Empty turbopack config to acknowledge Turbopack is the default in Next.js 16
+  turbopack: {},
 
   // TypeScript configuration for build
   typescript: {
