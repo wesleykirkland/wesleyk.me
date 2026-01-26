@@ -151,4 +151,4 @@ The success of this project demonstrated the value of investing in enterprise-gr
 4. **Automate Where Possible**: Reduce manual processes to minimize human error
 5. **Document Everything**: Maintain comprehensive audit trails for compliance and security
 
-To read the case study at Markmonitor please see [here](https://clarivate.com/intellectual-property/lp/helping-ministry-brands-gather-its-domain-flock/), or you can download it from my website [here](/public/documents/markmonitor_ministry-brands_case-study_march-2021.pdf).
+To read the case study at Markmonitor please see [here](https://clarivate.com/intellectual-property/lp/helping-ministry-brands-gather-its-domain-flock/), or you can download it from my website [here](/documents/markmonitor_ministry-brands_case-study_march-2021.pdf).
