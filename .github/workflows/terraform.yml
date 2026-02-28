@@ -1,18 +1,17 @@
 name: Terraform
 
 on:
-  workflow_run:
-    workflows: ['Run pre-commit on push']
-    types:
-      - completed
-    branches:
-      - main
   pull_request:
     branches:
       - main
     paths:
       - 'terraform/**'
-    types: [labeled] # https://docs.github.com/actions/learn-github-actions/events-that-trigger-workflows
+    types: [opened, synchronize, reopened, labeled] # Plan on every PR update; label triggers for manual plan/apply.
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
   workflow_dispatch:
     inputs:
       command:
@@ -25,24 +24,29 @@ on:
         default: plan
 
 permissions:
-  actions: read # Required to identify workflow run
-  checks: write # Required to add status summary
-  contents: read # Required to checkout repository
-  id-token: write # Required to authenticate via OIDC
-  pull-requests: write # Required to add PR comment
-  issues: write # Required to add label.
+  actions: read # Required to identify workflow run.
+  checks: write # Required to add status summary.
+  contents: read # Required to checkout repository.
+  id-token: write # Required to authenticate via OIDC.
+  issues: write # Required to manage PR labels via Issues API.
+  pull-requests: write # Required to add PR comment.
 
 env:
   AWS_ACCOUNT_ID: '838419074361'
   AWS_REGION: 'us-east-2'
-  TF_VERSION: '1.10.5'
   TF_WORKING_DIR: './terraform'
 
 jobs:
   terraform:
     name: Terraform Plan & Apply
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'pull_request' || github.event_name == 'issue_comment' || github.event_name == 'workflow_dispatch' }}
+    # Skip labeled events that don't carry a TF label (e.g., unrelated labels).
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      github.event.action != 'labeled' ||
+      contains(github.event.pull_request.labels.*.name, 'run-plan') ||
+      contains(github.event.pull_request.labels.*.name, 'run-apply')
 
     steps:
       - name: Checkout code
@@ -64,17 +68,17 @@ jobs:
         with:
           path: ~/.terraform.d/plugin-cache
           key: cache-tf-${{ runner.os }}-${{ hashFiles('terraform/.terraform.lock.hcl') }}
+          restore-keys: cache-tf-${{ runner.os }}-
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: ${{ env.TF_VERSION }}
-          terraform_wrapper: false # Required for TF-via-PR to get detailed exit codes
+          terraform_wrapper: false # Required for TF-via-PR to capture detailed exit codes.
 
-      # Security scanning for Terraform (skip for label events)
+      # Security scanning — runs on every event except label-only triggers.
       - name: Run Checkov
-        if: github.event_name != 'pull_request' || github.event.action != 'labeled'
-        uses: bridgecrewio/checkov-action@master
+        if: github.event.action != 'labeled'
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: ${{ env.TF_WORKING_DIR }}
           framework: terraform
@@ -83,22 +87,21 @@ jobs:
         continue-on-error: true
 
       - name: Upload Checkov results
-        if: (github.event_name != 'pull_request' || github.event.action != 'labeled') && always() && hashFiles('terraform-checkov.sarif') != ''
+        if: github.event.action != 'labeled' && always() && hashFiles('terraform-checkov.sarif') != ''
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: terraform-checkov.sarif
         continue-on-error: true
 
-      # TFSec security scanning (skip for label events)
       - name: Run tfsec
-        if: github.event_name != 'pull_request' || github.event.action != 'labeled'
+        if: github.event.action != 'labeled'
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: ${{ env.TF_WORKING_DIR }}
           soft_fail: true
         continue-on-error: true
 
-      # TF-via-PR: Plan on PR, Apply on push to main, or based on labels
+      # Plan on PR, apply on merge to main or via run-apply label/workflow_dispatch.
       - name: Provision TF
         uses: op5dev/tf-via-pr@v13
         env:
@@ -107,8 +110,15 @@ jobs:
           TF_IN_AUTOMATION: true
         with:
           working-directory: ${{ env.TF_WORKING_DIR }}
-          command: ${{ github.event_name == 'push' && 'apply' || contains(github.event.pull_request.labels.*.name, 'run-apply') && 'apply' || 'plan' }}
-          arg-lock: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'run-apply') }}
+          command: >-
+            ${{ inputs.command ||
+                (github.event_name == 'push' && 'apply') ||
+                (contains(github.event.pull_request.labels.*.name, 'run-apply') && 'apply') ||
+                'plan' }}
+          arg-lock: >-
+            ${{ inputs.command == 'apply' ||
+                github.event_name == 'push' ||
+                contains(github.event.pull_request.labels.*.name, 'run-apply') }}
           plan-encrypt: ${{ secrets.TF_PLAN_PASSPHRASE }}
           validate: true
           format: true
@@ -118,8 +128,10 @@ jobs:
 
       - name: Remove label
         if: |
-          contains(github.event.pull_request.labels.*.name, 'run-plan') ||
-          contains(github.event.pull_request.labels.*.name, 'run-apply')
+          always() && (
+            contains(github.event.pull_request.labels.*.name, 'run-plan') ||
+            contains(github.event.pull_request.labels.*.name, 'run-apply')
+          )
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
