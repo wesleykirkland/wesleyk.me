@@ -66,7 +66,7 @@ jobs:
           key: cache-tf-${{ runner.os }}-${{ hashFiles('terraform/.terraform.lock.hcl') }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false # Required for TF-via-PR to get detailed exit codes
