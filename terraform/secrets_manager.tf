@@ -8,7 +8,7 @@ module "secrets_manager" {
   recovery_window_in_days = 7
 
   # Version - We will replace in the console
-  create_random_password           = true
+  create_random_password           = false
   random_password_length           = 64
   random_password_override_special = "!@#$%^&*()_+"
 
