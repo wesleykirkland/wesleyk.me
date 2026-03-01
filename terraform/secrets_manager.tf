@@ -6,7 +6,7 @@ module "secrets_manager" {
   name                     = "website-wesleyk-me"
   description              = "Wesleyk.me Secrets in JSON"
   recovery_window_in_days  = 7
-  create_random_password   = false
+  create_random_password   = true
   secret_string_wo         = ""
   secret_string_wo_version = 1
 
