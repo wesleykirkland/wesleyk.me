@@ -3,14 +3,12 @@ module "secrets_manager" {
   version = "~> 2.0"
 
   # Secret
-  name                    = "website-wesleyk-me"
-  description             = "Wesleyk.me Secrets in JSON"
-  recovery_window_in_days = 7
-
-  # Version - We will replace in the console
-  create_random_password           = false
-  random_password_length           = 64
-  random_password_override_special = "!@#$%^&*()_+"
+  name                     = "website-wesleyk-me"
+  description              = "Wesleyk.me Secrets in JSON"
+  recovery_window_in_days  = 7
+  create_random_password   = false
+  secret_string_wo         = ""
+  secret_string_wo_version = 1
 
   tags = local.tags
 }
