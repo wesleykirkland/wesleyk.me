@@ -3,12 +3,10 @@ module "secrets_manager" {
   version = "~> 2.0"
 
   # Secret
-  name                     = "website-wesleyk-me"
-  description              = "Wesleyk.me Secrets in JSON"
-  recovery_window_in_days  = 7
-  create_random_password   = true
-  secret_string_wo         = ""
-  secret_string_wo_version = 1
+  name                    = "website-wesleyk-me"
+  description             = "Wesleyk.me Secrets in JSON"
+  recovery_window_in_days = 7
+  create_random_password  = true
 
   tags = local.tags
 }
