@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: anthropics/claude-code-action@0fe28cdb64e23015219b0e478100b7105fd7dfa1 # v1.0.167
+      - uses: anthropics/claude-code-action@af0559ee4f514d1ef21826982bed13f7edc3c35e # v1.0.178
         with:
           anthropic_api_key: ${{ secrets.CLAUDE_CODE_API_KEY }}
           allowed_bots: 'renovate[bot]'
