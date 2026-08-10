@@ -211,7 +211,7 @@ export const setupTestEnv = (vars: Record<string, string>) => {
   return originalEnv;
 };
 
-export const restoreTestEnv = (originalEnv: Record<string, string>) => {
+export const restoreTestEnv = (originalEnv: NodeJS.ProcessEnv) => {
   process.env = originalEnv;
 };
 

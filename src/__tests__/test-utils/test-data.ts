@@ -15,8 +15,6 @@ export const createMockBlogPost = (
   excerpt: 'Test excerpt',
   tags: ['test', 'blog'],
   author: 'Test Author',
-  readingTime: 5,
-  wordCount: 1000,
   ...overrides
 });
 

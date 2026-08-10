@@ -37,7 +37,7 @@ jest.mock('next/server', () => ({
       Buffer.isBuffer(body)
     ) {
       // Image response - use the headers from init if provided
-      return new Response(body, {
+      return new Response(body as BodyInit, {
         status: init?.status || 200,
         headers: init?.headers || {}
       });

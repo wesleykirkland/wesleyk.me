@@ -254,12 +254,14 @@ describe('DarkModeToggle Component', () => {
 
       render(<DarkModeToggle />);
 
-      let button: HTMLElement;
       await waitFor(() => {
-        button = screen.getByRole('button');
-        expect(button).toHaveAttribute('aria-label', 'Switch to dark mode');
+        expect(screen.getByRole('button')).toHaveAttribute(
+          'aria-label',
+          'Switch to dark mode'
+        );
       });
 
+      const button = screen.getByRole('button');
       fireEvent.click(button);
 
       await waitFor(() => {

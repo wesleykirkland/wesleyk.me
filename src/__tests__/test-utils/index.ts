@@ -52,7 +52,8 @@ export const expectToThrow = async (
     throw new Error('Expected function to throw');
   } catch (error) {
     if (expectedError) {
-      expect(error.message).toContain(expectedError);
+      const message = error instanceof Error ? error.message : String(error);
+      expect(message).toContain(expectedError);
     }
   }
 };
@@ -61,9 +62,8 @@ export const expectNotToThrow = async (fn: () => Promise<any>) => {
   try {
     await fn();
   } catch (error) {
-    throw new Error(
-      `Expected function not to throw, but got: ${error.message}`
-    );
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Expected function not to throw, but got: ${message}`);
   }
 };
 
@@ -128,13 +128,13 @@ export const retryTest = async <T>(
   maxRetries: number = 3,
   delay: number = 1000
 ): Promise<T> => {
-  let lastError: Error;
+  let lastError: Error = new Error('retryTest: fn was never invoked');
 
   for (let i = 0; i <= maxRetries; i++) {
     try {
       return await fn();
     } catch (error) {
-      lastError = error;
+      lastError = error instanceof Error ? error : new Error(String(error));
       if (i < maxRetries) {
         await new Promise((resolve) => setTimeout(resolve, delay));
       }

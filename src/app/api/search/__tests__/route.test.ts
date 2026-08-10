@@ -76,7 +76,7 @@ describe('/api/search Route', () => {
     });
 
     it('should handle search with tags', async () => {
-      const mockResults = [];
+      const mockResults: unknown[] = [];
       mockSearchPosts.mockReturnValue(mockResults);
 
       const request = createMockRequest(
@@ -99,7 +99,7 @@ describe('/api/search Route', () => {
     });
 
     it('should handle search with content inclusion', async () => {
-      const mockResults = [];
+      const mockResults: unknown[] = [];
       mockSearchPosts.mockReturnValue(mockResults);
 
       const request = createMockRequest(
@@ -121,7 +121,7 @@ describe('/api/search Route', () => {
     });
 
     it('should handle search with limit', async () => {
-      const mockResults = [];
+      const mockResults: unknown[] = [];
       mockSearchPosts.mockReturnValue(mockResults);
 
       const request = createMockRequest(
@@ -190,7 +190,7 @@ describe('/api/search Route', () => {
     });
 
     it('should handle empty search query', async () => {
-      const mockResults = [];
+      const mockResults: unknown[] = [];
       mockSearchPosts.mockReturnValue(mockResults);
 
       const request = createMockRequest('http://localhost:3000/api/search');
@@ -231,7 +231,7 @@ describe('/api/search Route', () => {
     });
 
     it('should filter empty tags', async () => {
-      const mockResults = [];
+      const mockResults: unknown[] = [];
       mockSearchPosts.mockReturnValue(mockResults);
 
       const request = createMockRequest(

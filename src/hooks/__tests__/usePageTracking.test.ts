@@ -41,7 +41,7 @@ const setupWindowMocks = () => {
 describe('usePageTracking Hook', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.NODE_ENV = 'production'; // Enable tracking by default
+    process.env = { ...process.env, NODE_ENV: 'production' }; // Enable tracking by default
     mockUsePathname.mockReturnValue('/test-path');
     setupWindowMocks();
   });
@@ -63,7 +63,7 @@ describe('usePageTracking Hook', () => {
     });
 
     it('does not track in development by default', () => {
-      process.env.NODE_ENV = 'development';
+      process.env = { ...process.env, NODE_ENV: 'development' };
 
       renderHook(() => usePageTracking());
 
@@ -71,7 +71,7 @@ describe('usePageTracking Hook', () => {
     });
 
     it('can be explicitly enabled in development', () => {
-      process.env.NODE_ENV = 'development';
+      process.env = { ...process.env, NODE_ENV: 'development' };
 
       renderHook(() => usePageTracking({ enabled: true }));
 
@@ -184,6 +184,8 @@ describe('usePageTracking Hook', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       window.overtracking = {
+        track: jest.fn(),
+        identify: jest.fn(),
         page: jest.fn(() => {
           throw new Error('Tracking error');
         })
@@ -230,6 +232,8 @@ describe('usePageTracking Hook', () => {
     beforeEach(() => {
       // Reset overtracking mock for these tests
       window.overtracking = {
+        track: jest.fn(),
+        identify: jest.fn(),
         page: mockOvertrackingPage
       };
     });
@@ -255,6 +259,8 @@ describe('usePageTracking Hook', () => {
     beforeEach(() => {
       // Reset overtracking mock for these tests
       window.overtracking = {
+        track: jest.fn(),
+        identify: jest.fn(),
         page: mockOvertrackingPage
       };
     });
@@ -299,7 +305,11 @@ describe('usePageTracking Hook', () => {
       expect(mockOvertrackingPage).not.toHaveBeenCalled();
 
       // Add overtracking after delay
-      window.overtracking = { page: mockOvertrackingPage };
+      window.overtracking = {
+        track: jest.fn(),
+        identify: jest.fn(),
+        page: mockOvertrackingPage
+      };
 
       // Fast-forward time
       jest.advanceTimersByTime(500);
@@ -326,7 +336,7 @@ describe('useEventTracking Hook', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.NODE_ENV = 'production';
+    process.env = { ...process.env, NODE_ENV: 'production' };
 
     Object.defineProperty(window, 'overtracking', {
       value: {
@@ -374,7 +384,7 @@ describe('useEventTracking Hook', () => {
   });
 
   it('does not track in development', () => {
-    process.env.NODE_ENV = 'development';
+    process.env = { ...process.env, NODE_ENV: 'development' };
     const { result } = renderHook(() => useEventTracking());
 
     result.current.track('test-event');
@@ -693,7 +703,7 @@ describe('trackingEvents', () => {
       // Set up environment for tracking
       const originalEnv = process.env.NODE_ENV;
       const originalSiteId = process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID;
-      process.env.NODE_ENV = 'production';
+      process.env = { ...process.env, NODE_ENV: 'production' };
       process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID = 'test-site-id';
 
       // Mock URLSearchParams to simulate complex search parameters
@@ -714,7 +724,7 @@ describe('trackingEvents', () => {
 
       // Restore everything
       global.URLSearchParams = originalURLSearchParams;
-      process.env.NODE_ENV = originalEnv;
+      process.env = { ...process.env, NODE_ENV: originalEnv };
       process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID = originalSiteId;
     });
 
@@ -757,7 +767,7 @@ describe('trackingEvents', () => {
 
   describe('useEventTracking', () => {
     it('tracks events in production with overtracking available', () => {
-      process.env.NODE_ENV = 'production';
+      process.env = { ...process.env, NODE_ENV: 'production' };
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const { result } = renderHook(() => useEventTracking());
@@ -773,11 +783,11 @@ describe('trackingEvents', () => {
       expect(consoleSpy).toHaveBeenCalledWith('Overtracking: Event tracked');
 
       consoleSpy.mockRestore();
-      process.env.NODE_ENV = 'test';
+      process.env = { ...process.env, NODE_ENV: 'test' };
     });
 
     it('logs event tracking in non-production environment', () => {
-      process.env.NODE_ENV = 'development';
+      process.env = { ...process.env, NODE_ENV: 'development' };
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const { result } = renderHook(() => useEventTracking());
@@ -790,7 +800,7 @@ describe('trackingEvents', () => {
       );
 
       consoleSpy.mockRestore();
-      process.env.NODE_ENV = 'test';
+      process.env = { ...process.env, NODE_ENV: 'test' };
     });
 
     it('logs event tracking when overtracking not available', () => {
