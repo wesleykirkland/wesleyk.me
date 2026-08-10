@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from 'react';
 import { render, renderHook } from '@testing-library/react';
 import Overtracking, { useOvertracking } from '../Overtracking';
 
@@ -24,12 +25,14 @@ jest.mock('next/script', () => {
 
     return (
       <div
-        data-src={src}
-        src={src}
-        data-onload={onLoad ? 'true' : 'false'}
-        data-onerror={onError ? 'true' : 'false'}
-        data-testid="overtracking-script"
-        {...props}
+        {...({
+          'data-src': src,
+          src,
+          'data-onload': onLoad ? 'true' : 'false',
+          'data-onerror': onError ? 'true' : 'false',
+          'data-testid': 'overtracking-script',
+          ...props
+        } as HTMLAttributes<HTMLDivElement>)}
       />
     );
   };
@@ -48,7 +51,7 @@ describe('Overtracking Component', () => {
   });
 
   it('renders script when site ID is provided and enabled', () => {
-    process.env.NODE_ENV = 'production';
+    process.env = { ...process.env, NODE_ENV: 'production' };
 
     const { getByTestId } = render(
       <Overtracking siteId="test-site-id" enabled={true} />
@@ -78,7 +81,7 @@ describe('Overtracking Component', () => {
 
   it('uses environment variable for site ID by default', () => {
     process.env.NEXT_PUBLIC_OVERTRACKING_SITE_ID = 'env-site-id';
-    process.env.NODE_ENV = 'production';
+    process.env = { ...process.env, NODE_ENV: 'production' };
 
     const { getByTestId } = render(<Overtracking />);
 
@@ -90,7 +93,7 @@ describe('Overtracking Component', () => {
   });
 
   it('defaults to production-only when no enabled prop provided', () => {
-    process.env.NODE_ENV = 'development';
+    process.env = { ...process.env, NODE_ENV: 'development' };
 
     const { queryByTestId } = render(<Overtracking siteId="test-site-id" />);
 
@@ -146,7 +149,7 @@ describe('Overtracking Component', () => {
 
   describe('Environment Handling', () => {
     it('works in production environment', () => {
-      process.env.NODE_ENV = 'production';
+      process.env = { ...process.env, NODE_ENV: 'production' };
 
       const { getByTestId } = render(
         <Overtracking siteId="test-site-id" enabled={true} />
@@ -156,7 +159,7 @@ describe('Overtracking Component', () => {
     });
 
     it('does not render in test environment by default', () => {
-      process.env.NODE_ENV = 'test';
+      process.env = { ...process.env, NODE_ENV: 'test' };
 
       const { queryByTestId } = render(<Overtracking siteId="test-site-id" />);
 
@@ -234,12 +237,12 @@ describe('useOvertracking Hook', () => {
 
   afterEach(() => {
     console.log = originalConsoleLog;
-    process.env.NODE_ENV = originalNodeEnv;
+    process.env = { ...process.env, NODE_ENV: originalNodeEnv };
   });
 
   describe('in development environment', () => {
     beforeEach(() => {
-      process.env.NODE_ENV = 'development';
+      process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
     it('logs development messages for track', () => {
@@ -275,7 +278,7 @@ describe('useOvertracking Hook', () => {
 
   describe('in production environment', () => {
     beforeEach(() => {
-      process.env.NODE_ENV = 'production';
+      process.env = { ...process.env, NODE_ENV: 'production' };
     });
 
     it('calls overtracking.track when available', () => {

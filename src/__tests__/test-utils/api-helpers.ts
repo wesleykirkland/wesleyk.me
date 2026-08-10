@@ -16,7 +16,11 @@ export const createTestRequest = (
 ) => {
   const { method = 'GET', body, headers = {} } = options;
 
-  const requestInit: RequestInit = {
+  const requestInit: {
+    method: string;
+    headers: Record<string, string>;
+    body?: string;
+  } = {
     method,
     headers: {
       'Content-Type': 'application/json',

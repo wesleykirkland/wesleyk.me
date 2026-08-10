@@ -68,7 +68,7 @@ const mockTrackingEvents =
   require('../../hooks/usePageTracking').trackingEvents;
 
 describe('ContactForm Component', () => {
-  let originalEnv: Record<string, string>;
+  let originalEnv: NodeJS.ProcessEnv;
 
   beforeEach(() => {
     jest.clearAllMocks();
