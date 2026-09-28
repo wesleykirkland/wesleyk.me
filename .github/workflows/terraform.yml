@@ -103,7 +103,7 @@ jobs:
 
       # Plan on PR, apply on merge to main or via run-apply label/workflow_dispatch.
       - name: Provision TF
-        uses: op5dev/tf-via-pr@v13
+        uses: op5dev/tf-via-pr@v14
         env:
           NETLIFY_API_TOKEN: ${{ secrets.NETLIFY_API_TOKEN }}
           TF_LOG: ERROR
